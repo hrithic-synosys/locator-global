@@ -70,6 +70,8 @@ const MAX_MB = 10
 
 export default function ContactForm() {
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
 
@@ -85,16 +87,34 @@ export default function ContactForm() {
     setFile(f)
   }
 
-  // NOTE: no backend endpoint yet — matches QuoteForm, which also shows the
-  // success state locally. Wire both to a real API route when one exists.
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSent(true)
+    if (sending) return
+    if (fileError) { setSubmitError(fileError); return }
+    const formData = new FormData(e.currentTarget)
+    setSending(true)
+    setSubmitError(null)
+    try {
+      const response = await fetch('/api/contact', { method: 'POST', body: formData })
+      const result = await response.json()
+      if (!response.ok || result.success !== true) {
+        setSubmitError(result.error || 'Unable to send your message. Please try again.')
+        return
+      }
+      setFile(null)
+      setFileError(null)
+      setSent(true)
+    } catch {
+      setSubmitError('Unable to send your message. Please try again.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
     <section className="ctf" id="contact-form">
       <style href="ct-contactform" precedence="medium">{`
+        .ctf-submit:disabled { opacity: .65; cursor: wait; }
         .ctf { background: #fff; padding: clamp(44px,6vw,80px) 28px clamp(52px,7vw,88px); }
         .ctf-shell {
           max-width: var(--w-1180); margin: 0 auto;
@@ -241,7 +261,7 @@ export default function ContactForm() {
                 Fill in the details below and our team will get back to you within one business day.
               </p>
 
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} aria-busy={sending}>
                 <div className="ctf-grid">
                   {FIELDS.map(f => (
                     <div key={f.name} className={`ctf-field${f.half ? '' : ' full'}`}>
@@ -308,8 +328,11 @@ export default function ContactForm() {
                   <span>I agree that Locator may contact me about this enquiry.</span>
                 </label>
 
-                <button type="submit" className="ctf-submit">
-                  Send Message
+                {submitError && (
+                  <p role="alert" style={{ color: '#b42318', marginTop: '16px' }}>{submitError}</p>
+                )}
+                <button type="submit" className="ctf-submit" disabled={sending}>
+                  {sending ? 'Sending message…' : 'Send Message'}
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21.4 2.6 10.9 13.1M21.4 2.6 14.7 21.4l-3.8-8.3-8.3-3.8Z" />
                   </svg>
