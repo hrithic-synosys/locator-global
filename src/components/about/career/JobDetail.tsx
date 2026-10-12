@@ -22,6 +22,8 @@ type Experience = { id: number; value: string }
 export default function JobDetail({ job }: { job: Job }) {
   const [tab, setTab] = useState<'overview' | 'application'>('overview')
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [experiences, setExperiences] = useState<Experience[]>([])
@@ -29,12 +31,32 @@ export default function JobDetail({ job }: { job: Job }) {
   const nextExpId = useRef(0)
   const resumeInputRef = useRef<HTMLInputElement>(null)
 
-  // NOTE: no backend endpoint yet — shows the success state locally.
-  // Wire this to a real API route / ATS integration when available.
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSent(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (sending) return
+    const formData = new FormData(e.currentTarget)
+    formData.set('jobSlug', job.slug)
+    const resume = formData.get('resume')
+    if (!(resume instanceof File) || !resume.size || resume.size > 5 * 1024 * 1024) {
+      setSubmitError('Please choose a non-empty resume no larger than 5 MB.')
+      return
+    }
+    setSending(true)
+    setSubmitError(null)
+    try {
+      const response = await fetch('/api/career-application', { method: 'POST', body: formData })
+      const result = await response.json()
+      if (!response.ok || result.success !== true) {
+        setSubmitError(result.error || 'Unable to send your application. Please try again.')
+        return
+      }
+      setSent(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch {
+      setSubmitError('Unable to send your application. Please try again.')
+    } finally {
+      setSending(false)
+    }
   }
 
   const handleShare = async () => {
@@ -212,7 +234,8 @@ export default function JobDetail({ job }: { job: Job }) {
           background: #1360ee; box-shadow: 0 12px 26px -10px rgba(19,96,238,.6);
           transition: .18s ${EASE};
         }
-        .jd-submit:hover { background: #0d4fd4; transform: translateY(-1px); }
+        .jd-submit:disabled { opacity: .65; cursor: wait; transform: none; }
+        .jd-submit:hover:not(:disabled) { background: #0d4fd4; transform: translateY(-1px); }
 
         .jd-success { text-align: center; padding: clamp(40px,6vw,64px) 8px; }
         .jd-check { width: 64px; height: 64px; margin: 0 auto 22px; border-radius: 50%; background: rgba(19,146,63,.1); color: #13923f; display: grid; place-items: center; }
@@ -279,13 +302,13 @@ export default function JobDetail({ job }: { job: Job }) {
               <button className="jd-apply-cta" onClick={() => setTab('overview')}>Back to job details</button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} aria-busy={sending}>
               {/* Autofill banner — shares the same hidden input as Resume below,
                   so picking a file here really does fill that field too. */}
               <div className="jd-autofill">
                 <div>
-                  <p className="jd-autofill-h">Autofill application</p>
-                  <p className="jd-autofill-p">Save time by importing your resume — PDF, DOC, DOCX, ODT, or RTF.</p>
+                  <p className="jd-autofill-h">Upload your resume</p>
+                  <p className="jd-autofill-p">Attach your resume — PDF, DOC, DOCX, ODT, or RTF, up to 5 MB.</p>
                 </div>
                 <button type="button" className="jd-autofill-btn" onClick={() => resumeInputRef.current?.click()}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -301,28 +324,28 @@ export default function JobDetail({ job }: { job: Job }) {
               <div className="jd-form-grid">
                 <div className="jd-field">
                   <label className="jd-label" htmlFor="jd-first">First name<b> *</b></label>
-                  <input id="jd-first" className="jd-input" type="text" required placeholder="First name" />
+                  <input id="jd-first" name="firstName" className="jd-input" type="text" required placeholder="First name" />
                 </div>
                 <div className="jd-field">
                   <label className="jd-label" htmlFor="jd-last">Last name<b> *</b></label>
-                  <input id="jd-last" className="jd-input" type="text" required placeholder="Last name" />
+                  <input id="jd-last" name="lastName" className="jd-input" type="text" required placeholder="Last name" />
                 </div>
                 <div className="jd-field full">
                   <label className="jd-label" htmlFor="jd-email">Email<b> *</b></label>
-                  <input id="jd-email" className="jd-input" type="email" required placeholder="you@email.com" />
+                  <input id="jd-email" name="email" className="jd-input" type="email" required placeholder="you@email.com" />
                 </div>
                 <div className="jd-field full">
                   <label className="jd-label" htmlFor="jd-phone">Phone<b> *</b></label>
                   <div className="jd-phone-row">
-                    <select className="jd-phone-code" defaultValue="+971" aria-label="Country code">
+                    <select name="countryCode" className="jd-phone-code" defaultValue="+971" aria-label="Country code">
                       {COUNTRY_CODES.map((c) => <option key={c.code} value={c.code}>{c.code}</option>)}
                     </select>
-                    <input id="jd-phone" className="jd-input" type="tel" required placeholder="5xx xxx xxx" />
+                    <input id="jd-phone" name="phone" className="jd-input" type="tel" required placeholder="5xx xxx xxx" />
                   </div>
                 </div>
                 <div className="jd-field full">
                   <label className="jd-label" htmlFor="jd-address">Address <span className="jd-optional">(Optional)</span></label>
-                  <input id="jd-address" className="jd-input" type="text" placeholder="City, region, country" />
+                  <input id="jd-address" name="address" className="jd-input" type="text" placeholder="City, region, country" />
                   <p className="jd-hint">Include your city, region, and country, so we can manage your application easily.</p>
                 </div>
               </div>
@@ -356,7 +379,7 @@ export default function JobDetail({ job }: { job: Job }) {
                     <path d="M12 15V3M7 8l5-5 5 5" /><path d="M20 15v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4" />
                   </svg>
                   <span>{fileName ? <b>{fileName}</b> : <><b>Choose a file</b> or drag and drop here</>}</span>
-                  <input ref={resumeInputRef} id="jd-resume" type="file" required accept=".pdf,.doc,.docx,.odt,.rtf" onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)} />
+                  <input ref={resumeInputRef} id="jd-resume" name="resume" type="file" required accept=".pdf,.doc,.docx,.odt,.rtf" onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)} />
                 </label>
               </div>
 
@@ -366,17 +389,17 @@ export default function JobDetail({ job }: { job: Job }) {
 
               <div className="jd-field full">
                 <label className="jd-label" htmlFor="jd-cover">Cover letter<b> *</b></label>
-                <textarea id="jd-cover" className="jd-textarea" required placeholder="Tell us why you're a good fit for this role" />
+                <textarea id="jd-cover" name="coverLetter" className="jd-textarea" required placeholder="Tell us why you're a good fit for this role" />
               </div>
 
               <div className="jd-field full">
                 <label className="jd-label" htmlFor="jd-relocate">Are you willing to work on-site in {job.location.split(',')[0]}?<b> *</b></label>
-                <textarea id="jd-relocate" className="jd-textarea" required style={{ minHeight: '70px' }} placeholder="Yes / No — add any details" />
+                <textarea id="jd-relocate" name="onsite" className="jd-textarea" required style={{ minHeight: '70px' }} placeholder="Yes / No — add any details" />
               </div>
 
               <div className="jd-field full">
                 <label className="jd-label" htmlFor="jd-salary">What is your salary expectation?<b> *</b></label>
-                <textarea id="jd-salary" className="jd-textarea" required style={{ minHeight: '70px' }} placeholder="e.g. AED 5,000 / month" />
+                <textarea id="jd-salary" name="salary" className="jd-textarea" required style={{ minHeight: '70px' }} placeholder="e.g. AED 5,000 / month" />
               </div>
 
               <div className="jd-field full">
@@ -399,8 +422,11 @@ export default function JobDetail({ job }: { job: Job }) {
                 </div>
               </div>
 
-              <button type="submit" className="jd-submit">
-                Submit application
+              {submitError && (
+                <p role="alert" style={{ color: '#b42318', marginBottom: '12px' }}>{submitError}</p>
+              )}
+              <button type="submit" className="jd-submit" disabled={sending}>
+                {sending ? 'Sending application…' : 'Submit application'}
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
               </button>
             </form>
