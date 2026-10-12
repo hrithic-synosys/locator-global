@@ -388,8 +388,8 @@ export default function JobDetail({ job }: { job: Job }) {
               </div>
 
               <div className="jd-field full">
-                <label className="jd-label" htmlFor="jd-cover">Cover letter<b> *</b></label>
-                <textarea id="jd-cover" name="coverLetter" className="jd-textarea" required placeholder="Tell us why you're a good fit for this role" />
+                <label className="jd-label" htmlFor="jd-cover">Cover letter</label>
+                <textarea id="jd-cover" name="coverLetter" className="jd-textarea" placeholder="Tell us why you're a good fit for this role" />
               </div>
 
               <div className="jd-field full">
@@ -399,7 +399,7 @@ export default function JobDetail({ job }: { job: Job }) {
 
               <div className="jd-field full">
                 <label className="jd-label" htmlFor="jd-salary">What is your salary expectation?<b> *</b></label>
-                <textarea id="jd-salary" name="salary" className="jd-textarea" required style={{ minHeight: '70px' }} placeholder="e.g. AED 5,000 / month" />
+                <textarea id="jd-salary" name="salary" className="jd-textarea" required style={{ minHeight: '70px' }} placeholder="e.g. AED 3,000 / month" />
               </div>
 
               <div className="jd-field full">

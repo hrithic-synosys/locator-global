@@ -70,7 +70,7 @@ export async function POST(request: Request) {
   const address = text('address')
   const experienceValues = form.getAll('experience')
   
-  if (![firstName, lastName, email, countryCode, phone, coverLetter, onsite, salary].every(Boolean)) {
+  if (![firstName, lastName, email, countryCode, phone, onsite, salary].every(Boolean)) {
     return failure('Please complete all required fields.')
   }
   if (email.length > 254 || !/^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(email)) {
