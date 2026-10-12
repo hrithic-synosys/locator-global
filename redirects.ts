@@ -6,6 +6,8 @@ export type RedirectRule = { source: string; destination: string; permanent: tru
 
 const rules: [string, string][] = [
   ['/aboutus.html', '/about/who-we-are'],
+  ['/index.html', '/'],
+  ['/about', '/about/who-we-are'],
   ['/software.html', '/software'],
   ['/services.html', '/service/fleet-telematics'],
   ['/shahin.html', '/shahin'],
@@ -21,6 +23,7 @@ const rules: [string, string][] = [
   ['/why-locator.html', '/'], // REVIEW: not a topical match (homepage/unrelated target) - Google may treat as soft 404
   ['/blog.html', '/about/newsroom/blog'],
   ['/gps-tracking.html', '/benefits-of-gps-tracking'],
+  ['/gps_tracking/contact_us', '/get-a-quote'],
   ['/GPS-Tracker.html', '/service/gps-tracker'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
   ['/Car-Tracker.html', '/service/car-tracker'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
   ['/GPS-Tracking-System.html', '/service/gps-tracking-system'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
@@ -29,6 +32,7 @@ const rules: [string, string][] = [
   ['/Vehicle-Tracking-System.html', '/service/vehicle-tracking-system'],
   ['/contact.html', '/contact'],
   ['/Services/sales-service-tracking.html', '/service/fleet-telematics'],
+  ['/service', '/service/fleet-telematics'],
   ['/Services/delivery-trucks-tracking.html', '/service/fleet-telematics'],
   ['/Services/field-staff-tracking.html', '/service/task-manager'],
   ['/Services/asset-tracking.html', '/service/smart-iot'],
@@ -78,6 +82,11 @@ const rules: [string, string][] = [
   ['/guidance-on-securepath-certification-process.html', '/securepath'],
   ['/partners.html', '/'],
   ['/faq.html', '/faq'],
+  ['/service-details.html/2/Delivery-Trucks-Tracking', '/service/fleet-telematics'],
+  ['/service-details.html/4/Asset-Tracking', '/service/fleet-telematics'],
+  ['/service-details.html/5/Motor-Cycle-Tracking', '/service/fleet-telematics'],
+  ['/service-details.html/6/School-Bus-Tracking', '/service/fleet-telematics'],
+  ['/asateel.html', '/asateel-certified-obu'],
 ];
 
 // ---- Build-time safety net: fails the build if someone later introduces a mistake ----
