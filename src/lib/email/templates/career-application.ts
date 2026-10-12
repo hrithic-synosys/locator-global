@@ -31,7 +31,7 @@ export function careerApplicationTemplate(data: CareerApplicationData) {
       { label: 'Phone', value: data.phone },
       { label: 'Address', value: data.address || '—' },
       { label: 'Experience', value: data.experiences.join('\n') || '—' },
-      { label: 'Cover letter', value: data.coverLetter },
+      { label: 'Cover letter', value: data.coverLetter || '—' },
       { label: 'On-site availability', value: data.onsite },
       { label: 'Salary expectation', value: data.salary },
       { label: 'Screening question', value: data.screeningQuestion },
