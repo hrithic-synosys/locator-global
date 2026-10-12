@@ -87,6 +87,8 @@ const rules: [string, string][] = [
   ['/service-details.html/5/Motor-Cycle-Tracking', '/service/fleet-telematics'],
   ['/service-details.html/6/School-Bus-Tracking', '/service/fleet-telematics'],
   ['/asateel.html', '/asateel-certified-obu'],
+  ['/contact.php', '/contact'],
+  ['/service-details.html/1/Sales-Service-Tracking', '/service/gps-tracking-system'],
 ];
 
 // ---- Build-time safety net: fails the build if someone later introduces a mistake ----
