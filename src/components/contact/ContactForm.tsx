@@ -1,5 +1,6 @@
 'use client'
 
+import { trackLeadSubmission } from '@/lib/analytics'
 import { useState } from 'react'
 
 const LOCATOR_MAP_URL =
@@ -101,6 +102,10 @@ export default function ContactForm() {
         setSubmitError(result.error || 'Unable to send your message. Please try again.')
         return
       }
+      
+      //gtm conversion trigger
+      trackLeadSubmission("contact");
+
       setFile(null)
       setFileError(null)
       setSent(true)

@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { motion, useInView, type Variants } from "framer-motion";
 import {  QuoteFormState, sendQuoteEmail } from "@/app/actions/send-quote-email";
+import { trackLeadSubmission } from "@/lib/analytics";
 
 const EASE = "cubic-bezier(.22,.61,.36,1)";
 const NODE = 64; // px — node diameter; track aligns to its centre
@@ -238,7 +239,7 @@ export default function QuoteForm() {
     sendQuoteEmail,
     initialState
   );
-
+  const lastTrackedState = useRef<QuoteFormState | null>(null);
   // Particles for a connector only start once THAT segment's beam has drawn
   // in — otherwise, with a 1.5s gap between steps, you'd see step 3's
   // particles already flowing before step 3 has even appeared.
@@ -255,7 +256,14 @@ export default function QuoteForm() {
   }, [inView]);
 
   useEffect(() => {
-    if (state.success) setShowSuccess(true);
+    if (!state.success) return;
+
+    setShowSuccess(true);
+
+    if (lastTrackedState.current === state) return;
+
+    lastTrackedState.current = state;
+    trackLeadSubmission("quote");
   }, [state]);
 
   return (
