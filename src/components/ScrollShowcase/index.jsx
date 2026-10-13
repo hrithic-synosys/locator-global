@@ -277,12 +277,7 @@ export default function ScrollShowcase() {
 
     const observers = rowRefs.current.map((el, i) => {
       if (!el) return null;
-      // Use a generous rootMargin so the scene fires as soon as the row enters view.
-      // On desktop the sticky anim panel is always visible, but the row entering/leaving
-      // still gives us a clean play/stop signal. On mobile (stacked), the row entering
-      // the viewport is exactly when we want the animation to start.
-      const isDesktop = window.innerWidth >= 1024;
-      const margin = isDesktop ? '-15% 0px -15% 0px' : '0px';
+      const panel = el.querySelector('.ss-anim-panel') || el;
       const obs = new IntersectionObserver(
         ([entry]) => {
           const scene = innerRefs.current[i];
@@ -293,9 +288,9 @@ export default function ScrollShowcase() {
             if (scene.__stop) scene.__stop();
           }
         },
-        { rootMargin: margin, threshold: 0 }
+        { rootMargin: '0px', threshold: 0 }
       );
-      obs.observe(el);
+      obs.observe(panel);
       return obs;
     });
 

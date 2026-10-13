@@ -5,7 +5,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import BrowserChrome from './BrowserChrome';
 import { createSectionMachine } from './section-machine';
-import { attachWheelSteps } from './wheel-steps';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -223,6 +222,7 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
   const linesRef     = useRef(null);
   const outerRef     = useRef(null);
   const playedRef    = useRef(false);
+  const inViewRef    = useRef(false);
   const [scale, setScale] = useState(1);
 
   // ── State machine ─────────────────────────────────────────────────────────
@@ -247,12 +247,8 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
   const ST_ICONS = 0, ST_DESKTOP = 1;
   const iconsTlRef   = useRef(null);
   const desktopTlRef = useRef(null);
-  // Only the pinned breakpoint locks scrolling. Below 1024px the row is not pinned
-  // and simply flows past, so freezing the page there would strand the user staring
-  // at a frozen screen for the length of an animation they did not ask to wait for.
+  // Pin layout is tracked only to avoid unnecessary measurement refreshes.
   const pinnedRef    = useRef(false);
-  // The pinning trigger, so a wheel step can map a state back to a scroll position.
-  const stRef        = useRef(null);
 
   // Per-state thresholds — the boundary that applies depends on which way you are
   // travelling, which is the hysteresis: there is no single point where a few
@@ -260,19 +256,6 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
   const TO_DESKTOP = 0.34;  // icons   → desktop
   const TO_ICONS   = 0.26;  // desktop → icons
 
-  // Where a wheel step parks the page for each state: the middle of that state's
-  // band, as far from its edges as the range allows, so a stepped change gets the
-  // same hysteresis a distance-driven one has.
-  //
-  //   ST_ICONS   0.12   below TO_DESKTOP (0.34)
-  //   ST_DESKTOP 0.72   well above TO_ICONS (0.26), with room left to scroll out
-  const BAND_POS = [0.12, 0.72];
-
-  // The state machine. Built by getMachine, which is defined near the bottom of this
-  // component because it points at runTransition and applyState — the two pieces of
-  // this scene the machine drives. The ref is declared up here with the others so
-  // everything above can reach the machine without reading a binding that does not
-  // exist yet.
   const machineRef = useRef(null);
 
   useEffect(() => {
@@ -318,11 +301,13 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
 
   useLayoutEffect(() => () => {
     allTweens.current.forEach(t => t?.kill());
-    // Killing the timelines means no completion callback will ever fire, so a
-    // transition in flight would never release its lock — destroy() force-unlocks
-    // rather than counting down, because leaving the user on an unscrollable page is
-    // far worse than dropping a refcount that nothing else is holding.
+    // Ignore stale callbacks and rebuild cleanly on development remounts.
     machineRef.current?.destroy();
+    machineRef.current = null;
+    playedRef.current = false;
+    iconsTlRef.current = null;
+    desktopTlRef.current = null;
+    allTweens.current = [];
   }, []);
 
   // NOT refreshed on the pinned branch, and that omission is deliberate — see the
@@ -344,7 +329,7 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
   // The scene is a one-shot per stage now, so leaving the viewport must NOT kill
   // anything — doing that left the dashboard stuck part-drawn on scroll-out.
   // Cleanup happens on unmount instead (see the effect above).
-  const stop = () => {};
+  const stop = () => { inViewRef.current = false; iconsTlRef.current?.pause(); };
 
   // Gentle curves, matching Scene1Icons. sine has the softest acceleration of the
   // standard eases, so the line draw reads as one continuous glide; power3/power2.in
@@ -412,7 +397,13 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
   const play = () => {
     // Guarded: the row re-enters the viewport whenever the user scrolls back up,
     // and restarting would yank the scene back to stage 0 from wherever it got to.
-    if (playedRef.current) return;
+    inViewRef.current = true;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      getMachine().showStatic();
+      return;
+    }
+    if (machineRef.current && machineRef.current.getState() !== ST_ICONS) return;
+    if (playedRef.current) { iconsTlRef.current?.resume(); return; }
     playedRef.current = true;
 
     resetAll();
@@ -671,7 +662,7 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
   // Unwinding runs a little quicker than building. A reveal earns its time — it is
   // showing the user something new — but replaying the same beats backwards at the
   // same pace feels like being held up, and the user is scrolling AWAY.
-  const REVERSE_RATE = 1.35;
+  const REVERSE_RATE = 2.8;
 
   // The ONLY place a timeline is started. Every entry point routes through here, so
   // there is exactly one owner per transition and two can never be pointed at once.
@@ -693,7 +684,7 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
       // and been paused on a DIFFERENT frame since — without this a second forward
       // play snaps the board back to the first play's frame before fading.
       if (tl.progress() === 0) tl.invalidate();
-      tl.timeScale(1);
+      tl.timeScale(2.4);
       tl.eventCallback('onComplete', done);
       tl.play();
       return;
@@ -733,7 +724,9 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
       tl.progress(0).pause();
       // ST_ICONS means the loop owns the board again — the same hand-over a normal
       // reverse performs when it lands here.
-      iconsTlRef.current?.resume();
+      if (inViewRef.current) {
+        if (iconsTlRef.current) iconsTlRef.current.resume(); else play();
+      } else iconsTlRef.current?.pause();
       return;
     }
 
@@ -751,7 +744,6 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
         states: 2,
         forward:  [0, TO_DESKTOP],
         backward: [TO_ICONS, 0],
-        bands: BAND_POS,
         runTransition,
         applyState,
       });
@@ -763,113 +755,65 @@ export default forwardRef(function Scene4Pricing(_props, ref) {
   // travels through the viewport, and it is the box that needs pinning.
   useLayoutEffect(() => {
     const el = outerRef.current;
-    if (!el) return;
-    const row = el.closest('.ss-row');
-    if (!row) return;
-
-    // Built here rather than inside the gsap.context callback below: the wheel
-    // handlers at the bottom of this effect are OUTSIDE that callback's scope, so
-    // a `machine` declared in there is not in scope by the time they close over
-    // it. getMachine memoises into machineRef, so this is still the one instance
-    // the ScrollTriggers use.
+    const row = el?.closest('.ss-row');
+    if (!el || !row) return;
+    const panel = el.closest('.ss-anim-panel') || el;
     const machine = getMachine();
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
+      const callbacks = {
+        onUpdate: self => machine.onScroll(self),
+        onRefresh: self => machine.onRefresh(self),
+        onLeave: () => machine.onLeave(),
+        onLeaveBack: () => machine.onLeaveBack(),
+      };
 
-      // Desktop: pin the whole row so the section holds still in view while the
-      // wireframe draws and the dashboard lands — the scene plays where the user is
-      // already looking instead of sliding up the screen underneath the animation.
-      mm.add('(min-width: 1024px)', () => {
+      mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
         pinnedRef.current = true;
-        machine.setPinned(true);
-
-        stRef.current = ScrollTrigger.create({
+        const trigger = ScrollTrigger.create({
           trigger: row,
           start: 'top top',
-          // Purely a pacing choice: the state threshold is a fraction of this, so it
-          // only decides how much scrolling sits either side of the change.
-          //
-          //   0.00 → 0.34   icon board   (first scroll lands the dashboard)
-          //   0.34 → 1.00   dashboard, then release
-          //
-          // Reverse reads the same band with its own threshold, so the pin is not
-          // given up until the board is back to icons. It no longer has to be long
-          // enough to CONTAIN a time-based icon pass, which is what 1.6 was sized
-          // for and what no length reliably achieved.
-          end: () => '+=' + window.innerHeight * 1.8,
+          end: () => '+=' + window.innerHeight * 0.65,
           pin: true,
           pinSpacing: true,
-          // NO anticipatePin — see Scene1Icons. Pinning ahead of the trigger point puts
-          // a fixed, viewport-filling row on screen while the previous section is still
-          // showing, which is worse than the late latch it avoids.
           invalidateOnRefresh: true,
-          onUpdate: (self) => machine.onScroll(self),
-          // A refresh RESOLVES rather than settles — see section-machine. A reload
-          // partway down the section, or a resize, lands on the state the position
-          // implies instead of starting a transition nobody asked for.
-          onRefresh: (self) => machine.onRefresh(self),
-          // onLeave / onLeaveBack are what make a fast scroll safe, and their absence
-          // was the bug. Fly past this row and it must be left on the finished frame
-          // for the edge it was left by, instantly and without moving the page —
-          // otherwise a section the user has already gone past keeps running its own
-          // wall-clock transitions over the one they have arrived at.
-          onLeave:     () => machine.onLeave(),
-          onLeaveBack: () => machine.onLeaveBack(),
+          ...callbacks,
         });
-
-        machine.setTrigger(stRef.current);
-
-        // Crossing back below 1024px tears this branch down. Drop the pinned flag
-        // with it, and release any lock still held, or the page stays frozen with
-        // nothing left running to unfreeze it.
-        return () => {
-          pinnedRef.current = false;
-          stRef.current = null;
-          machine.setPinned(false);
-          machine.setTrigger(null);
-        };
+        machine.setTrigger(trigger);
+        if (inViewRef.current) play();
+        return () => { pinnedRef.current = false; machine.setTrigger(null); };
       });
 
-      // Below 1024px nothing is pinned, but `self.progress` runs 0→1 across the
-      // range below exactly as it does across the pin, so the same fraction works
-      // untouched.
-      mm.add('(max-width: 1023px)', () => {
-        const st = ScrollTrigger.create({
-          trigger: row,
-          start: 'top 75%',
-          end: 'bottom 30%',
+      mm.add('(max-width: 1023px) and (prefers-reduced-motion: no-preference)', () => {
+        const trigger = ScrollTrigger.create({
+          // Measure the artwork, not the long text column above it.
+          trigger: panel,
+          start: 'top 85%',
+          end: 'bottom 20%',
           invalidateOnRefresh: true,
-          onUpdate:    (self) => machine.onScroll(self),
-          onRefresh:   (self) => machine.onRefresh(self),
-          onLeave:     () => machine.onLeave(),
-          onLeaveBack: () => machine.onLeaveBack(),
+          ...callbacks,
         });
-
-        machine.setTrigger(st);
+        machine.setTrigger(trigger);
+        if (inViewRef.current) play();
         return () => machine.setTrigger(null);
+      });
+
+      mm.add('(prefers-reduced-motion: reduce)', () => {
+        machine.setTrigger(null);
+        machine.showStatic();
+        return () => machine.reset();
       });
     }, el);
 
-    // Wheel gestures step the state directly (see wheel-steps). Only while pinned
-    // and in range: below 1024px the row flows past normally, where moving the
-    // scroll position under the user would be a visible jump rather than the no-op
-    // it is inside a pin. The machine re-checks all of that itself in step().
-    const detachWheel = attachWheelSteps({
-      isReady: () => pinnedRef.current && !!stRef.current?.isActive && !machine.isSkipping(),
-      isBusy:  () => machine.isBusy(),
-      onStep:  (dir) => machine.step(dir),
-    });
-
-    return () => { detachWheel(); ctx.revert(); };
+    return () => ctx.revert();
   }, []);
 
   // ── Skip ──────────────────────────────────────────────────────────────────
   // Called by the section's Skip button just BEFORE the page starts moving. Jumps
   // the scene to the frame belonging to the edge the user is leaving by — the landed
-  // dashboard going down, the looping icon board going up — and releases any scroll
-  // lock a transition-in-flight is holding, so the skip's own scroll can actually
-  // travel. That is the machine's RESOLVE path: the same thing a fast scroll past
+  // dashboard going down, the looping icon board going up. Any active transition
+  // settles immediately. That is the machine's RESOLVE path: a fast scroll past
   // this section does, only asked for deliberately.
   const skipToEnd = (direction = 'down') => getMachine().skip(direction);
 

@@ -15,12 +15,15 @@ export async function sendMail(opts: {
   subject: string;
   html: string;
   replyTo?: string;
+  fromName?: string;
+  attachments?: { filename: string; content: Buffer; contentType?: string }[];
 }) {
   return transporter.sendMail({
-    from: `Quote Requests <${process.env.MAIL_FROM}>`,
+    from: `${opts.fromName || "Quote Requests"} <${process.env.MAIL_FROM}>`,
     to: opts.to,
     subject: opts.subject,
     html: opts.html,
     replyTo: opts.replyTo,
+    attachments: opts.attachments,
   });
 }

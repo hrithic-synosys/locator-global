@@ -1,7 +1,8 @@
 "use client";
 
 import { DemoFormState, sendDemoEmail } from "@/app/actions/send-demo-email";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { trackLeadSubmission } from "@/lib/analytics";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 
 const EASE = "cubic-bezier(.22,.61,.36,1)";
 
@@ -236,10 +237,19 @@ export default function DemoBooking() {
     sendDemoEmail,
     initialState
   );
+  const lastTrackedState = useRef<DemoFormState | null>(null);
+
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    if (state.success) setShowSuccess(true);
+    if (!state.success) return;
+
+    setShowSuccess(true);
+
+    if (lastTrackedState.current === state) return;
+
+    lastTrackedState.current = state;
+    trackLeadSubmission("demo");
   }, [state]);
 
   useEffect(() => {

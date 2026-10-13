@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import {
   QuickMessageFormState,
   sendQuickContact,
 } from "@/app/actions/send-quick-contact";
+import { trackLeadSubmission } from "@/lib/analytics";
 
 const companyLinks = [
   { href: "/about/who-we-are", label: "Who We Are" },
@@ -130,6 +131,7 @@ export default function Footer() {
     sendQuickContact,
     initialState
   );
+  const lastTrackedState = useRef<QuickMessageFormState | null>(null);
 
   const focusIn = (
     e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -145,9 +147,19 @@ export default function Footer() {
   };
 
   useEffect(() => {
-    if (quickContactState.success) {
-      setForm({ name: "", email: "", phone: "", message: "" });
-    }
+    if (!quickContactState.success) return;
+
+    setForm({
+      name: "",
+      email: "",
+      phone: "",
+      message: "",
+    });
+
+    if (lastTrackedState.current === quickContactState) return;
+
+    lastTrackedState.current = quickContactState;
+    trackLeadSubmission("contact");
   }, [quickContactState]);
 
   return (

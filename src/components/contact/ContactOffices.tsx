@@ -2,6 +2,11 @@ import Image from 'next/image'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
+const LOCATOR_MAP_DUBAI =
+  'https://www.google.com/maps/place/Locator+GPS+Tracker+for+Car+Dubai/@25.2194077,55.2798261,17z/data=!3m1!4b1!4m6!3m5!1s0x3e5f42d64d345f65:0xf2109013bb2bffd7!8m2!3d25.2194077!4d55.2798261!16s%2Fg%2F11h0gttlv?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D'
+const LOCATOR_MAP_ABUDHABI =
+  'https://www.google.com/maps/place/LOCATOR+GPS+-+ASATEEL+Certified+OBU+Installation+Company+-+Abu+Dhabi/@24.3732884,54.5353985,17z/data=!3m1!4b1!4m6!3m5!1s0x3e5e4183e2f0d80d:0xc86366d346381d6f!8m2!3d24.3732835!4d54.5379734!16s%2Fg%2F11tsdk6y67?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D'
+
 type Office = {
   n: string
   city: string
@@ -25,12 +30,12 @@ const OFFICES: Office[] = [
     badge: 'Head Office',
     img: '/contact/dubai-office.webp',
     imgAlt: 'Locator Dubai — Sheikh Zayed Road and the Downtown skyline at sunset',
-    address: 'City Tower 2, Sheikh Zayed Road, Trade Centre,\nTrade Centre 1, Dubai, United Arab Emirates',
+    address: 'Locator GPS Tracker for Car Dubai, City Tower 2, Sheikh Zayed Road, Trade Center First,\nDubai, United Arab Emirates',
     phone: '+971 4 354 7766',
     phoneHref: 'tel:+97143547766',
     email: 'info@locator.ae',
     hours: 'Mon – Sat · 9:00 AM – 6:00 PM',
-    maps: 'https://maps.google.com/?q=Sheikh+Zayed+Road+Trade+Centre+1+Dubai',
+    maps: LOCATOR_MAP_DUBAI,
   },
   {
     n: '02',
@@ -39,12 +44,12 @@ const OFFICES: Office[] = [
     badge: 'Regional Office',
     img: '/contact/abu-dhabi-office.webp',
     imgAlt: 'Locator Abu Dhabi — Mazyad Mall office building in Mohammed Bin Zayed City',
-    address: 'Mazyad Mall, Mohammed Bin Zayed City,\nAbu Dhabi, United Arab Emirates',
+    address: 'LOCATOR GPS - ASATEEL Certified OBU Installation Company, Mazyad Mall, Mohammed Bin Zayed City,\nAbu Dhabi, United Arab Emirates',
     phone: '+971 52 675 1880',
     phoneHref: 'tel:+971526751880',
     email: 'info@locator.ae',
     hours: 'Mon – Sat · 9:00 AM – 6:00 PM',
-    maps: 'https://maps.google.com/?q=Mazyad+Mall+Mohammed+Bin+Zayed+City+Abu+Dhabi',
+    maps: LOCATOR_MAP_ABUDHABI,
   },
 ]
 
