@@ -35,7 +35,7 @@ const CHANNELS: Channel[] = [
     desc: 'Quick answers during working hours — no forms, no queue.',
     meta: 'Usually replies in minutes',
     action: 'Start a chat',
-    href: 'https://wa.me/971508746688',
+    href: 'https://wa.me/971525500956',
     external: true,
     from: '#5BF675', to: '#128C7E',
     // Official WhatsApp glyph.

@@ -14,11 +14,11 @@ export const siteConfig = {
   url: siteUrl,
   ogImage: "/brand/og-image.png",
   locale: "en_AE",
-  phone: "+971508746688",
+  phone: "+971525500956",
   phoneDisplay: "050 874 66 88",
   // Digits only, no '+' — that is the format wa.me expects. Same line as `phone`;
   // kept separate so the two can diverge without hunting through components.
-  whatsapp: "971508746688",
+  whatsapp: "971525500956",
   keywords: [
     "fleet management UAE",
     "GPS tracking Dubai",

@@ -448,7 +448,7 @@ export default function Navbar() {
             {/* Direct call — sits between the flag and the CTA. Colour follows the
                 same isPanelOpen flip as the nav links, on the same 240ms curve. */}
             <a
-              href="tel:+971508746688"
+              href="tel:+971525500956"
               className="hn-link text-sm font-semibold whitespace-nowrap hidden xl:flex items-center gap-2"
               style={{ color: navTextColor }}
             >

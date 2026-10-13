@@ -143,7 +143,7 @@ export default function DeviceDetail({ device }: { device: Device }) {
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </Link>
-                <a href="tel:+971508746688" className="dd-btn dd-btn-secondary">050 874 66 88</a>
+                <a href="tel:+971525500956" className="dd-btn dd-btn-secondary">050 874 66 88</a>
               </div>
             </div>
           </div>
