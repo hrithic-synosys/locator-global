@@ -540,7 +540,7 @@ export default function Footer() {
                   City Tower 2, Sheikh Zayed Road, Dubai, UAE
                 </span>
               </div>
-              <a href="tel:+971525500956" className="footer-phone">
+              <a href="tel:+971508746688" className="footer-phone">
                 <svg
                   width="12"
                   height="12"
