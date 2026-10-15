@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
 const STEPS = [
@@ -224,9 +226,11 @@ export default function ServiceProcess() {
                 background: '#1360ee', color: '#fff', cursor: 'pointer',
                 transition: '.18s cubic-bezier(.22,.61,.36,1)',
               }}>
-                Book a free site visit
+                <Link href="/get-a-quote">
+                  Book a free site visit
+                </Link>
               </button>
-              <button style={{
+              {/* <button style={{
                 fontFamily: 'inherit', fontSize: 'var(--f-14)', fontWeight: 700,
                 padding: '12px 26px', borderRadius: '999px',
                 border: '1.5px solid #e3e3e6', background: '#fff',
@@ -234,7 +238,7 @@ export default function ServiceProcess() {
                 transition: '.18s cubic-bezier(.22,.61,.36,1)',
               }}>
                 See pricing plans
-              </button>
+              </button> */}
             </div>
           </div>
 
