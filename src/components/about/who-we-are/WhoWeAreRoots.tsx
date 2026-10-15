@@ -1,0 +1,52 @@
+const paragraphs = [
+  "LOCATOR is a GPS tracking and fleet management technology company established in 2009 and a subsidiary of Synosys. With a longstanding presence in the Middle East, LOCATOR has developed its expertise in GPS vehicle tracking, asset tracking and fleet management, serving businesses across the UAE through its operations in Dubai and Abu Dhabi.",
+  "Over the years, LOCATOR has continuously evolved its platform to meet changing business needs. From launching its first software version in 2009 and mobile applications for iOS and Android in 2010 to introducing one minute reporting in 2011 and a complete Fleet Manager module in 2012, each milestone has contributed to the platform's development. By 2014, LOCATOR had integrated more than 500 types of GPS devices into its software. The journey continued with smartphone based people tracking and student tracking in 2015, asset tracking in 2018, and driver task management in 2019.",
+  "Our experience in GPS tracking technology has shaped our approach to helping businesses improve vehicle utilisation, monitor assets, coordinate field staff and gain greater control over daily operations. By combining vehicle tracking and fleet management capabilities, LOCATOR helps businesses improve fleet visibility, identify operational inefficiencies and work towards reducing operating costs.",
+  "With a focus on reliable technology and practical business needs, LOCATOR continues to build on its established foundation, providing fleet tracking and management solutions designed to make business operations more visible, manageable and efficient.",
+]
+
+export default function WhoWeAreRoots() {
+  return (
+    <section className="wwroots" aria-labelledby="wwroots-title">
+      <style href="wwroots-section" precedence="medium">{`
+        .wwroots { padding: clamp(48px,6vw,88px) 28px; background: #fff; border-top: 1px solid #eef1f7; }
+        .wwroots-inner { max-width: var(--w-1120); margin: 0 auto; }
+        .wwroots-eyebrow { display: block; margin-bottom: 12px; color: #1360ee; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+        .wwroots-title { max-width: 24ch; margin: 0 0 32px; color: #1d1d1f; font-size: clamp(26px,3vw,40px); font-weight: 800; line-height: 1.16; letter-spacing: -.025em; }
+        .wwroots-grid { display: grid; grid-template-columns: minmax(0,1.75fr) minmax(0,1fr); gap: clamp(28px,4vw,60px); align-items: center; }
+        .wwroots-copy p { margin: 0 0 20px; color: #52525e; font-size: clamp(14px,1.1vw,17px); line-height: 1.85; }
+        .wwroots-copy p:last-child { margin-bottom: 0; }
+        .wwroots-quote { position: relative; margin: 0; padding: clamp(24px,3vw,36px); border: 1px solid #dce7fa; border-radius: 22px; background: linear-gradient(145deg,#f2f7ff,#f7fcff); box-shadow: 0 16px 40px -28px rgba(19,96,238,.28); }
+        .wwroots-quote-mark { display: block; width: 40px; height: 32px; margin-bottom: 20px; color: #1360ee; opacity: .65; }
+        .wwroots-quote p { margin: 0; color: #16417d; font-size: clamp(18px,1.65vw,24px); line-height: 1.65; font-weight: 600; letter-spacing: -.015em; }
+        @media (max-width: 800px) {
+          .wwroots-grid { grid-template-columns: 1fr; }
+          .wwroots-title { max-width: 100%; margin-bottom: 24px; }
+          .wwroots-quote { max-width: 100%; }
+        }
+        @media (max-width: 480px) {
+          .wwroots { padding: 44px 20px; }
+        }
+      `}</style>
+      <div className="wwroots-inner">
+        <header data-reveal>
+          <span className="wwroots-eyebrow">Our story</span>
+          <h2 id="wwroots-title" className="wwroots-title">Our Roots in Fleet Technology</h2>
+        </header>
+        <div className="wwroots-grid">
+          <div className="wwroots-copy" data-reveal>
+            {paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
+          </div>
+          <blockquote className="wwroots-quote" data-reveal data-reveal-delay="100">
+            <svg className="wwroots-quote-mark" viewBox="0 0 40 32" fill="currentColor" aria-hidden="true">
+              <path d="M0 17C0 7 6 1 16 0v6C10 7 7 10 7 15h9v17H0V17Zm24 0C24 7 30 1 40 0v6c-6 1-9 4-9 9h9v17H24V17Z" />
+            </svg>
+            <p>
+              &ldquo;Most companies struggle to effectively utilize their vehicles and field staff. LOCATOR helps them manage operations better, reduce fuel costs and inefficiencies, improve business performance, and drive sustainable growth and revenue.&rdquo;
+            </p>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+  )
+}

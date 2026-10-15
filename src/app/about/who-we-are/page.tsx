@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import ScrollReveal from '@/components/software/ScrollReveal'
 import WhoWeAreHero from '@/components/about/who-we-are/WhoWeAreHero'
 import WhoWeArePurpose from '@/components/about/who-we-are/WhoWeArePurpose'
+import WhoWeAreRoots from '@/components/about/who-we-are/WhoWeAreRoots'
 import WhoWeAreNumbers from '@/components/about/who-we-are/WhoWeAreNumbers'
 import WhoWeAreJourney from '@/components/about/who-we-are/WhoWeAreJourney'
 import WhoWeAreServices from '@/components/about/who-we-are/WhoWeAreServices'
@@ -33,6 +34,7 @@ export default function WhoWeArePage() {
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
       <WhoWeAreHero />
+      <WhoWeAreRoots />
       <WhoWeArePurpose />
       <WhoWeAreNumbers />
       <WhoWeAreJourney />
