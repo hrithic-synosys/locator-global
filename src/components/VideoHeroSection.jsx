@@ -15,7 +15,7 @@ import {
  *  • Floating lavender-blue decorative blocks with soft glow and depth
  *  • Layered 3-D composition (blocks go both behind AND in front of video)
  *  • Large centered video player with dark overlay (Vimeo embed, mounted
- *    on click — see src/components/locator-video.ts for the shared source)
+ *    on visibility or click — see src/components/locator-video.ts for the shared source)
  *  • Frosted-glass play button with hover states
  *  • Sparkle / star detail at bottom-right of video
  *  • Light blue section background with subtle radial center highlight
@@ -34,8 +34,11 @@ export default function VideoHeroSection({
   poster = LOCATOR_VIDEO_POSTER,
 }) {
   const sectionRef = useRef(null);
+  const videoCardRef = useRef(null);
+  const startedRef = useRef(false);
   const [active, setActive] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
   const [ready, setReady] = useState(false);
 
   // Scroll-triggered reveal
@@ -57,10 +60,32 @@ export default function VideoHeroSection({
     return () => obs.disconnect();
   }, []);
 
-  // Mounting the iframe IS starting playback — the embed autoplays, and from
-  // then on Vimeo owns transport, so there is no pause branch to mirror and
-  // no play() promise to catch. This is a one-way switch by design.
-  const handlePlay = () => setPlaying(true);
+  // Load the player only when its card is meaningfully visible. Muted,
+  // inline playback permits autoplay on desktop and mobile browsers.
+  useEffect(() => {
+    const card = videoCardRef.current;
+    if (!card || typeof IntersectionObserver === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || entry.intersectionRatio < 0.35) return;
+      if (!startedRef.current) {
+        startedRef.current = true;
+        setMuted(true);
+        setPlaying(true);
+      }
+      observer.disconnect();
+    }, { threshold: 0.35 });
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
+  // A deliberate click retains the previous sound-on playback behavior.
+  const handlePlay = () => {
+    startedRef.current = true;
+    setMuted(false);
+    setPlaying(true);
+  };
 
   return (
     <section ref={sectionRef} className={`vhs ${active ? "vhs--active" : ""}`}>
@@ -102,7 +127,7 @@ export default function VideoHeroSection({
           {/* Subtle glow behind the video card */}
           <div className="vhs__video-glow" />
 
-          <div className="vhs__video-card" onClick={playing ? undefined : handlePlay}>
+          <div ref={videoCardRef} className="vhs__video-card" onClick={playing ? undefined : handlePlay}>
             {/* The still stays mounted for the whole life of the card rather
                 than being swapped out on click. Vimeo's iframe paints nothing
                 until its player document boots, and with the still removed
@@ -120,7 +145,7 @@ export default function VideoHeroSection({
             {playing && (
               <iframe
                 className="vhs__video vhs__frame"
-                src={locatorVideoEmbed()}
+                src={`${locatorVideoEmbed()}&muted=${muted ? 1 : 0}&playsinline=1`}
                 title={LOCATOR_VIDEO_TITLE}
                 allow={LOCATOR_VIDEO_ALLOW}
                 allowFullScreen
