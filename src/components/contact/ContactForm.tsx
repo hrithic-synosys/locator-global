@@ -1,5 +1,6 @@
 'use client'
 
+import PrivacyNotice from '@/components/common/PrivacyNotice'
 import { trackLeadSubmission } from '@/lib/analytics'
 import { useState } from 'react'
 
@@ -333,6 +334,7 @@ export default function ContactForm() {
                   <span>I agree that Locator may contact me about this enquiry.</span>
                 </label>
 
+                <PrivacyNotice />
                 {submitError && (
                   <p role="alert" style={{ color: '#b42318', marginTop: '16px' }}>{submitError}</p>
                 )}
@@ -348,7 +350,7 @@ export default function ContactForm() {
                     <rect x="4" y="10.5" width="16" height="10.5" rx="2.2" />
                     <path d="M8 10.5V7.4a4 4 0 0 1 8 0v3.1" />
                   </svg>
-                  Your information is secure and will never be shared.
+                  Your information is handled as described in our Privacy Policy.
                 </p>
               </form>
             </>

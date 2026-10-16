@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import PrivacyNotice from "@/components/common/PrivacyNotice";
 import { useActionState, useEffect, useRef, useState } from "react";
 import {
   QuickMessageFormState,
@@ -362,6 +363,7 @@ export default function Footer() {
                   Message sent — we'll be in touch soon.
                 </p>
               )}
+              <PrivacyNotice />
               <button
                 className="footer-btn-primary"
                 type="submit"
@@ -606,6 +608,10 @@ export default function Footer() {
               </a>{" "}
               · All Rights Reserved
             </span>
+            <span className="footer-sep" aria-hidden="true" />
+            <Link href="/privacy-policy" className="footer-textlink">
+              Privacy Policy
+            </Link>
             <span className="footer-sep" aria-hidden="true" />
             <a href="/sitemap.xml" className="footer-textlink">
               Sitemap

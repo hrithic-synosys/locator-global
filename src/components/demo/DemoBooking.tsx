@@ -1,5 +1,6 @@
 "use client";
 
+import PrivacyNotice from "@/components/common/PrivacyNotice";
 import { DemoFormState, sendDemoEmail } from "@/app/actions/send-demo-email";
 import { trackLeadSubmission } from "@/lib/analytics";
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
@@ -551,6 +552,7 @@ export default function DemoBooking() {
                     )}
                   </p>
 
+                  <PrivacyNotice>We use your details to arrange your demo.</PrivacyNotice>
                   <button
                     type="submit"
                     className="db-submit"

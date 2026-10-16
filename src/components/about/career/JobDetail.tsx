@@ -1,5 +1,6 @@
 'use client'
 
+import PrivacyNotice from '@/components/common/PrivacyNotice'
 import { useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -422,6 +423,7 @@ export default function JobDetail({ job }: { job: Job }) {
                 </div>
               </div>
 
+              <PrivacyNotice>We use your application details to assess your suitability for the role.</PrivacyNotice>
               {submitError && (
                 <p role="alert" style={{ color: '#b42318', marginBottom: '12px' }}>{submitError}</p>
               )}

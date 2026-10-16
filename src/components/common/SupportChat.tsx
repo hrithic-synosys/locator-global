@@ -565,7 +565,8 @@ export default function SupportChat() {
         </form>
 
         <p className="sc-note">
-          Quick answers from our assistant ·{' '}
+          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          {' · '}Quick answers from our assistant ·{' '}
           <a href={WA} target="_blank" rel="noopener noreferrer">
             talk to a person
           </a>
