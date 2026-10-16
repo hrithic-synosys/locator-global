@@ -41,13 +41,13 @@ export default function BenefitsClosing() {
         <div className="bgc-inner" data-reveal>
           <div className="bgc-mark" aria-hidden="true" />
           <p className="bgc-quote">
-            At the end of the day, vehicle tracking is just another management tool —
+            At the end of the day, vehicle tracking is just another management tool
             one that happens to tell you the truth about how your fleet spent its week.
           </p>
           <p className="bgc-note">
             Every figure on this page came out of a real deployment. If you want to know
             which of the eleven applies to your operation, the fastest answer is a
-            fifteen-minute call.
+            fifteen minute call.
           </p>
         </div>
       </section>

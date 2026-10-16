@@ -79,24 +79,25 @@ const socialLinks = [
     ),
   },
   {
-    href: "https://twitter.com",
-    label: "Twitter",
+    href: "https://www.linkedin.com/company/locatormedia/",
+    label: "LinkedIn",
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.35V9h3.414v1.561h.049c.476-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.119 20.452H3.555V9H7.12v11.452z" />
       </svg>
     ),
   },
   {
-    href: "https://plus.google.com",
-    label: "Google+",
+    href: "https://www.youtube.com/@locatormedia820",
+    label: "YouTube",
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972a6.033 6.033 0 1 1 0-12.064c1.498 0 2.866.549 3.921 1.453l2.814-2.814A9.969 9.969 0 0 0 12.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z" />
+        <path d="M23.498 6.186a2.974 2.974 0 0 0-2.092-2.105C19.555 3.58 12 3.58 12 3.58s-7.555 0-9.406.501A2.974 2.974 0 0 0 .502 6.186 31.017 31.017 0 0 0 0 12a31.017 31.017 0 0 0 .502 5.814 2.974 2.974 0 0 0 2.092 2.105c1.851.501 9.406.501 9.406.501s7.555 0 9.406-.501a2.974 2.974 0 0 0 2.092-2.105A31.017 31.017 0 0 0 24 12a31.017 31.017 0 0 0-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
       </svg>
     ),
   },
 ];
+
 
 const EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
 
@@ -537,7 +538,7 @@ export default function Footer() {
                     lineHeight: 1.5,
                   }}
                 >
-                  City Tower 2, Sheikh Zayed Road, Dubai, UAE
+                  Locator, City Tower 2, Sheikh Zayed Road, Dubai, UAE
                 </span>
               </div>
               <a href="tel:+971508746688" className="footer-phone">

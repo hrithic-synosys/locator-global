@@ -1,12 +1,21 @@
 // redirects.ts
-// Old locator.ae URLs -> new Next.js URLs (73 rules). Source of truth = the mapping sheet.
+// Old locator.ae URLs -> new Next.js URLs. Source of truth = the mapping sheet.
 // '/' and '/sitemap.xml' are intentionally NOT redirected.
+//
+// ORDER MATTERS: Next.js uses the first matching rule, so exact URLs come first and the
+// ':slug' fallbacks (old site routed by numeric ID only and ignored the slug) come last.
+//
+// TODO (not redirected here): /task-manager/privacy-policy.html and
+// /mobile-app-privacy-policy/privacy-policy.html - serve them from the new site (e.g. public/)
+// or add redirects once the new privacy-policy URLs are known. App-store listings likely link to them.
 
 export type RedirectRule = { source: string; destination: string; permanent: true };
 
 const rules: [string, string][] = [
+  // ---------- Exact URLs (from mapping sheet + sitemaps) ----------
   ['/aboutus.html', '/about/who-we-are'],
   ['/index.html', '/'],
+  ['/index.php', '/'],
   ['/about', '/about/who-we-are'],
   ['/software.html', '/software'],
   ['/services.html', '/service/fleet-telematics'],
@@ -16,18 +25,18 @@ const rules: [string, string][] = [
   ['/Shahin/securepathpremium.html', '/securepath-premium'],
   ['/Vehicle-tracking-UAE.html', '/service/vehicle-tracking-system'],
   ['/get-free-quote.html', '/get-a-quote'],
-  ['/free-demo.html', '/get-a-free-demo'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
+  ['/free-demo.html', '/get-a-free-demo'],
   ['/blog-details.html/13/Fleet-Tracking-Software', '/about/newsroom/blog/fleet-tracking-software-real-time-vehicle-management'],
   ['/blog-details.html/12/Optimized-GPS', '/about/newsroom/blog/the-tracking-edge-optimized-gps-and-field-tools'],
   ['/career.html', '/about/career'],
-  ['/why-locator.html', '/'], // REVIEW: not a topical match (homepage/unrelated target) - Google may treat as soft 404
+  ['/why-locator.html', '/'],
   ['/blog.html', '/about/newsroom/blog'],
   ['/gps-tracking.html', '/benefits-of-gps-tracking'],
   ['/gps_tracking/contact_us', '/get-a-quote'],
-  ['/GPS-Tracker.html', '/service/gps-tracker'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
-  ['/Car-Tracker.html', '/service/car-tracker'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
-  ['/GPS-Tracking-System.html', '/service/gps-tracking-system'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
-  ['/Car-GPS-Tracker.html', '/service/car-gps-tracker'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
+  ['/GPS-Tracker.html', '/service/gps-tracker'],
+  ['/Car-Tracker.html', '/service/car-tracker'],
+  ['/GPS-Tracking-System.html', '/service/gps-tracking-system'],
+  ['/Car-GPS-Tracker.html', '/service/car-gps-tracker'],
   ['/Car-Tracking-System.html', '/service/car-tracking-system'],
   ['/Vehicle-Tracking-System.html', '/service/vehicle-tracking-system'],
   ['/contact.html', '/contact'],
@@ -63,14 +72,15 @@ const rules: [string, string][] = [
   ['/blog-details.html/8/GPS-Trackers-Matter-for-Your-Business', '/about/newsroom/blog/why-gps-trackers-matter-for-your-business'],
   ['/blog-details.html/7/The-Power-of-GPS-Vehicle-Trackers', '/about/newsroom/blog/gps-vehicle-trackers-fleet-management-dubai'],
   ['/blog-details.html/1/4-Steps-to-get-vehicle-permit-in-asateel', '/about/newsroom/blog/asateel-vehicle-permit-4-simple-steps'],
+  ['/blog-details.html/1/4-Steps-to-get-vehicle-permit-in-asteel', '/about/newsroom/blog/asateel-vehicle-permit-4-simple-steps'], // typo URL is in the old sitemap.xml
   ['/blog-details.html/2/ASATEEL-Simple', '/about/newsroom/blog/asateel-certified-obu-installation-made-simple'],
   ['/blog-details.html/3/Freight-and-passenger-transport-operating', '/about/newsroom/blog/asateel-freight-and-passenger-transport-abu-dhabi'],
   ['/blog-details.html/4/Covid-19', '/about/newsroom/blog'],
   ['/blog-details.html/5/Fleet-Management-Softwares', '/about/newsroom/blog/ten-things-a-fleet-manager-should-be-tracking'],
   ['/blog-details.html/6/High-Mileage-Vehicles', '/about/newsroom/blog/how-to-keep-high-mileage-vehicles-running-smoothly'],
-  ['/car-gps-tracker-details.html/1/Fuel-Management', '/service/car-gps-tracker'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
-  ['/car-gps-tracker-details.html/2/Real-Time-Location-And-GPS', '/service/car-gps-tracker'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
-  ['/car-gps-tracker-details.html/3/Customizable-Notifications', '/service/car-gps-tracker'], // VERIFY: destination not in the sitemap I saw - must return 200 before launch
+  ['/car-gps-tracker-details.html/1/Fuel-Management', '/service/car-gps-tracker'],
+  ['/car-gps-tracker-details.html/2/Real-Time-Location-And-GPS', '/service/car-gps-tracker'],
+  ['/car-gps-tracker-details.html/3/Customizable-Notifications', '/service/car-gps-tracker'],
   ['/car-tracking-system-details.html/1/Real-Time-Fleet-Visibility', '/service/car-tracking-system'],
   ['/car-tracking-system-details.html/2/Reduced-Fleet-Cost', '/service/car-tracking-system'],
   ['/car-tracking-system-details.html/3/Easy-Reporting', '/service/car-tracking-system'],
@@ -82,13 +92,101 @@ const rules: [string, string][] = [
   ['/guidance-on-securepath-certification-process.html', '/securepath'],
   ['/partners.html', '/'],
   ['/faq.html', '/faq'],
+  ['/service-details.html', '/service/fleet-telematics'],
   ['/service-details.html/2/Delivery-Trucks-Tracking', '/service/fleet-telematics'],
+  ['/service-details.html/3/Field-Staff-Tracking', '/service/task-manager'],
   ['/service-details.html/4/Asset-Tracking', '/service/fleet-telematics'],
   ['/service-details.html/5/Motor-Cycle-Tracking', '/service/fleet-telematics'],
   ['/service-details.html/6/School-Bus-Tracking', '/service/fleet-telematics'],
   ['/asateel.html', '/asateel-certified-obu'],
   ['/contact.php', '/contact'],
   ['/service-details.html/1/Sales-Service-Tracking', '/service/gps-tracking-system'],
+
+  // ---------- Direct .php URLs (old pages were also reachable as /name.php) ----------
+  ['/about.php', '/about/who-we-are'],
+  ['/software.php', '/software'],
+  ['/services.php', '/service/fleet-telematics'],
+  ['/service-details.php', '/service/fleet-telematics'],
+  ['/faq.php', '/faq'],
+  ['/career.php', '/about/career'],
+  ['/blog.php', '/about/newsroom/blog'],
+  ['/gps-tracking.php', '/benefits-of-gps-tracking'],
+  ['/free-demo.php', '/get-a-free-demo'],
+  ['/quote.php', '/get-a-quote'],
+  ['/quote-1.php', '/get-a-quote'],
+  ['/partner.php', '/'],
+  ['/why-locator.php', '/'],
+  ['/shahin.php', '/shahin'],
+  ['/shahin-registration.php', '/shahin'],
+  ['/advice-on-shahin-registration.php', '/shahin'],
+  ['/securepath.php', '/securepath'],
+  ['/certificate.php', '/securepath'],
+  ['/certification.php', '/securepath'],
+  ['/SecurePath/certificate.php', '/securepath'],
+  ['/SecurePath/certification.php', '/securepath'],
+  ['/assistance-on-securepath-certificate-process.php', '/securepath'],
+  ['/guidance-on-securepath-certification-process.php', '/securepath'],
+  ['/securepathpremium.php', '/securepath-premium'],
+  ['/advice-on-securepath-premium-registration.php', '/securepath-premium'],
+  ['/asateel.php', '/asateel-certified-obu'],
+  ['/asateel-certified-OBU.php', '/asateel-certified-obu'],
+  ['/asateel-for-delivery-motorbikes.php', '/asateel-certified-obu'],
+  ['/help-on-asateel-account-creation.php', '/asateel-certified-obu'],
+  ['/advice-to-register-delivery-bikes-in-asateel.php', '/asateel-certified-obu'],
+  ['/gps-tracker.php', '/service/gps-tracker'],
+  ['/car-tracker.php', '/service/car-tracker'],
+  ['/gps-tracking-system.php', '/service/gps-tracking-system'],
+  ['/car-gps-tracker.php', '/service/car-gps-tracker'],
+  ['/car-tracking-system.php', '/service/car-tracking-system'],
+  ['/vehicle-tracking-system.php', '/service/vehicle-tracking-system'],
+  ['/asset-tracking.php', '/service/smart-iot'],
+  ['/motor-cycle-tracking.php', '/service/fleet-telematics'],
+  ['/school-bus-tracking.php', '/service/fleet-telematics'],
+
+  // ---------- Slug-agnostic fallbacks (old .htaccess routed by ID only; any slug worked) ----------
+  // Blog
+  ['/blog-details.html/1/:slug', '/about/newsroom/blog/asateel-vehicle-permit-4-simple-steps'],
+  ['/blog-details.html/2/:slug', '/about/newsroom/blog/asateel-certified-obu-installation-made-simple'],
+  ['/blog-details.html/3/:slug', '/about/newsroom/blog/asateel-freight-and-passenger-transport-abu-dhabi'],
+  ['/blog-details.html/4/:slug', '/about/newsroom/blog'],
+  ['/blog-details.html/5/:slug', '/about/newsroom/blog/ten-things-a-fleet-manager-should-be-tracking'],
+  ['/blog-details.html/6/:slug', '/about/newsroom/blog/how-to-keep-high-mileage-vehicles-running-smoothly'],
+  ['/blog-details.html/7/:slug', '/about/newsroom/blog/gps-vehicle-trackers-fleet-management-dubai'],
+  ['/blog-details.html/8/:slug', '/about/newsroom/blog/why-gps-trackers-matter-for-your-business'],
+  ['/blog-details.html/9/:slug', '/about/newsroom/blog/car-fleet-why-you-need-a-gps-tracker'],
+  ['/blog-details.html/10/:slug', '/about/newsroom/blog/next-gen-gps-tracker-insights'],
+  ['/blog-details.html/11/:slug', '/about/newsroom/blog/car-tracker-hub-from-routes-to-reports'],
+  ['/blog-details.html/12/:slug', '/about/newsroom/blog/the-tracking-edge-optimized-gps-and-field-tools'],
+  ['/blog-details.html/13/:slug', '/about/newsroom/blog/fleet-tracking-software-real-time-vehicle-management'],
+  // Devices
+  ['/device-details.html/1/:slug', '/service/tracking-devices/fmb120'],
+  ['/device-details.html/2/:slug', '/service/tracking-devices/fmb920'],
+  ['/device-details.html/3/:slug', '/service/tracking-devices/fmb202'],
+  ['/device-details.html/4/:slug', '/service/tracking-devices/ibutton-reader-tag'],
+  ['/device-details.html/5/:slug', '/service/tracking-devices/rfid-reader-tag'],
+  ['/device-details.html/6/:slug', '/service/tracking-devices/fuel-sensor'],
+  ['/device-details.html/7/:slug', '/service/tracking-devices/temperature-sensor'],
+  ['/device-details.html/8/:slug', '/service/tracking-devices/lv-can200'],
+  ['/device-details.html/9/:slug', '/service/tracking-devices/bluetooth-temperature-humidity'],
+  // Service details
+  ['/service-details.html/1/:slug', '/service/gps-tracking-system'],
+  ['/service-details.html/2/:slug', '/service/fleet-telematics'],
+  ['/service-details.html/3/:slug', '/service/task-manager'],
+  ['/service-details.html/4/:slug', '/service/fleet-telematics'],
+  ['/service-details.html/5/:slug', '/service/fleet-telematics'],
+  ['/service-details.html/6/:slug', '/service/fleet-telematics'],
+  // Car GPS tracker details
+  ['/car-gps-tracker-details.html/1/:slug', '/service/car-gps-tracker'],
+  ['/car-gps-tracker-details.html/2/:slug', '/service/car-gps-tracker'],
+  ['/car-gps-tracker-details.html/3/:slug', '/service/car-gps-tracker'],
+  // Car tracking system details
+  ['/car-tracking-system-details.html/1/:slug', '/service/car-tracking-system'],
+  ['/car-tracking-system-details.html/2/:slug', '/service/car-tracking-system'],
+  ['/car-tracking-system-details.html/3/:slug', '/service/car-tracking-system'],
+  // Vehicle tracking system details
+  ['/vehicle-tracking-system-details.html/1/:slug', '/service/vehicle-tracking-system'],
+  ['/vehicle-tracking-system-details.html/2/:slug', '/service/vehicle-tracking-system'],
+  ['/vehicle-tracking-system-details.html/3/:slug', '/service/vehicle-tracking-system'],
 ];
 
 // ---- Build-time safety net: fails the build if someone later introduces a mistake ----

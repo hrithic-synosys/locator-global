@@ -15,7 +15,7 @@ export type Benefit = {
 export const BENEFITS: Benefit[] = [
   {
     title: 'Reduced operating cost',
-    desc: 'Vehicle tracking cuts your phone bills outright — it is no longer a necessity to constantly call employees to find out where they are.',
+    desc: 'Vehicle tracking cuts your phone bills outright it is no longer a necessity to constantly call employees to find out where they are.',
   },
   {
     title: 'Improved customer relations',
@@ -39,7 +39,7 @@ export const BENEFITS: Benefit[] = [
   },
   {
     title: 'Lower maintenance spend',
-    desc: 'Fleet maintenance costs fall as total mileage comes down and driving behaviour improves — the two things that wear a vehicle out fastest.',
+    desc: 'Fleet maintenance costs fall as total mileage comes down and driving behaviour improves the two things that wear a vehicle out fastest.',
   },
   {
     title: 'Vicinity of the fleet',
@@ -55,7 +55,7 @@ export const BENEFITS: Benefit[] = [
   },
   {
     title: 'Fuel saving',
-    desc: 'Bringing average speeds down and keeping vehicles inside the limit feeds straight through to fuel burn, maintenance and accident rates — worth up to 20% off a monthly fuel bill.',
+    desc: 'Bringing average speeds down and keeping vehicles inside the limit feeds straight through to fuel burn, maintenance and accident rates worth up to 20% off a monthly fuel bill.',
   },
 ]
 
