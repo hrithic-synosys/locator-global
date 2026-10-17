@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import PrivacyContents from '@/components/privacy/PrivacyContents'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 import Footer from '@/components/layouts/Footer'
 
@@ -104,57 +104,104 @@ const sections = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <main style={{ background: '#fff', minHeight: '100vh' }}>
+    <main className="pp-page">
       <SoftwareNavbar />
       <style href="privacy-policy-page" precedence="medium">{`
-        .pp-hero { padding: clamp(48px,7vw,88px) 24px; background: linear-gradient(135deg,#eef4ff,#f7fcff); }
-        .pp-inner { max-width: 960px; margin: 0 auto; }
-        .pp-hero h1 { margin: 12px 0 16px; color: #1d1d1f; font-size: clamp(32px,4vw,52px); font-weight: 800; line-height: 1.15; letter-spacing: -.025em; }
-        .pp-hero p, .pp-article p, .pp-links { font-size: clamp(14px,1.1vw,17px); line-height: 1.85; color: #52525e; }
-        .pp-article { padding: clamp(36px,5vw,64px) 24px; }
-        .pp-article section { margin-bottom: 36px; scroll-margin-top: 100px; }
-        .pp-article h2 { font-size: clamp(20px,2vw,26px); line-height: 1.35; color: #1d1d1f; margin: 0 0 16px; font-weight: 700; }
-        .pp-article p { margin: 0 0 14px; }
-        .pp-contents { display: flex; flex-wrap: wrap; gap: 10px 20px; padding: 20px 0 0; }
-        .pp-contents a, .pp-article a { color: #1360ee; text-decoration: underline; text-underline-offset: 3px; }
-        .pp-contents a { font-size: 13px; line-height: 1.6; }
-        .pp-contact { border: 1px solid #dce7fa; background: #f7faff; padding: 24px; border-radius: 16px; overflow-wrap: anywhere; }
+        .pp-page { min-height: 100vh; background: #f8faff; color: #171c25; }
+        .pp-hero { padding: 58px 24px 50px; text-align: center; background: linear-gradient(180deg,#f1f7ff 0%,#f8faff 100%); }
+        .pp-hero::before { content: ''; display: block; width: 58px; height: 3px; margin: 0 auto 18px; background: #0875ef; border-radius: 2px; }
+        .pp-hero h1 { margin: 0 0 16px; font-size: clamp(36px,4.6vw,58px); font-weight: 750; line-height: 1.16; letter-spacing: -.035em; }
+        .pp-hero h1 span { color: #066bea; }
+        .pp-hero-description { max-width: 600px; margin: 0 auto; font-size: 15px; line-height: 1.75; color: #626976; }
+        .pp-updated { margin: 14px 0 0; font-size: 12px; color: #697282; }
+        .pp-layout { display: grid; grid-template-columns: 250px minmax(0,1fr); align-items: start; gap: 48px; max-width: 1200px; margin: 0 auto; padding: 10px 32px 88px; }
+        .pp-sidebar { position: sticky; top: 88px; }
+        .pp-contents { background: #f2f5fb; padding: 22px 12px; border-radius: 8px; max-height: calc(100svh - 112px); overflow-y: auto; }
+        .pp-contents h2 { font-size: 14px; line-height: 1.5; font-weight: 700; margin: 0 12px 14px; }
+        .pp-contents ol { list-style: none; margin: 0; padding: 0; }
+        .pp-contents li + li { margin-top: 3px; }
+        .pp-contents a { position: relative; display: flex; align-items: baseline; gap: 7px; padding: 9px 12px; border-radius: 4px; color: #606875; font-size: 12px; line-height: 1.55; text-decoration: none; }
+        .pp-nav-number { flex: 0 0 17px; }
+        .pp-contents a:hover { background: #eaf1fd; color: #065cce; }
+        .pp-contents a[aria-current="location"] { background: #e4efff; color: #0066db; font-weight: 600; }
+        .pp-contents a[aria-current="location"]::before { content: ''; position: absolute; left: -3px; top: 15px; width: 7px; height: 7px; border-radius: 50%; background: #0875ef; }
+        .pp-article { min-width: 0; }
+        .pp-article section { margin-bottom: 42px; scroll-margin-top: 110px; overflow-wrap: anywhere; }
+        .pp-article section:last-child { margin-bottom: 0; }
+        .pp-article section::before { content: ''; display: block; width: 28px; height: 3px; margin-bottom: 14px; border-radius: 2px; background: #237cef; }
+        .pp-article h2 { margin: 0 0 14px; font-size: clamp(21px,2vw,27px); font-weight: 700; line-height: 1.35; letter-spacing: -.025em; }
+        .pp-section-number { color: #006cde; }
+        .pp-article p { margin: 0 0 15px; color: #626976; font-size: 14px; line-height: 1.85; }
+        .pp-article strong { color: #343c49; font-weight: 600; }
+        .pp-article a { color: #0969da; text-decoration: underline; text-underline-offset: 3px; }
+        .pp-page a:focus-visible { outline: 2px solid #0969da; outline-offset: 4px; }
+        .pp-article .pp-links { font-size: 13px; }
+        @media (max-width: 900px) {
+          .pp-layout { grid-template-columns: 210px minmax(0,1fr); gap: 28px; padding-inline: 24px; }
+        }
+        @media (max-width: 700px) {
+          .pp-hero { padding: 40px 20px 32px; }
+          .pp-hero-description { font-size: 14px; }
+          .pp-layout { grid-template-columns: minmax(0,1fr); gap: 32px; padding: 0 20px 56px; }
+          .pp-sidebar { position: static; }
+          .pp-contents { max-height: none; padding: 18px 12px; }
+          .pp-contents ol { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 3px 8px; }
+          .pp-contents li + li { margin-top: 0; }
+          .pp-contents a { height: 100%; padding: 8px; font-size: 12px; }
+          .pp-article section { margin-bottom: 34px; }
+        }
+        @media (max-width: 380px) {
+          .pp-contents ol { grid-template-columns: minmax(0,1fr); }
+        }
+        @media print {
+          .pp-hero { padding: 24px 0; }
+          .pp-layout { display: block; padding: 0; }
+          .pp-sidebar { display: none; }
+          .pp-page { background: #fff; }
+        }
       `}</style>
       <header className="pp-hero">
-        <div className="pp-inner">
-          <Link href="/" style={{ color: '#1360ee', fontSize: '13px' }}>Home</Link>
-          <h1>Privacy Policy</h1>
-          <p>How LOCATOR handles your information when you visit our website, contact us, or use our tracking and fleet management services.</p>
-          <p>Last updated: <time dateTime="2026-10-15">15 October 2026</time></p>
-          <nav className="pp-contents" aria-label="Privacy policy contents">
-            {sections.map(section => <a key={section.id} href={`#${section.id}`}>{section.title}</a>)}
-          </nav>
-        </div>
+        <h1>Privacy <span>Policy</span></h1>
+        <p className="pp-hero-description">This Privacy Policy explains how LOCATOR collects, uses, protects, and manages your personal information.</p>
+        <p className="pp-updated">Last updated: <time dateTime="2026-10-15">15 October 2026</time></p>
       </header>
-      <article className="pp-article pp-inner" aria-label="Privacy policy">
-        {sections.map(section => (
-          <section key={section.id} id={section.id} className={section.id === 'contact-information' ? 'pp-contact' : undefined} aria-labelledby={`pp-${section.id}`}>
-            <h2 id={`pp-${section.id}`}>{section.title}</h2>
-            {section.paragraphs.map(paragraph => (
-              <p key={paragraph}>
-                {paragraph.split(/(info@locator\.ae)/g).map((part, i) =>
-                  /^(info@locator\.ae)$/.test(part)
-                    ? <a key={i} href={`mailto:${part}`}>{part}</a>
-                    : part
-                )}
-              </p>
-            ))}
-            {section.id === 'cookies' && (
-              <p className="pp-links">
-                Provider policies:{' '}
-                <a href="https://vimeo.com/privacy" target="_blank" rel="noopener noreferrer">Vimeo</a>,{' '}
-                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google</a>, and{' '}
-                <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">WhatsApp</a>.
-              </p>
-            )}
-          </section>
-        ))}
-      </article>
+      <div className="pp-layout">
+        <aside className="pp-sidebar">
+          <PrivacyContents sections={sections.map(({ id, title }) => ({ id, title }))} />
+        </aside>
+        <article className="pp-article" aria-label="Privacy policy">
+          {sections.map((section, index) => (
+            <section key={section.id} id={section.id} aria-labelledby={`pp-${section.id}`}>
+              <h2 id={`pp-${section.id}`}>
+                <span className="pp-section-number">{index + 1}.</span>{' '}
+                {section.title.replace(/^\d+\.\s*/, '')}
+              </h2>
+              {section.paragraphs.map(paragraph => {
+                const label = paragraph.match(/^([^:]{1,45}:) /)?.[1]
+                const body = label ? paragraph.slice(label.length + 1) : paragraph
+                return (
+                  <p key={paragraph}>
+                    {label && <><strong>{label}</strong>{' '}</>}
+                    {body.split(/(info@locator\.ae)/g).map((part, i) =>
+                      part === 'info@locator.ae'
+                        ? <a key={i} href={`mailto:${part}`}>{part}</a>
+                        : part
+                    )}
+                  </p>
+                )
+              })}
+              {section.id === 'cookies' && (
+                <p className="pp-links">
+                  Provider policies:{' '}
+                  <a href="https://vimeo.com/privacy" target="_blank" rel="noopener noreferrer">Vimeo</a>,{' '}
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google</a>, and{' '}
+                  <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">WhatsApp</a>.
+                </p>
+              )}
+            </section>
+          ))}
+        </article>
+      </div>
       <Footer />
     </main>
   )
