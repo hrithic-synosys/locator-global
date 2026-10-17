@@ -62,8 +62,8 @@ export const FEATURES: Feature[] = [
     desc:
       'Another reason our tracker software is different: you decide what is worth interrupting your day for. Speeding, geofence breaches, idling, after-hours movement, harsh braking — set the thresholds yourself.',
     href: '/software',
-    accent: '#c2740a',
-    tint: 'rgba(194,116,10,.1)',
+    accent: '#1360ee',
+    tint: 'rgba(19,96,238,.1)',
     icon: (
       <svg viewBox="0 0 24 24" {...s} aria-hidden="true">
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
