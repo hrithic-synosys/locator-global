@@ -11,8 +11,8 @@ import TrackingUseCases from '@/components/tracking/TrackingUseCases'
 import SoftwareBlog from '@/components/software/SoftwareBlog'
 import SoftwareCTA from '@/components/software/SoftwareCTA'
 import Footer from '@/components/layouts/Footer'
-import { FEATURES, WHY_POINTS, BENEFIT_POINTS } from '@/components/vehicle-tracking/data'
-import { VOICES } from '@/components/tracking/data'
+// import { FEATURES, WHY_POINTS, BENEFIT_POINTS } from '@/components/vehicle-tracking/data'
+// import { VOICES } from '@/components/tracking/data'
 import WhoWeAreNumbers from '@/components/about/who-we-are/WhoWeAreNumbers'
 
 // Below-the-fold and self-contained, so its client JS goes in its own chunk.
@@ -60,7 +60,7 @@ export default function VehicleTrackingSystemPage() {
           page renders so the two cannot drift. aggregateRating is deliberately
           absent — we hold no rating figures, and inventing one is the dishonest
           part of this markup. */}
-      <script
+      {/* <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -84,7 +84,7 @@ export default function VehicleTrackingSystemPage() {
             })),
           }),
         }}
-      />
+      /> */}
     </main>
   )
 }
