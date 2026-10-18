@@ -1,5 +1,6 @@
 "use client";
 
+import PrivacyNotice from "@/components/common/PrivacyNotice";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { motion, useInView, type Variants } from "framer-motion";
 import {  QuoteFormState, sendQuoteEmail } from "@/app/actions/send-quote-email";
@@ -538,6 +539,7 @@ export default function QuoteForm() {
                   </div>
                 </div>
 
+                <PrivacyNotice />
                 <button
                   type="submit"
                   className="qf-submit"

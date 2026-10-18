@@ -11,8 +11,8 @@ import TrackingUseCases from '@/components/tracking/TrackingUseCases'
 import SoftwareBlog from '@/components/software/SoftwareBlog'
 import SoftwareCTA from '@/components/software/SoftwareCTA'
 import Footer from '@/components/layouts/Footer'
-import { CAPABILITIES, REASONS } from '@/components/car-tracking/data'
-import { VOICES } from '@/components/tracking/data'
+// import { CAPABILITIES, REASONS } from '@/components/car-tracking/data'
+// import { VOICES } from '@/components/tracking/data'
 import WhoWeAreNumbers from '@/components/about/who-we-are/WhoWeAreNumbers'
 
 // Below-the-fold and self-contained, so its client JS goes in its own chunk.
@@ -61,7 +61,7 @@ export default function CarTrackingSystemPage() {
           attributions, which is what makes Review markup honest here — the
           aggregate rating is deliberately omitted, since we hold no rating
           figures and inventing one would be the dishonest part. */}
-      <script
+      {/* <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -85,7 +85,7 @@ export default function CarTrackingSystemPage() {
             })),
           }),
         }}
-      />
+      /> */}
     </main>
   )
 }
