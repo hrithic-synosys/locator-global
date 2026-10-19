@@ -1,5 +1,6 @@
 "use server";
 
+import { verifyTurnstile } from "@/lib/turnstile";
 import { sendMail } from "@/lib/email/send-mail";
 import { demoRequestTemplate } from "@/lib/email/templates/demo-request";
 
@@ -25,6 +26,9 @@ export async function sendDemoEmail(
   if (!date || !time) {
     return { success: false, error: "Please pick a date and time first." };
   }
+
+  const verification = await verifyTurnstile(formData, "demo");
+  if (!verification.success) return verification;
 
   try {
     await sendMail({

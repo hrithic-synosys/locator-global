@@ -1,5 +1,6 @@
 "use client";
 
+import TurnstileField from "@/components/common/TurnstileField";
 import PrivacyNotice from "@/components/common/PrivacyNotice";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { motion, useInView, type Variants } from "framer-motion";
@@ -233,6 +234,8 @@ export default function QuoteForm() {
   const stepsRef = useRef<HTMLDivElement>(null);
   const inView = useInView(stepsRef, { once: true, amount: 0.3 });
 
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [turnstileToken, setTurnstileToken] = useState("");
   const initialState: QuoteFormState = { success: false }
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -258,6 +261,7 @@ export default function QuoteForm() {
 
   useEffect(() => {
     if (!state.success) return;
+    setFormValues({});
 
     setShowSuccess(true);
 
@@ -521,6 +525,8 @@ export default function QuoteForm() {
                         className="qf-input"
                         type={f.type}
                         name={f.name}
+                        value={formValues[f.name] ?? ""}
+                        onChange={(event) => setFormValues(values => ({ ...values, [f.name]: event.target.value }))}
                         required={f.required}
                         placeholder={f.label}
                       />
@@ -534,16 +540,22 @@ export default function QuoteForm() {
                       id="qf-message"
                       className="qf-textarea"
                       name="message"
+                      value={formValues.message ?? ""}
+                      onChange={(event) => setFormValues(values => ({ ...values, message: event.target.value }))}
                       placeholder="Anything specific we should know?"
                     />
                   </div>
                 </div>
 
+                {state.error && <p role="alert" style={{ color: "#b42318", margin: "12px 0", fontSize: 13 }}>{state.error}</p>}
+
+
                 <PrivacyNotice />
+                <TurnstileField action="quote" onTokenChange={setTurnstileToken} resetKey={state} />
                 <button
                   type="submit"
                   className="qf-submit"
-                  disabled={isPending}
+                  disabled={isPending || !turnstileToken}
                 >
                   {isPending ? (
                     <>

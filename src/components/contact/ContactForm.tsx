@@ -1,5 +1,6 @@
 'use client'
 
+import TurnstileField from '@/components/common/TurnstileField'
 import PrivacyNotice from '@/components/common/PrivacyNotice'
 import { trackLeadSubmission } from '@/lib/analytics'
 import { useState } from 'react'
@@ -71,6 +72,8 @@ const ACCEPT = '.pdf,.doc,.docx,.jpg,.jpeg,.png'
 const MAX_MB = 10
 
 export default function ContactForm() {
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [verificationAttempt, setVerificationAttempt] = useState(0)
   const [sent, setSent] = useState(false)
   const [sending, setSending] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -92,6 +95,7 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (sending) return
+    if (!turnstileToken) { setSubmitError('Please complete the security check before submitting.'); return }
     if (fileError) { setSubmitError(fileError); return }
     const formData = new FormData(e.currentTarget)
     setSending(true)
@@ -113,6 +117,7 @@ export default function ContactForm() {
     } catch {
       setSubmitError('Unable to send your message. Please try again.')
     } finally {
+      setVerificationAttempt(value => value + 1)
       setSending(false)
     }
   }
@@ -335,10 +340,11 @@ export default function ContactForm() {
                 </label>
 
                 <PrivacyNotice />
+                <TurnstileField action="contact" onTokenChange={setTurnstileToken} resetKey={verificationAttempt} />
                 {submitError && (
                   <p role="alert" style={{ color: '#b42318', marginTop: '16px' }}>{submitError}</p>
                 )}
-                <button type="submit" className="ctf-submit" disabled={sending}>
+                <button type="submit" className="ctf-submit" disabled={sending || !turnstileToken}>
                   {sending ? 'Sending message…' : 'Send Message'}
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21.4 2.6 10.9 13.1M21.4 2.6 14.7 21.4l-3.8-8.3-8.3-3.8Z" />

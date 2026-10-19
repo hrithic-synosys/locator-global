@@ -1,3 +1,4 @@
+import { verifyTurnstile } from '@/lib/turnstile'
 import { sendMail } from '@/lib/email/send-mail'
 import { contactMessageTemplate } from '@/lib/email/templates/contact-message'
 
@@ -56,6 +57,9 @@ export async function POST(request: Request) {
   if (name.length > 150 || /[\r\n]/.test(name) || phone.length > 50 || company.length > 250 || message.length > 10000) {
     return failure('Some details are too long. Please shorten them and try again.')
   }
+
+  const verification = await verifyTurnstile(form, 'contact')
+  if (!verification.success) return failure(verification.error, 400)
 
   const attachment = form.get('attachment')
   let attachments: { filename: string; content: Buffer; contentType: string }[] | undefined

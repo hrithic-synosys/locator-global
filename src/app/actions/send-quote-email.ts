@@ -1,5 +1,6 @@
 "use server";
 
+import { verifyTurnstile } from "@/lib/turnstile";
 import { sendMail } from "@/lib/email/send-mail";
 import { quoteRequestTemplate } from "@/lib/email/templates/quote-request";
 
@@ -18,6 +19,9 @@ export async function sendQuoteEmail(
   if (!name || !email) {
     return { success: false, error: "Name and email are required." };
   }
+
+  const verification = await verifyTurnstile(formData, "quote");
+  if (!verification.success) return verification;
 
   try {
     await sendMail({

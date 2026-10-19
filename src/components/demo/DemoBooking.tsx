@@ -1,5 +1,6 @@
 "use client";
 
+import TurnstileField from "@/components/common/TurnstileField";
 import PrivacyNotice from "@/components/common/PrivacyNotice";
 import { DemoFormState, sendDemoEmail } from "@/app/actions/send-demo-email";
 import { trackLeadSubmission } from "@/lib/analytics";
@@ -233,6 +234,8 @@ export default function DemoBooking() {
   const [windowStart, setWindowStart] = useState<Date | null>(null);
   const [slot, setSlot] = useState<{ key: string; time: string } | null>(null);
 
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [turnstileToken, setTurnstileToken] = useState("");
   const initialState: DemoFormState = { success: false };
   const [state, formAction, isPending] = useActionState(
     sendDemoEmail,
@@ -244,6 +247,7 @@ export default function DemoBooking() {
 
   useEffect(() => {
     if (!state.success) return;
+    setFormValues({});
 
     setShowSuccess(true);
 
@@ -490,6 +494,8 @@ export default function DemoBooking() {
                           className="db-input"
                           type={f.type}
                           name={f.name}
+                        value={formValues[f.name] ?? ""}
+                        onChange={(event) => setFormValues(values => ({ ...values, [f.name]: event.target.value }))}
                           required={f.required}
                           placeholder={f.placeholder}
                         />
@@ -506,6 +512,8 @@ export default function DemoBooking() {
                         id="db-message"
                         className="db-textarea"
                         name="message"
+                      value={formValues.message ?? ""}
+                      onChange={(event) => setFormValues(values => ({ ...values, message: event.target.value }))}
                         placeholder="Anything specific we should know?"
                       />
                     </div>
@@ -552,11 +560,15 @@ export default function DemoBooking() {
                     )}
                   </p>
 
+                  {state.error && <p role="alert" style={{ color: "#b42318", margin: "12px 0", fontSize: 13 }}>{state.error}</p>}
+
+
                   <PrivacyNotice>We use your details to arrange your demo.</PrivacyNotice>
+                <TurnstileField action="demo" onTokenChange={setTurnstileToken} resetKey={state} />
                   <button
                     type="submit"
                     className="db-submit"
-                    disabled={!slot || isPending}
+                    disabled={!slot || isPending || !turnstileToken}
                   >
                     {isPending ? (
                       <>
