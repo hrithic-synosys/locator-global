@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import TurnstileField from "@/components/common/TurnstileField";
 import PrivacyNotice from "@/components/common/PrivacyNotice";
 import { useActionState, useEffect, useRef, useState } from "react";
 import {
@@ -129,6 +130,7 @@ export default function Footer() {
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm((p) => ({ ...p, [k]: e.target.value }));
 
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [quickContactState, formAction, isPending] = useActionState(
     sendQuickContact,
     initialState
@@ -364,10 +366,11 @@ export default function Footer() {
                 </p>
               )}
               <PrivacyNotice />
+                <TurnstileField action="quick_contact" onTokenChange={setTurnstileToken} resetKey={quickContactState} />
               <button
                 className="footer-btn-primary"
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || !turnstileToken}
               >
                 {isPending ? "Sending…" : "Send Message"}
               </button>

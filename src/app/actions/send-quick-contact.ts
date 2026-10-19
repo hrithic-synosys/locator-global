@@ -1,5 +1,6 @@
 "use server";
 
+import { verifyTurnstile } from "@/lib/turnstile";
 import { sendMail } from "@/lib/email/send-mail";
 import { quickMessageTemplate } from "@/lib/email/templates/quick-message";
 
@@ -20,6 +21,9 @@ export async function sendQuickContact(
   if (!name || !email || !message || !phone) {
     return { success: false, error: "Name, email, phone and message are required." };
   }
+
+  const verification = await verifyTurnstile(formData, "quick_contact");
+  if (!verification.success) return verification;
 
   try {
     await sendMail({
