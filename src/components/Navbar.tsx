@@ -2,9 +2,11 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useCountry, useCountryRouter } from '@/components/country/CountryProvider'
+import { stripCountry } from '@/lib/country/paths'
 import { REGULATORY_PRODUCTS } from '@/components/regulatory/data'
 import { ABOUT_PAGES } from '@/components/about/data'
 import { SERVICE_PAGES } from '@/components/service/data'
@@ -61,8 +63,9 @@ export default function Navbar() {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const megaInnerRef = useRef<HTMLDivElement>(null)
   const [megaH, setMegaH] = useState(0)
-  const pathname = usePathname()
-  const router = useRouter()
+  const pathname = stripCountry(usePathname())
+  const country = useCountry()
+  const router = useCountryRouter()
   // Roll height for the hover text swap. In em (not px) so the two label copies
   // track the button's fluid font-size and the pill keeps the same height as the
   // software navbar's CTA, whose line box is the font's normal ~1.2.
@@ -437,8 +440,8 @@ export default function Navbar() {
           {/* Right side */}
           <div className="flex items-center gap-3 shrink-0" onMouseEnter={() => setActiveMenu(null)}>
             <Image
-              src="/flags/uae.svg"
-              alt="UAE"
+              src={country.flag}
+              alt={country.label}
               width={32}
               height={32}
               className="hn-flag rounded-full hidden sm:block"
@@ -758,8 +761,8 @@ export default function Navbar() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <Image
-                src="/flags/uae.svg"
-                alt="UAE"
+                src={country.flag}
+                alt={country.label}
                 width={28}
                 height={28}
                 className="rounded-full border-2 border-white/30"

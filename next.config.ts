@@ -1,10 +1,16 @@
 import type { NextConfig } from "next";
 import { redirects as legacyRedirects } from './redirects';
+import { countries, countryCodes } from './src/config/countries';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   async redirects() {
-    return legacyRedirects;
+    return [
+      ...legacyRedirects,
+      ...countryCodes.filter(code => code !== 'global' && countries[code].enabled).flatMap(code =>
+        legacyRedirects.map(rule => ({ ...rule, source: `${countries[code].prefix}${rule.source}`, destination: `${countries[code].prefix}${rule.destination === '/' ? '' : rule.destination}` })),
+      ),
+    ];
   },
   poweredByHeader: false,
   compress: true,

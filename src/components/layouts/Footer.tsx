@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import CountryAnchor from '@/components/country/CountryAnchor'
+import Link from '@/components/country/CountryLink';
 import Image from "next/image";
 import TurnstileField from "@/components/common/TurnstileField";
 import PrivacyNotice from "@/components/common/PrivacyNotice";
@@ -434,7 +435,7 @@ export default function Footer() {
                   Find Us
                 </span>
               </div>
-                <a
+                <CountryAnchor
                   href={mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -503,7 +504,7 @@ export default function Footer() {
                   </svg>
                   VIEW MAP
                 </div>
-              </a>
+              </CountryAnchor>
             </div>
 
             {/* Address + phone stacked compactly */}
@@ -564,7 +565,7 @@ export default function Footer() {
               </a>
             </div>
 
-            <a href="/get-a-quote" className="footer-btn-outline">
+            <CountryAnchor href="/get-a-quote" className="footer-btn-outline">
               <svg
                 width="12"
                 height="12"
@@ -578,7 +579,7 @@ export default function Footer() {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               Get a Quote
-            </a>
+            </CountryAnchor>
           </div>
         </div>
 
@@ -616,15 +617,15 @@ export default function Footer() {
               Privacy Policy
             </Link>
             <span className="footer-sep" aria-hidden="true" />
-            <a href="/sitemap.xml" className="footer-textlink">
+            <CountryAnchor href="/sitemap.xml" className="footer-textlink">
               Sitemap
-            </a>
+            </CountryAnchor>
           </div>
 
           <div className="footer-bottom-meta">
             <div className="footer-socials">
               {socialLinks.map((s) => (
-                <a
+                <CountryAnchor
                   key={s.label}
                   href={s.href}
                   target="_blank"
@@ -633,7 +634,7 @@ export default function Footer() {
                   className="footer-social"
                 >
                   {s.icon}
-                </a>
+                </CountryAnchor>
               ))}
             </div>
 

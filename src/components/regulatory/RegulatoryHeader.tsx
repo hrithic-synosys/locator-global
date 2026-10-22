@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import type { ReactNode } from 'react'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 

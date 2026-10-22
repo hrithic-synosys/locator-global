@@ -1,8 +1,9 @@
 'use client'
 
+import CountryAnchor from '@/components/country/CountryAnchor'
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import CustomerReviewVideos from './CustomerReviewVideos'
 import { BLOG_POSTS } from './newsroom-data'
 import { BLOG_BASE } from './blog/blog-index'
@@ -74,9 +75,9 @@ function BlogCard({ blog }: { blog: (typeof BLOG_POSTS)[number] }) {
   }
 
   return (
-    <a href={href} className="nvc-blog-card">
+    <CountryAnchor href={href} className="nvc-blog-card">
       {content}
-    </a>
+    </CountryAnchor>
   )
 }
 

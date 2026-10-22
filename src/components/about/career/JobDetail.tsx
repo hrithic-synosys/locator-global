@@ -2,7 +2,7 @@
 
 import PrivacyNotice from '@/components/common/PrivacyNotice'
 import { useRef, useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
 import type { Job } from './jobs-data'
 

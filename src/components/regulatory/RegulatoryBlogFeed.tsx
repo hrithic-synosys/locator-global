@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import { BLOG_POSTS, blogHref } from '@/components/about/newsroom/blog/blog-index'
 
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']

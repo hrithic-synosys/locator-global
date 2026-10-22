@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useCountry, useCountryRouter } from '@/components/country/CountryProvider'
+import { stripCountry } from '@/lib/country/paths'
 import { REGULATORY_PRODUCTS } from '@/components/regulatory/data'
 import { ABOUT_PAGES } from '@/components/about/data'
 import { SERVICE_PAGES } from '@/components/service/data'
@@ -51,8 +53,9 @@ export default function SoftwareNavbar() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null) // open mega-menu href
   const [renderMenu, setRenderMenu] = useState<string | null>(null) // content kept during close anim
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pathname = usePathname()
-  const router = useRouter()
+  const pathname = stripCountry(usePathname())
+  const country = useCountry()
+  const router = useCountryRouter()
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -313,7 +316,7 @@ export default function SoftwareNavbar() {
 
             {/* Right: flag + CTA + hamburger */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }} onMouseEnter={() => setActiveMenu(null)}>
-              <Image src="/flags/uae.svg" alt="UAE" width={28} height={28} className="swn-flag" style={{ borderRadius: '50%', display: 'block' }} />
+              <Image src={country.flag} alt={country.label} width={28} height={28} className="swn-flag" style={{ borderRadius: '50%', display: 'block' }} />
               <button className="swn-cta" onClick={() => router.push('/get-a-quote')}>Get a quote</button>
 
               <button

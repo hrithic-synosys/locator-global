@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useCountryRouter } from '@/components/country/CountryProvider'
 
 const vehicles = [
   {
@@ -123,7 +123,7 @@ const MOBILE_OVERRIDES: Record<
 }
 
 export default function RoadSection() {
-  const router = useRouter()
+  const router = useCountryRouter()
   const [hoveredPin, setHoveredPin] = useState<string | null>(null)
   const [showAllTooltips, setShowAllTooltips] = useState(true)
   const [isMobile, setIsMobile] = useState(false)

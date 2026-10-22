@@ -3,7 +3,7 @@
 // the web dashboard view as the user scrolls (smooth, scroll-driven) — mirroring
 // the Locator-websites hero. Fully responsive; mobile shows a single device each.
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 import HeroNotificationPhone from '@/components/software/HeroNotificationPhone'

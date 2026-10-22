@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 import { DEVICES, type Device } from './devices-data'

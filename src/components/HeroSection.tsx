@@ -1,7 +1,7 @@
 // Server component: pure markup, inline styles and CSS-only animations.
 // Only the interactive <Navbar> (its own 'use client' boundary) ships JS.
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import Navbar from './Navbar'
 
 // The hero is full-bleed, so nothing here was ever "squeezed into a container" — the

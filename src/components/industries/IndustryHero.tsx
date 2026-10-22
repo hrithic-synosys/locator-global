@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 import type { Industry } from './industries-data'
 

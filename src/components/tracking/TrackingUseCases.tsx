@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import { USE_CASES } from './data'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'

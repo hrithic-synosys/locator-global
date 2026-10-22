@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useCountryRouter, useCountryPath } from '@/components/country/CountryProvider'
 import { siteConfig } from '@/config/site'
 
 // ── Support chat ─────────────────────────────────────────────────────────────
@@ -213,7 +213,8 @@ function isGreeting(input: string): boolean {
 }
 
 export default function SupportChat() {
-  const router = useRouter()
+  const router = useCountryRouter()
+  const countryPath = useCountryPath()
   const [open, setOpen] = useState(false)
   const [msgs, setMsgs] = useState<Msg[]>([openingMessage()])
   const [typing, setTyping] = useState(false)
@@ -565,7 +566,7 @@ export default function SupportChat() {
         </form>
 
         <p className="sc-note">
-          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <a href={countryPath("/privacy-policy")} target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           {' · '}Quick answers from our assistant ·{' '}
           <a href={WA} target="_blank" rel="noopener noreferrer">
             talk to a person

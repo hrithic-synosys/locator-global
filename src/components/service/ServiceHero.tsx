@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(Math.max(v, a), b)

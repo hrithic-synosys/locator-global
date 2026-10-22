@@ -3,27 +3,14 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
 import ScrollRestoration from "@/components/ScrollRestoration";
-import ContactDock from "@/components/common/ContactDock";
 import StyledJsxRegistry from "./StyledJsxRegistry";
 import Script from "next/script";
 import { GoogleTagManager } from '@next/third-parties/google';
 
-// ---------------------------------------------------------------------------
-// Environment switch.
-//
-// Only the LIVE site (locator.ae) sets SITE_ENV=production. On beta, local dev,
-// preview builds, or anywhere the variable is missing, this is false, so:
-//   - Google Tag Manager (GTM-W99N62T) is NOT loaded  -> no beta traffic or test
-//     conversions in the real GA4 / Google Ads data
-//   - the Tawk.to chat widget is NOT loaded           -> no beta chats in the
-//     live chat inbox
-//   - robots meta is noindex,nofollow                 -> beta can't get indexed
-//
-// Failing safe is deliberate: forgetting the variable can never leak tracking
-// or indexing, it just leaves them off.
-// ---------------------------------------------------------------------------
+// New domain integrations must be explicitly configured; never inherit UAE IDs.
 const isProd = process.env.SITE_ENV === "production";
-const GTM_ID = "GTM-W99N62T";
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID?.trim();
+const chatUrl = process.env.NEXT_PUBLIC_TAWK_EMBED_URL?.trim();
 
 // Self-hosted rather than next/font/google.
 //
@@ -105,23 +92,7 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.ogImage],
   },
-  robots: isProd
-  ? {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
-    }
-  : {
-      index: false,
-      follow: false,
-      googleBot: { index: false, follow: false },
-    },
+  robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
 };
 
 export default function RootLayout({
@@ -135,7 +106,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${inter.variable}`}
       suppressHydrationWarning
     >
-      {isProd && <GoogleTagManager gtmId={GTM_ID} />}
+      {isProd && GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
       <body
         className="min-h-screen bg-background font-poppins antialiased"
         suppressHydrationWarning
@@ -153,7 +124,7 @@ export default function RootLayout({
             }),
           }}
         />
-        {isProd && (
+        {isProd && GTM_ID && (
           <noscript>
             <iframe
               src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
@@ -170,13 +141,12 @@ export default function RootLayout({
         <StyledJsxRegistry>
           <ScrollRestoration />
           {children}
-          <ContactDock />
-          <Script
+          {isProd && chatUrl && <Script
             id="tawk-to-chat"
             strategy="lazyOnload"
-            src="https://embed.tawk.to/5ed23f408ee2956d73a601e9/default"
+            src={chatUrl}
             crossOrigin="anonymous"
-          />
+          />}
         </StyledJsxRegistry>
       </body>
     </html>

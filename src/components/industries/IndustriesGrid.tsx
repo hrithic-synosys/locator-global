@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import { INDUSTRIES } from './industries-data'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'

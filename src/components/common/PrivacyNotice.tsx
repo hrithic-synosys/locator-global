@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import type { ReactNode } from 'react'
 
 export default function PrivacyNotice({ children = 'We use your details to respond to your enquiry.' }: { children?: ReactNode }) {

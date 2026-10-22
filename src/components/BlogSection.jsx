@@ -1,4 +1,5 @@
 "use client";
+import { useCountryPath } from '@/components/country/CountryProvider';
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -31,6 +32,7 @@ const POSTS = [
 ];
 
 export default function BlogSection() {
+  const countryPath = useCountryPath();
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -85,7 +87,7 @@ export default function BlogSection() {
 
         {/* ── CTA ── */}
         <div className={`bs__foot ${visible ? "bs__foot--on" : ""}`}>
-          <a href="/about/newsroom/blog" className="bs__btn">
+          <a href={countryPath("/about/newsroom/blog")} className="bs__btn">
             View All Articles
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
               <path d="M3.5 8.5h10M9.5 4.5l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -274,6 +276,7 @@ export default function BlogSection() {
    BLOG CARD — vertical, image top, content bottom
 ══════════════════════════════════════════════════ */
 function BlogCard({ post, delay, visible }) {
+  const countryPath = useCountryPath();
   return (
     <article
       className={`bc ${visible ? "bc--on" : ""}`}
@@ -329,7 +332,7 @@ function BlogCard({ post, delay, visible }) {
         <div className="bc__rule" aria-hidden="true" />
 
         {/* Read more */}
-        <a href={post.href} className="bc__link">
+        <a href={countryPath(post.href)} className="bc__link">
           <span>Read More</span>
           <span className="bc__arrow">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">

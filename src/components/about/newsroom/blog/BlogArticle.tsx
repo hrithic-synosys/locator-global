@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import BlogBlocks from './BlogBlocks'
 import { BLOG_BASE, blogHref, relatedPosts, type BlogPost } from './blog-index'
 import type { BlogBlock } from './blog-content'

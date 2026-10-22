@@ -1,5 +1,6 @@
 'use client'
 
+import CountryAnchor from '@/components/country/CountryAnchor'
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { LIVE_UPDATES, NEWS_ITEMS, formatAgo, type LiveUpdate } from './newsroom-data'
@@ -394,7 +395,7 @@ export default function NewsroomRail() {
 
             <div className="nrr-notif-stack">
               {slots.map(({ seq, item: u, leaving }) => (
-                <a
+                <CountryAnchor
                   key={seq}
                   href={u.href}
                   className={`nrr-item${leaving ? ' is-leaving' : ''}`}
@@ -402,7 +403,7 @@ export default function NewsroomRail() {
                   aria-hidden={leaving || undefined}
                 >
                   <LiveCardBody u={u} elapsed={elapsed} />
-                </a>
+                </CountryAnchor>
               ))}
             </div>
           </div>
@@ -416,13 +417,13 @@ export default function NewsroomRail() {
               <ul className="nrr-all-list">
                 {LIVE_UPDATES.map((u) => (
                   <li key={u.id}>
-                    <a
+                    <CountryAnchor
                       href={u.href}
                       className="nrr-item"
                       tabIndex={expanded ? undefined : -1}
                     >
                       <LiveCardBody u={u} elapsed={elapsed} />
-                    </a>
+                    </CountryAnchor>
                   </li>
                 ))}
               </ul>

@@ -1,9 +1,9 @@
-// Canonical site URL. Set NEXT_PUBLIC_SITE_URL in the deployment environment
-// (e.g. https://locator.ae). The localhost fallback is dev-only — metadata,
-// canonical URLs, sitemap and robots all derive from this, so a wrong value
-// here silently breaks SEO in production.
-export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+// Ignore a copied UAE origin in this clone. No metadata should identify it as
+// the original UAE deployment. Set this to the clone's own origin before build.
+const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '');
+export const siteUrl = configuredUrl && !['locator.ae', 'www.locator.ae'].includes(new URL(configuredUrl).hostname)
+  ? configuredUrl
+  : 'https://locatorglobal.com';
 
 export const siteConfig = {
   // Used as the title-template suffix on every page — keep it short.
@@ -13,7 +13,7 @@ export const siteConfig = {
     "LOCATOR delivers GPS fleet tracking, AI video telematics, smart IoT asset monitoring, and RTA-certified solutions across the UAE. Real-time visibility for vehicles, drivers, and business assets.",
   url: siteUrl,
   ogImage: "/brand/og-image.png",
-  locale: "en_AE",
+  locale: "en",
   phone: "+971508746688",
   phoneDisplay: "050 874 66 88",
   // Digits only, no '+' — that is the format wa.me expects. Same line as `phone`;
@@ -33,7 +33,7 @@ export const siteConfig = {
     "fleet management software",
   ],
   links: {
-    website: "https://locator.ae",
+    website: siteUrl,
   },
 };
 

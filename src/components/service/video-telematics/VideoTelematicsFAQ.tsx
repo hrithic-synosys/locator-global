@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 

@@ -1,3 +1,4 @@
+import CountryAnchor from '@/components/country/CountryAnchor'
 import Image from 'next/image'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 import { ABOUT_PAGES } from '@/components/about/data'
@@ -286,18 +287,18 @@ export default function AboutPillarHero({
                 {/* A shared system of values shapes how we build, collaborate, and deliver better outcomes for every customer, partner, and team member. */}
 
                 <div className="cv-cta-row">
-                  <a href="/contact" className="cv-btn cv-btn-primary">
+                  <CountryAnchor href="/contact" className="cv-btn cv-btn-primary">
                     Talk to our team
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12h14M13 6l6 6-6 6" />
                     </svg>
-                  </a>
-                  <a href="/software" className="cv-btn cv-btn-ghost">
+                  </CountryAnchor>
+                  <CountryAnchor href="/software" className="cv-btn cv-btn-ghost">
                     Explore the platform
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12h14M13 6l6 6-6 6" />
                     </svg>
-                  </a>
+                  </CountryAnchor>
                 </div>
               </div>
             </div>

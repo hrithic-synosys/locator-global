@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import type { ReactNode } from 'react'
 
 type Node = { tag: string; href?: string; children: Node[] } | { text: string }

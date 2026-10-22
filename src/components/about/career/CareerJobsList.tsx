@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import { JOBS } from './jobs-data'
 import FilterSelect from './FilterSelect'
 import CountryFlag from './CountryFlag'

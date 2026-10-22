@@ -1,3 +1,4 @@
+import CountryAnchor from '@/components/country/CountryAnchor'
 export default function SecurepathPremiumConclusion() {
   return (
     <section style={{ padding: '0 28px clamp(56px,7vw,80px)', background: '#fff' }}>
@@ -11,7 +12,7 @@ export default function SecurepathPremiumConclusion() {
           </p>
           <p style={{ margin: 0, fontSize: 'max(clamp(14px,1.25vw,15.5px), min(1.076vw, 22.47px))', lineHeight: 1.85, color: '#6e6e73' }}>
             For any assistance you may need in implementing a SecurePath Premium, our dedicated{' '}
-            <a href="/" style={{ color: '#1360ee', fontWeight: 600, textDecoration: 'none' }}>LOCATOR</a>
+            <CountryAnchor href="/" style={{ color: '#1360ee', fontWeight: 600, textDecoration: 'none' }}>LOCATOR</CountryAnchor>
             {' '}team is here to help. You can reach out to us anytime at{' '}
             <a href="tel:+97143547766" style={{ color: '#1360ee', fontWeight: 600, textDecoration: 'none' }}>04 354 7766</a>
             {' '}or simply drop us an email at{' '}

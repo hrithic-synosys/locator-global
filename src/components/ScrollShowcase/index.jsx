@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import Link from 'next/link';
+import Link from '@/components/country/CountryLink';
 import Scene1Icons     from './Scene1Icons';
 import Scene4Pricing   from './Scene4Pricing';
 import SkipButton      from '@/components/common/SkipButton';

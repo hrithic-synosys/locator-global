@@ -1,8 +1,9 @@
 'use client'
 
+import CountryAnchor from '@/components/country/CountryAnchor'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/country/CountryLink'
 import NewsroomRail from './NewsroomRail'
 // import SocialCard from './SocialCard'
 import NewsroomWatch from './NewsroomWatch'
@@ -44,7 +45,7 @@ function SocialGridCard({ post }: { post: SocialPost }) {
   const [head, ...rest] = post.text.split('\n').map((l) => l.trim()).filter(Boolean)
   const excerpt = rest.join(' ')
   return (
-    <a href={post.href} target="_blank" rel="noopener noreferrer" className="nrb-card nrb-card--social">
+    <CountryAnchor href={post.href} target="_blank" rel="noopener noreferrer" className="nrb-card nrb-card--social">
       <div className="nrb-card-media">
         <Image src={post.image} alt="" fill sizes="(max-width: 700px) 100vw, 340px" />
         <span className="nrb-chip" style={{ background: net.color }}>{net.label}</span>
@@ -55,7 +56,7 @@ function SocialGridCard({ post }: { post: SocialPost }) {
         {excerpt && <p className="nrb-card-excerpt">{excerpt}</p>}
         <span className="nrb-card-more">View on {net.label} →</span>
       </div>
-    </a>
+    </CountryAnchor>
   )
 }
 
@@ -401,7 +402,7 @@ export default function NewsroomBoard() {
             <div className="nrb-swap" key={tab}>
             {tab === 'all' && (
               <>
-                <a
+                <CountryAnchor
                   href={featured.href}
                   className="nrb-hero-card"
                   style={featured.fit === 'contain' && featured.imageAspect ? { aspectRatio: featured.imageAspect } : undefined}
@@ -422,7 +423,7 @@ export default function NewsroomBoard() {
                     <p className="nrb-hero-excerpt">{featured.excerpt}</p>
                     <span className="nrb-hero-more">Read Full Story →</span>
                   </div>
-                </a>
+                </CountryAnchor>
 
                 {/* <div className="nrb-grid">
                   {highlights.map((item) => (
@@ -508,7 +509,7 @@ export default function NewsroomBoard() {
             {tab === 'media' && (
               <div className="nrb-media">
                 {MEDIA_MENTIONS.map((m) => (
-                  <a key={m.id} href={m.href} target="_blank" rel="noopener noreferrer" className="nrb-card">
+                  <CountryAnchor key={m.id} href={m.href} target="_blank" rel="noopener noreferrer" className="nrb-card">
                     <div className="nrb-card-media">
                       <Image src={m.image} alt="" fill sizes="(max-width: 700px) 100vw, 400px" />
                       <span className="nrb-chip" style={{ background: '#475569' }}>{m.publication}</span>
@@ -518,7 +519,7 @@ export default function NewsroomBoard() {
                       <h3 className="nrb-card-title">{m.title}</h3>
                       <span className="nrb-card-more">Read Article →</span>
                     </div>
-                  </a>
+                  </CountryAnchor>
                 ))}
               </div>
             )}
