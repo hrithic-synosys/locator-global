@@ -1,12 +1,21 @@
-import Image from 'next/image'
-import Link from '@/components/country/CountryLink'
-import { BLOG_POSTS, blogHref } from './blog-index'
-
-const EASE = 'cubic-bezier(.22,.61,.36,1)'
-
-export default function BlogListing() {
-  const [lead, ...rest] = BLOG_POSTS
-
+/* eslint-disable @next/next/no-img-element -- Direct validated CMS media preserves the editor preview. */
+import Link from "next/link";
+import { blogHref, blogPageHref, dateLabel, type BlogFilters } from "@/lib/cms-blog/urls";
+import type { CmsCard, Pagination } from "@/lib/cms-blog/types";
+import type { CountryCode } from "@/config/countries";
+const EASE = "cubic-bezier(.22,.61,.36,1)";
+export default function BlogListing({
+  posts,
+  pagination,
+  market,
+  filters = { page: 1, q: "", tag: "" },
+}: {
+  market: CountryCode;
+  filters?: BlogFilters;
+  posts: CmsCard[];
+  pagination: Pagination;
+}) {
+  const [lead, ...rest] = posts;
   return (
     <section className="bl">
       <style href="nr-bloglisting" precedence="medium">{`
@@ -68,37 +77,71 @@ export default function BlogListing() {
           display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
         }
       `}</style>
-
       <div className="bl-wrap">
         <h1 className="bl-h1">Locator Blog</h1>
-
-        <Link href={blogHref(lead.slug)} className="bl-lead">
-          <div>
-            <span className="bl-chip">{lead.tag}</span>
-            <h2 className="bl-lead-title">{lead.title}</h2>
-            <p className="bl-lead-excerpt">{lead.excerpt}</p>
-            <p className="bl-meta" style={{ marginBottom: 14 }}>
-              <time dateTime={lead.date}>{lead.dateLabel}</time>
-              <i />
-              <span>{lead.readingMinutes} min read</span>
-            </p>
-            <span className="bl-more">Read Full Article →</span>
-          </div>
-          <div className="bl-lead-media">
-            <Image src={lead.hero.src} alt={lead.hero.alt} fill sizes="(max-width: 860px) 100vw, 520px" priority />
-          </div>
-        </Link>
-
+        {lead ? (
+          <Link
+            href={blogHref(market, lead.slug)}
+            className="bl-lead"
+            style={!lead.banner ? { gridTemplateColumns: "1fr" } : undefined}
+          >
+            <div>
+              <span className="bl-chip">{lead.category.name}</span>
+              <h2 className="bl-lead-title">{lead.title}</h2>
+              <p className="bl-lead-excerpt">{lead.excerpt}</p>
+              <p className="bl-meta" style={{ marginBottom: 14 }}>
+                <time dateTime={lead.publishedAt}>
+                  {dateLabel(lead.publishedAt)}
+                </time>
+                <i />
+                <span>{lead.readingMinutes} min read</span>
+              </p>
+              <span className="bl-more">Read Full Article →</span>
+            </div>
+            {lead.banner && (
+              <div className="bl-lead-media">
+                <img
+                  src={lead.banner.src}
+                  alt={lead.banner.alt}
+                  width={lead.banner.width}
+                  height={lead.banner.height}
+                  fetchPriority="high"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </div>
+            )}
+          </Link>
+        ) : (
+          <p role="status">
+            {pagination.total
+              ? "No articles on this page."
+              : "No published blog articles yet."}
+          </p>
+        )}
         <div className="bl-grid">
           {rest.map((p) => (
-            <Link key={p.slug} href={blogHref(p.slug)} className="bl-card">
-              <div className="bl-card-media">
-                <Image src={p.hero.src} alt={p.hero.alt} fill sizes="(max-width: 620px) 100vw, 360px" />
-                <span className="bl-chip">{p.tag}</span>
-              </div>
+            <Link key={p.slug} href={blogHref(market, p.slug)} className="bl-card">
+              {p.banner && (
+                <div className="bl-card-media">
+                  <img
+                    src={p.banner.src}
+                    alt={p.banner.alt}
+                    width={p.banner.width}
+                    height={p.banner.height}
+                    loading="lazy"
+                    style={{ width: "100%", height: "100%" }}
+                  />
+                  <span className="bl-chip">{p.category.name}</span>
+                </div>
+              )}
               <div className="bl-card-body">
+                {!p.banner && (
+                  <span className="bl-chip">{p.category.name}</span>
+                )}
                 <p className="bl-meta">
-                  <time dateTime={p.date}>{p.dateLabel}</time>
+                  <time dateTime={p.publishedAt}>
+                    {dateLabel(p.publishedAt)}
+                  </time>
                   <i />
                   <span>{p.readingMinutes} min read</span>
                 </p>
@@ -109,7 +152,33 @@ export default function BlogListing() {
             </Link>
           ))}
         </div>
+        {pagination.pages > 1 && (
+          <nav
+            aria-label="Blog pagination"
+            style={{ display: "flex", gap: 20, paddingBottom: 40 }}
+          >
+            {pagination.page > 1 && (
+              <Link
+                rel="prev"
+                href={blogPageHref(market, filters, pagination.page - 1)}
+              >
+                Previous
+              </Link>
+            )}
+            <span>
+              Page {pagination.page} of {pagination.pages}
+            </span>
+            {pagination.page < pagination.pages && (
+              <Link
+                rel="next"
+                href={blogPageHref(market, filters, pagination.page + 1)}
+              >
+                Next
+              </Link>
+            )}
+          </nav>
+        )}
       </div>
     </section>
-  )
+  );
 }

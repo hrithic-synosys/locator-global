@@ -11,6 +11,11 @@ import AboutPillarNav from '@/components/about/AboutPillarNav'
 import Footer from '@/components/layouts/Footer'
 import NewsroomVideosAndBlogs from '@/components/about/newsroom/NewsroomVideosAndBlogs'
 
+import { listBlogs } from '@/lib/cms-blog/client';
+import { assertMarket } from '@/lib/cms-blog/urls';
+import { newsroomCard } from '@/lib/cms-blog/teasers';
+export const dynamic = 'force-dynamic';
+
 const pageMetadata: Metadata = {
   title: 'Newsroom — About Locator',
   description:
@@ -24,15 +29,22 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function AboutNewsroomPage() {
+export default async function AboutNewsroomPage({ params, searchParams }: { params: Promise<{ market: CountryCode }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const { market } = await params;
+  assertMarket(market);
+  const query = await searchParams;
+  const raw = typeof query.blogPage === 'string' ? query.blogPage : '';
+  const page = /^\d{1,7}$/.test(raw) && Number(raw) > 0 ? Number(raw) : 1;
+  const result = await listBlogs(market, page, 3);
+  const blogs = result.items.map(newsroomCard);
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh', overflowX: 'clip' }}>
       <ScrollReveal />
       <NewsroomHero />
       <NewsroomTicker />
-      <NewsroomBoard />
+      <NewsroomBoard key={`board:${market}`} blogs={blogs} />
       <NewsroomHighlights />
-      <NewsroomVideosAndBlogs />
+      <NewsroomVideosAndBlogs key={`videos-and-blogs:${market}`} market={market} blogs={blogs} pagination={result.pagination} />
       <NewsroomSubscribe />
       <AboutPillarNav current="newsroom" />
       <Footer />

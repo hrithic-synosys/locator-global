@@ -31,7 +31,8 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function WhoWeArePage() {
+export default async function WhoWeArePage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -47,7 +48,7 @@ export default function WhoWeArePage() {
       {/* <WhoWeAreVideo /> */}
       <WhoWeAreFAQ />
       <AboutPillarNav current="who-we-are" />
-      <SoftwareBlog /> {/* No single topic — About page shows the most recent posts overall */}
+      <SoftwareBlog market={market} /> {/* No single topic — About page shows the most recent posts overall */}
       <Footer />
     </main>
   )

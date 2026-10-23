@@ -47,9 +47,9 @@ async function getPageMetadata({
 export default async function IndustryDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; market: CountryCode }>
 }) {
-  const { slug } = await params
+  const { slug, market } = await params
   const industry = getIndustry(slug)
   if (!industry) notFound()
 
@@ -67,7 +67,7 @@ export default async function IndustryDetailPage({
         headingMaxWidth="none"
         lead="Take control of your whole operation with LOCATOR GPS Tracking"
       />
-      <SoftwareBlog tag={['Fleet Management', 'Fleet Tracking', 'GPS Tracking']} />
+      <SoftwareBlog market={market} tag={['Fleet Management', 'Fleet Tracking', 'GPS Tracking']} />
       <ServiceFAQ />
       <SoftwareCTA />
       <Footer />

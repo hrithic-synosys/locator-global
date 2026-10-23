@@ -25,7 +25,10 @@ export function countryPath(href: string, country: CountryCode): string {
   return prefix + (path === '/' ? '' : path.startsWith('/?') || path.startsWith('/#') ? path.slice(1) : path);
 }
 
-/** Explicit market switch; retains query and hash. Availability is the caller's responsibility. */
+/** Articles are independent across markets; switch to the target blog index. */
 export function switchCountryPath(href: string, country: CountryCode): string {
-  return countryPath(stripCountry(href), country);
+  const path = stripCountry(href);
+  if (/^\/about\/newsroom\/blog\/[^/?#]+/.test(path)) return countryPath("/about/newsroom/blog", country);
+  if (/^\/about\/newsroom(?:\/blog)?(?:[?#]|$)/.test(path)) return countryPath(path.split(/[?#]/)[0], country);
+  return countryPath(path, country);
 }

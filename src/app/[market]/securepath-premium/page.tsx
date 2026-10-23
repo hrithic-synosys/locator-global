@@ -45,7 +45,7 @@ export default async function SecurepathPremiumPage({ params }: { params: Promis
       <SecurepathPremiumFAQ />
       <SecurepathPremiumConclusion />
       <SecurepathPremiumVideo />
-      <RegulatoryBlogFeed tag={['GPS Tracking', 'Car Tracking']} />
+      <RegulatoryBlogFeed market={market} tag={['GPS Tracking', 'Car Tracking']} />
       <Footer />
     </main>
   )

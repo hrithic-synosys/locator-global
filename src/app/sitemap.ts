@@ -2,12 +2,13 @@ import type { MetadataRoute } from "next";
 import { siteUrl } from "@/config/site";
 import { DEVICES } from "@/components/service/tracking-devices/devices-data";
 import { JOBS } from "@/components/about/career/jobs-data";
-import { BLOG_POSTS } from "@/components/about/newsroom/blog/blog-index";
+import { getBlogSlugs } from "@/lib/cms-blog/client";
+import { blogHref } from "@/lib/cms-blog/urls";
 import { INDUSTRIES } from "@/components/industries/industries-data";
-import { countryCodes } from '@/config/countries';
-import { canIndex } from '@/config/indexing';
-import { countryPath } from '@/lib/country/paths';
-import { exclusivePages, getExclusivePage } from '@/content/exclusive-pages';
+import { countries, countryCodes } from "@/config/countries";
+import { canIndex, hasIndexableMarkets } from "@/config/indexing";
+import { countryPath } from "@/lib/country/paths";
+import { exclusivePages, getExclusivePage } from "@/content/exclusive-pages";
 
 // Every live route. Add new entries here as routes are added.
 const ROUTES: { path: string; priority: number }[] = [
@@ -23,7 +24,6 @@ const ROUTES: { path: string; priority: number }[] = [
   { path: "/about/core-values", priority: 0.8 },
   { path: "/about/newsroom", priority: 0.6 },
   { path: "/about/newsroom/blog", priority: 0.8 },
-  ...BLOG_POSTS.map((p) => ({ path: `/about/newsroom/blog/${p.slug}`, priority: 0.7 })),
   { path: "/about/career", priority: 0.6 },
   ...JOBS.map((j) => ({ path: `/about/career/${j.slug}`, priority: 0.5 })),
   { path: "/software", priority: 0.9 },
@@ -41,7 +41,10 @@ const ROUTES: { path: string; priority: number }[] = [
   { path: "/service/smart-iot", priority: 0.6 },
   { path: "/service/task-manager", priority: 0.6 },
   { path: "/service/tracking-devices", priority: 0.6 },
-  ...DEVICES.map((d) => ({ path: `/service/tracking-devices/${d.slug}`, priority: 0.5 })),
+  ...DEVICES.map((d) => ({
+    path: `/service/tracking-devices/${d.slug}`,
+    priority: 0.5,
+  })),
   { path: "/regulatory", priority: 0.8 },
   { path: "/shahin", priority: 0.8 },
   { path: "/asateel-certified-obu", priority: 0.8 },
@@ -49,13 +52,42 @@ const ROUTES: { path: string; priority: number }[] = [
   { path: "/securepath-premium", priority: 0.8 },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return countryCodes.flatMap(country => [
-    ...ROUTES,
-    ...Object.keys(exclusivePages).filter(path => getExclusivePage(path, country)).map(path => ({ path, priority: 0.6 })),
-  ].filter(({ path }) => canIndex(country, path || '/')).map(({ path, priority }) => ({
-    url: `${siteUrl}${countryPath(path || '/', country)}`,
-    changeFrequency: "weekly" as const,
-    priority,
-  })));
+export const dynamic = "force-dynamic";
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (!hasIndexableMarkets()) return [];
+  const blogs = (
+    await Promise.all(
+      countryCodes
+        .filter((market) => countries[market].enabled)
+        .map(async (market) =>
+          (await getBlogSlugs(market))
+            .filter((post) =>
+              canIndex(market, "/about/newsroom/blog/" + post.slug)
+            )
+            .map((post) => ({
+              url: siteUrl + blogHref(market, post.slug),
+              lastModified: post.updatedAt,
+              changeFrequency: "weekly" as const,
+              priority: 0.7,
+            }))
+        )
+    )
+  ).flat();
+  return [
+    ...blogs,
+    ...countryCodes.flatMap((country) =>
+      [
+        ...ROUTES,
+        ...Object.keys(exclusivePages)
+          .filter((path) => getExclusivePage(path, country))
+          .map((path) => ({ path, priority: 0.6 })),
+      ]
+        .filter(({ path }) => canIndex(country, path || "/"))
+        .map(({ path, priority }) => ({
+          url: siteUrl + countryPath(path || "/", country),
+          changeFrequency: "weekly" as const,
+          priority,
+        }))
+    ),
+  ];
 }

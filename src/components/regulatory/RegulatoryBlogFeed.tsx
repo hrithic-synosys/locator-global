@@ -1,26 +1,19 @@
-import Image from 'next/image'
-import Link from '@/components/country/CountryLink'
-import { BLOG_POSTS, blogHref } from '@/components/about/newsroom/blog/blog-index'
+import type { CountryCode } from '@/config/countries'
+/* eslint-disable @next/next/no-img-element -- Validated CMS media is served directly as in the CMS preview. */
+import Link from 'next/link'
+import { blogBase, blogHref } from '@/lib/cms-blog/urls'
+import { teaserBlogs, teaserCard } from '@/lib/cms-blog/teasers'
 
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-/**
- * Every regulatory page (ASATEEL, SHAHIN, SecurePath, SecurePath Premium) used
- * to render the exact same two hardcoded posts regardless of topic. `tag`
- * pulls posts that actually match the page's subject instead — falling back
- * to the most recent posts overall if nothing in the index carries that tag
- * yet, so the section never renders empty while more topic-tagged content is
- * still being written.
- */
-export default function RegulatoryBlogFeed({ tag, limit = 2 }: { tag?: string | string[]; limit?: number } = {}) {
-  const tags = tag ? (Array.isArray(tag) ? tag : [tag]) : []
-  const matched = tags.length
-    ? BLOG_POSTS.filter(p => tags.includes(p.tag))
-    : []
-  const posts = (matched.length ? matched : BLOG_POSTS)
-    .slice()
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .slice(0, limit)
+/** CMS-backed blog teasers, selected by the scoped backend. */
+export default async function RegulatoryBlogFeed({ market, tag, limit = 2 }: { market: CountryCode; tag?: string | string[]; limit?: number }) {
+  void tag // Legacy display labels are not CMS tag slugs.
+  const result = await teaserBlogs(market, limit)
+  const posts = result.items.map(teaserCard)
+  if (result.unavailable) return <p role="status">Blog articles are temporarily unavailable. <Link href={blogBase(market)}>Try the blog</Link>.</p>
+
+  if (!posts.length) return <p role="status">No published blog articles yet.</p>
 
   return (
     <>
@@ -75,14 +68,14 @@ export default function RegulatoryBlogFeed({ tag, limit = 2 }: { tag?: string | 
             {posts.map((p, i) => {
               const d = new Date(p.date)
               return (
-                <Link key={p.slug} href={blogHref(p.slug)} className="rbf-card" data-reveal data-reveal-delay={String(i * 90)} style={{ textDecoration: 'none' }}>
+                <Link key={p.slug} href={blogHref(market, p.slug)} className="rbf-card" data-reveal data-reveal-delay={String(i * 90)} style={{ textDecoration: 'none' }}>
                   <div className="rbf-media">
                     <span className="rbf-date">
-                      <span className="rbf-date-day">{String(d.getDate()).padStart(2, '0')}</span>
-                      <span className="rbf-date-month">{MONTH_SHORT[d.getMonth()]}</span>
+                      <span className="rbf-date-day">{String(d.getUTCDate()).padStart(2, '0')}</span>
+                      <span className="rbf-date-month">{MONTH_SHORT[d.getUTCMonth()]}</span>
                     </span>
                     <div className="rbf-img-wrap">
-                      <Image src={p.hero.src} alt={p.hero.alt} width={p.hero.width} height={p.hero.height} style={{ width: '100%', height: 'auto', display: 'block' }} />
+                      {p.hero && <img src={p.hero.src} alt={p.hero.alt} width={p.hero.width} height={p.hero.height} loading="lazy" style={{ width: "100%", height: "auto", display: "block" }} />}
                     </div>
                   </div>
                   <div>

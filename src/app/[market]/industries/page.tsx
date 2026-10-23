@@ -29,7 +29,8 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function IndustriesPage() {
+export default async function IndustriesPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -37,7 +38,7 @@ export default function IndustriesPage() {
       <IndustriesGrid />
       <ServiceWhyChoose />
       <WhoWeAreNumbers />
-      <SoftwareBlog tag={['Fleet Management', 'Fleet Tracking', 'GPS Tracking']} />
+      <SoftwareBlog market={market} tag={['Fleet Management', 'Fleet Tracking', 'GPS Tracking']} />
       <ServiceFAQ />
       <SoftwareCTA />
       <Footer />

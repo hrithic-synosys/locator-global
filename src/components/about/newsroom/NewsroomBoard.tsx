@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable @next/next/no-img-element -- Validated CMS images keep their original host. */
 
 import CountryAnchor from '@/components/country/CountryAnchor'
 import { useMemo, useState } from 'react'
@@ -8,7 +9,6 @@ import NewsroomRail from './NewsroomRail'
 // import SocialCard from './SocialCard'
 import NewsroomWatch from './NewsroomWatch'
 import {
-  BLOG_POSTS,
   CATEGORY_COLOR,
   CATEGORY_LABEL,
   MEDIA_MENTIONS,
@@ -21,7 +21,8 @@ import {
   type NewsItem,
   type SocialPost,
 } from './newsroom-data'
-import { BLOG_BASE } from './blog/blog-index'
+import { blogBase } from '@/lib/cms-blog/urls'
+import { useCountry } from '@/components/country/CountryProvider'
 import SocialPreviewCard from './SocialPreviewCard'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
@@ -85,13 +86,13 @@ function Card({ item, size = 'md' }: { item: NewsItem; size?: 'md' | 'lg' }) {
   return (
     <Shell href={item.href} className={`nrb-card nrb-card--${size}`}>
       <div className="nrb-card-media" data-fit={item.fit ?? 'cover'} style={item.fit === 'contain' && item.imageAspect ? { aspectRatio: item.imageAspect } : undefined}>
-        <Image
+        {item.image && (item.category === "blog" ? <img src={item.image} alt={item.alt || ""} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}} /> : <Image
           src={item.image}
           alt={item.alt ?? ''}
           fill
           style={{ objectFit: item.fit ?? 'cover' }}
           sizes={size === 'lg' ? '(max-width: 1040px) 100vw, 700px' : '(max-width: 700px) 100vw, 340px'}
-        />
+        />)}
         <span className="nrb-chip" style={{ background: color }}>
           {item.tag || CATEGORY_LABEL[item.category]}
         </span>
@@ -114,16 +115,17 @@ function Card({ item, size = 'md' }: { item: NewsItem; size?: 'md' | 'lg' }) {
   )
 }
 
-export default function NewsroomBoard() {
+export default function NewsroomBoard({ blogs }: { blogs: NewsItem[] }) {
+  const { code: market } = useCountry();
   const [tab, setTab] = useState<Tab>('all')
 
   // Blog lives in its own array (it is editorial, not news), so the pool the
   // filter runs over depends on which tab is active.
   const pool = useMemo(() => {
-    if (tab === 'blog') return BLOG_POSTS
+    if (tab === 'blog') return blogs
     if (tab === 'all') return NEWS_ITEMS
     return NEWS_ITEMS.filter((i) => i.category === tab)
-  }, [tab])
+  }, [tab, blogs])
 
   const featured = NEWS_ITEMS.find((i) => i.featured) ?? NEWS_ITEMS[0]
   const highlights = NEWS_ITEMS.filter((i) => !i.featured).slice(0, 3)
@@ -527,7 +529,7 @@ export default function NewsroomBoard() {
             {tab === 'blog' && (
               <div className="nrb-section-head">
                 <h2>From the Locator blog</h2>
-                <Link href={BLOG_BASE} className="nrb-viewall">
+                <Link href={blogBase(market)} className="nrb-viewall">
                   View all articles →
                 </Link>
               </div>

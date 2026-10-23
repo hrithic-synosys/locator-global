@@ -1,6 +1,8 @@
-import Image from 'next/image'
-import Link from '@/components/country/CountryLink'
-import { BLOG_POSTS, blogHref } from '@/components/about/newsroom/blog/blog-index'
+import type { CountryCode } from '@/config/countries'
+/* eslint-disable @next/next/no-img-element -- Validated CMS media is served directly as in the CMS preview. */
+import Link from 'next/link'
+import { blogBase, blogHref } from '@/lib/cms-blog/urls'
+import { teaserBlogs, teaserCard } from '@/lib/cms-blog/teasers'
 
 // Category chip and author-avatar colours are all the site's own blues rather
 // than blue/orange/purple — this component is shared across ~10 routes,
@@ -12,21 +14,14 @@ const ACCENTS = [
   { color: '#2f6fed', bg: 'rgba(47,111,237,.1)' },
 ]
 
-/**
- * Used across every service, product, and industry page. `tag` pulls posts
- * that actually match that page's topic out of the real blog index instead
- * of the same three hardcoded (and non-existent — they linked to the blog
- * listing, not an article) placeholder posts every route used to show.
- * Falls back to the most recent posts overall if nothing in the index
- * carries the given tag(s) yet.
- */
-export default function SoftwareBlog({ tag, limit = 3 }: { tag?: string | string[]; limit?: number } = {}) {
-  const tags = tag ? (Array.isArray(tag) ? tag : [tag]) : []
-  const matched = tags.length ? BLOG_POSTS.filter(p => tags.includes(p.tag)) : []
-  const posts = (matched.length ? matched : BLOG_POSTS)
-    .slice()
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .slice(0, limit)
+/** CMS-backed blog teasers, selected by the scoped backend. */
+export default async function SoftwareBlog({ market, tag, limit = 3 }: { market: CountryCode; tag?: string | string[]; limit?: number }) {
+  void tag // Legacy display labels are not CMS tag slugs.
+  const result = await teaserBlogs(market, limit)
+  const posts = result.items.map(teaserCard)
+  if (result.unavailable) return <p role="status">Blog articles are temporarily unavailable. <Link href={blogBase(market)}>Try the blog</Link>.</p>
+
+  if (!posts.length) return <p role="status">No published blog articles yet.</p>
 
   return (
     <>
@@ -73,10 +68,10 @@ export default function SoftwareBlog({ tag, limit = 3 }: { tag?: string | string
             </h2>
 
             <p style={{ margin: '0 auto 22px', maxWidth: '440px', fontSize: 'max(clamp(13.5px,1.25vw,15px), min(1.042vw, 21.75px))', lineHeight: 1.65, color: '#6e6e73' }}>
-              Practical guides on fleet safety, cost control, and operations for UAE businesses.
+              Practical guides on fleet safety, cost control, and operations for fleet operators.
             </p>
 
-            <Link href="/about/newsroom/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: 'var(--f-13)', fontWeight: 700, color: '#1360ee', textDecoration: 'none', padding: '9px 20px', borderRadius: '999px', background: '#eef3ff', border: '1px solid rgba(19,96,238,.18)', whiteSpace: 'nowrap' as const }}>
+            <Link href={blogBase(market)} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: 'var(--f-13)', fontWeight: 700, color: '#1360ee', textDecoration: 'none', padding: '9px 20px', borderRadius: '999px', background: '#eef3ff', border: '1px solid rgba(19,96,238,.18)', whiteSpace: 'nowrap' as const }}>
               All articles →
             </Link>
           </div>
@@ -86,11 +81,11 @@ export default function SoftwareBlog({ tag, limit = 3 }: { tag?: string | string
             {posts.map((post, i) => {
               const accent = ACCENTS[i % ACCENTS.length]
               return (
-                <Link key={post.slug} href={blogHref(post.slug)} className="bc" data-reveal data-reveal-delay={`${i * 110}`}>
+                <Link key={post.slug} href={blogHref(market, post.slug)} className="bc" data-reveal data-reveal-delay={`${i * 110}`}>
 
                   {/* Image with overlay */}
                   <div style={{ position: 'relative', height: '200px', overflow: 'hidden', flexShrink: 0, background: '#dde5f0' }}>
-                    <Image src={post.hero.src} alt={post.title} fill className="bc-img" style={{ objectFit: 'cover' }} />
+                    {post.hero && <img src={post.hero.src} alt={post.hero.alt} width={post.hero.width} height={post.hero.height} loading="lazy" className="bc-img" style={{ objectFit: "cover", width: "100%", height: "100%" }} />}
                     {/* Dark gradient at bottom */}
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,14,50,.65) 0%, rgba(8,14,50,.15) 40%, transparent 100%)' }} />
                     {/* Category pill over image */}

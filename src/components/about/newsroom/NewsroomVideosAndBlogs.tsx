@@ -1,215 +1,35 @@
 'use client'
-
-import CountryAnchor from '@/components/country/CountryAnchor'
-import { useState } from 'react'
-import Image from 'next/image'
-import Link from '@/components/country/CountryLink'
+/* eslint-disable @next/next/no-img-element -- Validated CMS media URLs. */
+import Link from 'next/link'
 import CustomerReviewVideos from './CustomerReviewVideos'
-import { BLOG_POSTS } from './newsroom-data'
-import { BLOG_BASE } from './blog/blog-index'
-
+import type { NewsItem } from './newsroom-data'
+import type { Pagination } from '@/lib/cms-blog/types'
+import type { CountryCode } from '@/config/countries'
+import { blogBase, newsroomHref } from '@/lib/cms-blog/urls'
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
-
-/*
- * CustomerReviewVideos is the reference column.
- * The blog side intentionally stays compact: three small articles are shown
- * at a time, which keeps its visual height close to the video column without
- * trying to display the complete blog content.
- */
-const BLOGS_PER_PAGE = 3
-
-function chunk<T>(list: T[], size: number): T[][] {
-  const pages: T[][] = []
-
-  for (let i = 0; i < list.length; i += size) {
-    pages.push(list.slice(i, i + size))
-  }
-
-  return pages
-}
-
-const BLOG_PAGES = chunk(BLOG_POSTS, BLOGS_PER_PAGE)
-
-function BlogCard({ blog }: { blog: (typeof BLOG_POSTS)[number] }) {
-  const href = blog.href ?? BLOG_BASE
-  const isInternal = href.startsWith('/')
-
-  const content = (
-    <>
-      <div className="nvc-blog-image">
-        <Image
-          src={blog.image}
-          alt={blog.alt ?? ''}
-          fill
-          sizes="(max-width: 800px) 34vw, 170px"
-          style={{ objectFit: blog.fit ?? 'cover' }}
-        />
+export default function NewsroomVideosAndBlogs({ market, blogs, pagination }: { market: CountryCode; blogs: NewsItem[]; pagination: Pagination }) {
+  const pageHref = (page: number) => newsroomHref(market)+(page>1?'?blogPage='+page:'');
+  return <section className="nvc" aria-label="Newsroom videos and blog content">
+    <style>{styles}</style>
+    <div className="nvc-inner">
+      <div className="nvc-column nvc-column--videos"><CustomerReviewVideos /></div>
+      <div className="nvc-column nvc-column--blogs">
+        <div className="nvc-head"><h2>From the Locator Blog</h2><Link href={blogBase(market)}>View All →</Link></div>
+        <div className="nvc-blog-stage"><div className="nvc-blog-list">
+          {blogs.length ? blogs.map(blog => <Link key={blog.id} href={blog.href} className="nvc-blog-card" style={!blog.image?{gridTemplateColumns:'1fr'}:undefined}>
+            {blog.image && <div className="nvc-blog-image"><img src={blog.image} alt={blog.alt || ''} loading="lazy" style={{width:'100%',height:'100%',objectFit:'cover'}} /></div>}
+            <div className="nvc-blog-body"><span className="nvc-blog-date">{blog.date}</span><h3 className="nvc-blog-title">{blog.title}</h3>
+              {blog.excerpt && <p className="nvc-blog-excerpt">{blog.excerpt}</p>}<span className="nvc-blog-more">Read More →</span></div>
+          </Link>) : <p className="nvc-empty" role="status">{pagination.total?'No articles on this page.':'No published blog articles yet.'}</p>}
+        </div></div>
+        {pagination.pages>1 && <nav aria-label="Newsroom blog pagination" className="nvc-dots" style={{gap:16}}>
+          {pagination.page>1 && <Link rel="prev" href={pageHref(pagination.page-1)}>Previous</Link>}
+          <span>Page {pagination.page} of {pagination.pages}</span>
+          {pagination.page<pagination.pages && <Link rel="next" href={pageHref(pagination.page+1)}>Next</Link>}
+        </nav>}
       </div>
-
-      <div className="nvc-blog-body">
-        <span className="nvc-blog-date">{blog.date}</span>
-
-        <h3 className="nvc-blog-title">
-          {blog.title}
-        </h3>
-
-        {blog.excerpt && (
-          <p className="nvc-blog-excerpt">
-            {blog.excerpt}
-          </p>
-        )}
-
-        <span className="nvc-blog-more">
-          Read More →
-        </span>
-      </div>
-    </>
-  )
-
-  if (isInternal) {
-    return (
-      <Link href={href} className="nvc-blog-card">
-        {content}
-      </Link>
-    )
-  }
-
-  return (
-    <CountryAnchor href={href} className="nvc-blog-card">
-      {content}
-    </CountryAnchor>
-  )
-}
-
-export default function NewsroomVideosAndBlogs() {
-  const [blogPage, setBlogPage] = useState(0)
-
-  if (!BLOG_PAGES.length) {
-    return (
-      <section className="nvc" aria-label="Newsroom videos and content">
-        <style>{styles}</style>
-
-        <div className="nvc-inner">
-          <div className="nvc-column nvc-column--videos">
-            <CustomerReviewVideos />
-          </div>
-
-          <div className="nvc-column nvc-column--blogs">
-            <BlogHeader />
-            <div className="nvc-empty">
-              No blog articles available yet.
-            </div>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  const pageCount = BLOG_PAGES.length
-  const currentBlogs = BLOG_PAGES[blogPage] ?? BLOG_PAGES[0]
-
-  const go = (delta: number) => {
-    setBlogPage((current) => (current + delta + pageCount) % pageCount)
-  }
-
-  return (
-    <>
-      <style>{styles}</style>
-
-      <section className="nvc" aria-label="Newsroom videos and blog content">
-        <div className="nvc-inner">
-          {/* Left 50% — Customer Review Videos */}
-          <div className="nvc-column nvc-column--videos">
-            <CustomerReviewVideos />
-          </div>
-
-          {/* Right 50% — Minimal Blog Slider */}
-          <div className="nvc-column nvc-column--blogs">
-            <BlogHeader />
-
-            <div className="nvc-blog-stage">
-              {pageCount > 1 && (
-                <button
-                  type="button"
-                  className="nvc-arrow nvc-arrow--prev"
-                  onClick={() => go(-1)}
-                  aria-label="Previous blog posts"
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </button>
-              )}
-
-              <div className="nvc-blog-list" key={blogPage}>
-                {currentBlogs.map((blog) => (
-                  <BlogCard key={blog.id} blog={blog} />
-                ))}
-              </div>
-
-              {pageCount > 1 && (
-                <button
-                  type="button"
-                  className="nvc-arrow nvc-arrow--next"
-                  onClick={() => go(1)}
-                  aria-label="Next blog posts"
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {pageCount > 1 && (
-              <div className="nvc-dots">
-                {BLOG_PAGES.map((_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className={`nvc-dot ${index === blogPage ? 'is-on' : ''}`}
-                    onClick={() => setBlogPage(index)}
-                    aria-label={`Blog posts, page ${index + 1}`}
-                    aria-current={index === blogPage}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-    </>
-  )
-}
-
-function BlogHeader() {
-  return (
-    <div className="nvc-head">
-      <h2>From the Locator Blog</h2>
-
-      <Link href={BLOG_BASE}>
-        View All →
-      </Link>
     </div>
-  )
+  </section>
 }
 
 const styles = `

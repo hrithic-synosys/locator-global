@@ -27,7 +27,8 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function VideoTelematicsPage() {
+export default async function VideoTelematicsPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -38,7 +39,7 @@ export default function VideoTelematicsPage() {
       <VideoTelematicsIndustries />
       <VideoTelematicsVideo />
       <VideoTelematicsFAQ />
-      <SoftwareBlog tag={['Fleet Tracking', 'GPS Tracking']} />
+      <SoftwareBlog market={market} tag={['Fleet Tracking', 'GPS Tracking']} />
       <SoftwareCTA />
       <Footer />
     </main>

@@ -43,7 +43,7 @@ export default async function AsateelCertifiedObuPage({ params }: { params: Prom
       <WhoWeAreNumbers />
       <AsateelHireUsNow />
       <AsateelVideo />
-      <RegulatoryBlogFeed tag="ASATEEL Compliance" />
+      <RegulatoryBlogFeed market={market} tag="ASATEEL Compliance" />
       <Footer />
     </main>
   )

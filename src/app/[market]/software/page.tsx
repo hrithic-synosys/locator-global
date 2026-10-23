@@ -19,7 +19,8 @@ const pageMetadata: Metadata = {
     'One platform for complete fleet visibility. GPS tracking, telematics, tasks, expenses, inspections, maintenance and AI dashcams for your whole fleet.',
 }
 
-export default function SoftwarePage() {
+export default async function SoftwarePage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -27,7 +28,7 @@ export default function SoftwarePage() {
       <BenefitsSection />
       <ModulesSection />
       <DashcamShowcase />
-      <SoftwareBlog tag={['GPS Tracking', 'Fleet Tracking']} />
+      <SoftwareBlog market={market} tag={['GPS Tracking', 'Fleet Tracking']} />
       <SoftwareFAQ />
       <SoftwareCTA />
       <Footer />

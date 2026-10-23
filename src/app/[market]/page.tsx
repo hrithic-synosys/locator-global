@@ -38,7 +38,8 @@ const pageMetadata: Metadata = {
 // bottom of globals.css and carries no styling of its own. It scopes them to
 // this page's own sections, so the same components used on other routes are
 // unaffected.
-export default function Home() {
+export default async function Home({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main className="home-main min-h-screen bg-white relative">
       <HeroSection />
@@ -55,7 +56,7 @@ export default function Home() {
       <VideoHeroSection />
       <TestimonialCarousel />
       <LogoMarquee />
-      <BlogSection />
+      <BlogSection market={market} />
       <Footer />
     </main>
   );

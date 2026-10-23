@@ -18,6 +18,7 @@ function load(filename) {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
   vm.runInNewContext(code, { exports, URL, process: testProcess, require: id => {
+    if (id === '@/lib/cms-blog/client') return { getBlogSlugs: async () => [] };
     if (id.startsWith('.') || id.startsWith('@/')) {
       const target = id.startsWith('@/') ? path.resolve('src', id.slice(2)) : path.resolve(path.dirname(file), id);
       return load(`${target}.ts`);
@@ -121,20 +122,20 @@ test('proxy rewrites only global page URLs and preserves queries; API/assets sta
   assert.equal(proxy(new NextRequest('https://locatorglobal.com/global/contact')).headers.get('x-middleware-rewrite'), 'https://locatorglobal.com/global/__unavailable__');
 });
 
-test('sitemap and robots advertise only explicitly ready real market pages', () => {
+test('sitemap and robots advertise only explicitly ready real market pages', async () => {
   const sitemap = load('src/app/sitemap.ts').default;
   const robots = load('src/app/robots.ts').default;
   const { indexing } = load('src/config/indexing.ts');
-  assert.equal(sitemap().length, 0);
+  assert.equal((await sitemap()).length, 0);
   assert.equal(robots().sitemap, undefined);
   indexing.qa.pages = ['/contact'];
   testProcess.env.SITE_ENV = 'production';
-  const entries = sitemap();
+  const entries = await sitemap();
   assert.equal(entries.length, 1);
   assert.equal(entries[0].url, 'https://locatorglobal.com/qa/contact');
   assert.equal(robots().sitemap, 'https://locatorglobal.com/sitemap.xml');
   indexing.qa.ready = true;
-  for (const entry of sitemap()) {
+  for (const entry of await sitemap()) {
     assert.ok(entry.url.startsWith('https://locatorglobal.com/qa'));
     assert.ok(!/\/(?:ae|bh|global)(?:\/|$)/.test(new URL(entry.url).pathname));
   }
@@ -174,7 +175,7 @@ test('removing a Qatar entry blocks its route and leaves every other market unch
   } finally { regulatoryNavigation.qa = original; }
 });
 
-test('regulatory placeholders stay out of indexing and sitemap even when a whole market is enabled', () => {
+test('regulatory placeholders stay out of indexing and sitemap even when a whole market is enabled', async () => {
   const { indexing, canIndex } = load('src/config/indexing.ts');
   const { regulatoryNavigation } = load('src/config/regulatory.ts');
   const { marketMetadata } = load('src/lib/country/metadata.ts');
@@ -189,14 +190,14 @@ test('regulatory placeholders stay out of indexing and sitemap even when a whole
     for (const path of ['/regulatory', '/shahin', '/asateel-certified-obu', '/securepath', '/securepath-premium']) {
       assert.equal(canIndex('qa', path), false);
       assert.equal(marketMetadata({ title: 'Existing title' }, 'qa', path).robots.index, false);
-      assert.ok(!sitemap().some(entry => entry.url === `https://locatorglobal.com/qa${path}`));
+      assert.ok(!(await sitemap()).some(entry => entry.url === `https://locatorglobal.com/qa${path}`));
     }
     regulatoryNavigation.qa = { ...original, items: original.items.map(item => item.id === 'shahin' ? { ...item, ready: true, seo: { title: 'Reviewed Qatar title', description: 'Reviewed Qatar description' } } : item) };
     assert.equal(canIndex('qa', '/shahin'), true);
     const metadata = marketMetadata({ title: 'Old title' }, 'qa', '/shahin');
     assert.equal(metadata.title, 'Reviewed Qatar title');
     assert.equal(metadata.openGraph.description, 'Reviewed Qatar description');
-    assert.ok(sitemap().some(entry => entry.url === 'https://locatorglobal.com/qa/shahin'));
+    assert.ok((await sitemap()).some(entry => entry.url === 'https://locatorglobal.com/qa/shahin'));
   } finally {
     indexing.qa.ready = false;
     indexing.global.ready = false;

@@ -30,7 +30,8 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function GpsTrackerPage() {
+export default async function GpsTrackerPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -60,7 +61,7 @@ export default function GpsTrackerPage() {
         headingMaxWidth="760px"
       />
       <DeviceCarousel />
-      <SoftwareBlog tag="GPS Tracking" />
+      <SoftwareBlog market={market} tag="GPS Tracking" />
       <SoftwareCTA />
       <Footer />
     </main>

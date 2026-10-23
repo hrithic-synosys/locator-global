@@ -31,7 +31,8 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function CarTrackerPage() {
+export default async function CarTrackerPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -55,7 +56,7 @@ export default function CarTrackerPage() {
       />
       <ServiceUseCases />
       <DeviceCarousel />
-      <SoftwareBlog tag="Car Tracking" />
+      <SoftwareBlog market={market} tag="Car Tracking" />
       <SoftwareCTA />
       <Footer />
     </main>

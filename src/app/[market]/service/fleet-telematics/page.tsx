@@ -40,7 +40,8 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function FleetTelematicsPage() {
+export default async function FleetTelematicsPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -56,7 +57,7 @@ export default function FleetTelematicsPage() {
       <ServiceVideo />
       <ServiceWhyChoose />
       <DashcamShowcase />
-      <SoftwareBlog tag={['Fleet Tracking', 'Fleet Management']} />
+      <SoftwareBlog market={market} tag={['Fleet Tracking', 'Fleet Management']} />
       <ServiceFAQ />
       <SoftwareCTA />
       <Footer />

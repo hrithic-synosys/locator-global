@@ -43,7 +43,7 @@ export default async function SecurepathPage({ params }: { params: Promise<{ mar
       <WhoWeAreNumbers />
       <SecurepathFAQ />
       <SecurepathConclusion />
-      <RegulatoryBlogFeed tag={['GPS Tracking', 'Fleet Management']} />
+      <RegulatoryBlogFeed market={market} tag={['GPS Tracking', 'Fleet Management']} />
       <Footer />
     </main>
   )

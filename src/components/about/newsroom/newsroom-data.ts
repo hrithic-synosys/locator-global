@@ -1,7 +1,5 @@
-// Single source of truth for the newsroom. Every card the board renders comes
-// from here so the tab filter, the featured slot, and the rail all stay in sync.
+// Existing non-blog newsroom content. Blog records are supplied by the scoped CMS API.
 
-import { BLOG_POSTS as MIGRATED_POSTS, blogHref } from './blog/blog-index'
 
 export type NewsCategory =
   | 'product'
@@ -853,18 +851,3 @@ export const UPCOMING_EVENTS: UpcomingEvent[] = [
     href: '#',
   },
 ]
-
-// The Blog tab is fed by the articles migrated from the old locator.ae blog.
-// Mapped here rather than duplicated so the card copy, image and date always
-// match what the article page itself renders.
-export const BLOG_POSTS: NewsItem[] = MIGRATED_POSTS.map((p) => ({
-  id: p.slug,
-  category: 'blog',
-  tag: p.tag,
-  title: p.title,
-  excerpt: p.excerpt,
-  image: p.hero.src,
-  alt: p.hero.alt,
-  date: p.dateLabel,
-  href: blogHref(p.slug),
-}))

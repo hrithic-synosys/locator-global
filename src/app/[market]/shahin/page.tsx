@@ -41,7 +41,7 @@ export default async function ShahinPage({ params }: { params: Promise<{ market:
       <ShahinFAQ />
       <ShahinConclusion />
       <ShahinVideo />
-      <RegulatoryBlogFeed tag={['Fleet Management', 'Fleet Tracking']} />
+      <RegulatoryBlogFeed market={market} tag={['Fleet Management', 'Fleet Tracking']} />
       <Footer />
     </main>
   )

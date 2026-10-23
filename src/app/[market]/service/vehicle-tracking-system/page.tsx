@@ -35,7 +35,8 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function VehicleTrackingSystemPage() {
+export default async function VehicleTrackingSystemPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -53,7 +54,7 @@ export default function VehicleTrackingSystemPage() {
         headingMaxWidth="760px"
       />
       <TrackingUseCases />
-      <SoftwareBlog tag={['GPS Tracking', 'Vehicle Maintenance']} />
+      <SoftwareBlog market={market} tag={['GPS Tracking', 'Vehicle Maintenance']} />
       <ServiceFAQ />
       <SoftwareCTA />
       <Footer />
