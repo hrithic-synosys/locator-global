@@ -7,7 +7,7 @@ import { INDUSTRIES } from "@/components/industries/industries-data";
 import { countryCodes } from '@/config/countries';
 import { canIndex } from '@/config/indexing';
 import { countryPath } from '@/lib/country/paths';
-import { exclusivePages } from '@/content/exclusive-pages';
+import { exclusivePages, getExclusivePage } from '@/content/exclusive-pages';
 
 // Every live route. Add new entries here as routes are added.
 const ROUTES: { path: string; priority: number }[] = [
@@ -52,7 +52,7 @@ const ROUTES: { path: string; priority: number }[] = [
 export default function sitemap(): MetadataRoute.Sitemap {
   return countryCodes.flatMap(country => [
     ...ROUTES,
-    ...Object.entries(exclusivePages).filter(([, page]) => page.markets.includes(country)).map(([path]) => ({ path, priority: 0.6 })),
+    ...Object.keys(exclusivePages).filter(path => getExclusivePage(path, country)).map(path => ({ path, priority: 0.6 })),
   ].filter(({ path }) => canIndex(country, path || '/')).map(({ path, priority }) => ({
     url: `${siteUrl}${countryPath(path || '/', country)}`,
     changeFrequency: "weekly" as const,

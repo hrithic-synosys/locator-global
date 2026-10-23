@@ -7,7 +7,8 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useCountry, useCountryRouter } from '@/components/country/CountryProvider'
 import { stripCountry } from '@/lib/country/paths'
-import { REGULATORY_PRODUCTS } from '@/components/regulatory/data'
+import { getRegulatoryNavigation, isRegulatoryNavigationActive, regulatoryPaths } from '@/config/regulatory'
+import { getRegulatoryDropdown } from '@/components/regulatory/navigation'
 import { ABOUT_PAGES } from '@/components/about/data'
 import { SERVICE_PAGES } from '@/components/service/data'
 import { SOFTWARE_MODULES } from '@/components/software/modules-data'
@@ -19,14 +20,13 @@ const NAV_LINKS = [
   { href: '/software',   label: 'Software' },
   { href: '/service',    label: 'Service' },
   { href: '/industries', label: 'Industries' },
-  { href: '/regulatory', label: 'Regulatory GPS Certifications' },
+  { href: regulatoryPaths.overview, label: 'Regulatory' },
   { href: '/contact',    label: 'Contact' },
 ]
 
 // Nav items that open the shutter mega-menu instead of navigating directly.
-type NavDropdownItem = { slug: string; name: string; tagline: string; accent: string; icon: React.ReactNode }
+type NavDropdownItem = { slug: string; href?: string; name: string; tagline: string; accent: string; icon: React.ReactNode }
 const DROPDOWNS: Record<string, { items: NavDropdownItem[]; base: string; label: string; blurb: string; hash?: boolean; navigable?: boolean }> = {
-  '/regulatory': { items: REGULATORY_PRODUCTS, base: '',         label: 'Regulatory GPS Certifications', blurb: 'Certified GPS & OBU solutions built to meet UAE regulatory requirements.' },
   '/about':      { items: ABOUT_PAGES,         base: '/about',   label: 'About Locator',                 blurb: 'Who we are, where we’re headed, and the people behind the platform.' },
   '/software':   { items: SOFTWARE_MODULES,    base: '/software', label: 'Software Platform',            blurb: 'Jump straight to any module of the Locator fleet platform.', hash: true, navigable: true },
   '/service':    { items: SERVICE_PAGES,       base: '/service', label: 'Locator Services',              blurb: 'End-to-end fleet, video, and IoT services for every operation.' },
@@ -55,6 +55,10 @@ export default function SoftwareNavbar() {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pathname = stripCountry(usePathname())
   const country = useCountry()
+  const regulatory = getRegulatoryNavigation(country.code)
+  const links = NAV_LINKS.map(link => link.href === regulatoryPaths.overview ? { ...link, label: regulatory.label } : link)
+  const regulatoryDropdown = getRegulatoryDropdown(country.code)
+  const dropdownFor = (href: string): (typeof DROPDOWNS)[string] | undefined => href === regulatoryPaths.overview ? regulatoryDropdown : DROPDOWNS[href]
   const router = useCountryRouter()
 
   useEffect(() => { setMounted(true) }, [])
@@ -63,7 +67,7 @@ export default function SoftwareNavbar() {
   useEffect(() => { if (activeMenu) setRenderMenu(activeMenu) }, [activeMenu])
 
   // Close everything on route change.
-  useEffect(() => { setActiveMenu(null); setOpen(false) }, [pathname])
+  useEffect(() => { setActiveMenu(null); setOpen(false) }, [pathname, country.code])
 
   useEffect(() => {
     if (open) {
@@ -85,7 +89,7 @@ export default function SoftwareNavbar() {
     if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null }
   }
 
-  const activeDD = renderMenu ? DROPDOWNS[renderMenu] : null
+  const activeDD = renderMenu ? dropdownFor(renderMenu) : null
 
   return (
     <>
@@ -265,9 +269,9 @@ export default function SoftwareNavbar() {
 
             {/* Nav links */}
             <div className="swn-pills" style={{ display: 'flex', alignItems: 'center', gap: '2px', flex: 1, justifyContent: 'center' }}>
-              {NAV_LINKS.map(l => {
-                const isActive = l.href === '/' ? pathname === '/' : pathname.startsWith(l.href)
-                const dd = DROPDOWNS[l.href]
+              {links.map(l => {
+                const isActive = l.href === regulatoryPaths.overview ? isRegulatoryNavigationActive(country.code, pathname) : l.href === '/' ? pathname === '/' : pathname.startsWith(l.href)
+                const dd = dropdownFor(l.href)
                 if (dd) {
                   const isCurrent = activeMenu === l.href
                   const chev = (
@@ -353,7 +357,7 @@ export default function SoftwareNavbar() {
                 </div>
                 <div className="swn-mega-grid">
                   {activeDD.items.map(p => (
-                    <Link key={p.slug} href={itemHref(activeDD, p.slug)} className="swn-mega-card" role="menuitem" onClick={() => setActiveMenu(null)}>
+                    <Link key={p.slug} href={p.href ?? itemHref(activeDD, p.slug)} className="swn-mega-card" role="menuitem" onClick={() => setActiveMenu(null)}>
                       <span className="swn-mega-ic" style={{ background: `${MENU_ICON_ACCENT}14`, color: MENU_ICON_ACCENT }}>{p.icon}</span>
                       <span style={{ minWidth: 0 }}>
                         <span className="swn-mega-name">{p.name}</span>
@@ -396,9 +400,9 @@ export default function SoftwareNavbar() {
           </div>
 
           <ul style={{ listStyle: 'none', margin: 0, padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 0, overflowY: 'auto' }}>
-            {NAV_LINKS.map(l => {
-              const isActive = l.href === '/' ? pathname === '/' : pathname.startsWith(l.href)
-              const dd = DROPDOWNS[l.href]
+            {links.map(l => {
+              const isActive = l.href === regulatoryPaths.overview ? isRegulatoryNavigationActive(country.code, pathname) : l.href === '/' ? pathname === '/' : pathname.startsWith(l.href)
+              const dd = dropdownFor(l.href)
               return (
                 <li key={l.href}>
                   {dd ? (
@@ -422,7 +426,7 @@ export default function SoftwareNavbar() {
                       {dd.items.map(p => (
                         <Link
                           key={p.slug}
-                          href={itemHref(dd, p.slug)}
+                          href={p.href ?? itemHref(dd, p.slug)}
                           onClick={() => setOpen(false)}
                           style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '11px 4px', fontSize: '14.5px', fontWeight: 600, color: '#52525e', textDecoration: 'none' }}
                         >

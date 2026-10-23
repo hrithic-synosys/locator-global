@@ -142,3 +142,82 @@ test('sitemap and robots advertise only explicitly ready real market pages', () 
   indexing.qa.pages = [];
   testProcess.env.SITE_ENV = 'development';
 });
+
+test('global regulatory navigation is one link; all countries temporarily share four entries', () => {
+  const { getRegulatoryNavigation, isRegulatoryNavigationActive } = load('src/config/regulatory.ts');
+  assert.equal(getRegulatoryNavigation('global').kind, 'link');
+  assert.equal(getRegulatoryNavigation('global').label, 'Regulatory');
+  assert.equal(getRegulatoryNavigation('global').items.length, 0);
+  for (const code of ['qa', 'kw', 'om', 'sa']) {
+    const menu = getRegulatoryNavigation(code);
+    assert.equal(menu.kind, 'dropdown');
+    assert.deepEqual([...menu.items.map(item => countryPath(item.href, code))], [`/${code}/shahin`, `/${code}/asateel-certified-obu`, `/${code}/securepath`, `/${code}/securepath-premium`]);
+    assert.equal(isRegulatoryNavigationActive(code, '/shahin'), true);
+    assert.equal(isRegulatoryNavigationActive(code, '/regulatory'), true);
+    assert.equal(isRegulatoryNavigationActive(code, '/software'), false);
+  }
+});
+
+test('removing a Qatar entry blocks its route and leaves every other market unchanged', () => {
+  const { regulatoryNavigation, isRegulatoryPageAvailable } = load('src/config/regulatory.ts');
+  const { requireRegulatoryPage } = load('src/lib/country/regulatory.ts');
+  const { proxy } = load('src/proxy.ts');
+  const { NextRequest } = nodeRequire('next/server');
+  const original = regulatoryNavigation.qa;
+  try {
+    regulatoryNavigation.qa = { ...original, items: original.items.filter(item => item.id !== 'shahin') };
+    assert.equal(isRegulatoryPageAvailable('qa', '/shahin'), false);
+    assert.throws(() => requireRegulatoryPage('qa', '/shahin'), error => error.digest?.includes('404'));
+    assert.equal(proxy(new NextRequest('https://locatorglobal.com/qa/shahin')).headers.get('x-middleware-rewrite'), 'https://locatorglobal.com/qa/__unavailable__');
+    for (const code of ['kw', 'om', 'sa']) assert.equal(isRegulatoryPageAvailable(code, '/shahin'), true);
+    assert.equal(isRegulatoryPageAvailable('global', '/shahin'), false);
+  } finally { regulatoryNavigation.qa = original; }
+});
+
+test('regulatory placeholders stay out of indexing and sitemap even when a whole market is enabled', () => {
+  const { indexing, canIndex } = load('src/config/indexing.ts');
+  const { regulatoryNavigation } = load('src/config/regulatory.ts');
+  const { marketMetadata } = load('src/lib/country/metadata.ts');
+  const sitemap = load('src/app/sitemap.ts').default;
+  const original = regulatoryNavigation.qa;
+  indexing.qa.ready = true;
+  indexing.global.ready = true;
+  testProcess.env.SITE_ENV = 'production';
+  try {
+    assert.equal(canIndex('global', '/regulatory'), true);
+    assert.equal(canIndex('global', '/shahin'), false);
+    for (const path of ['/regulatory', '/shahin', '/asateel-certified-obu', '/securepath', '/securepath-premium']) {
+      assert.equal(canIndex('qa', path), false);
+      assert.equal(marketMetadata({ title: 'Existing title' }, 'qa', path).robots.index, false);
+      assert.ok(!sitemap().some(entry => entry.url === `https://locatorglobal.com/qa${path}`));
+    }
+    regulatoryNavigation.qa = { ...original, items: original.items.map(item => item.id === 'shahin' ? { ...item, ready: true, seo: { title: 'Reviewed Qatar title', description: 'Reviewed Qatar description' } } : item) };
+    assert.equal(canIndex('qa', '/shahin'), true);
+    const metadata = marketMetadata({ title: 'Old title' }, 'qa', '/shahin');
+    assert.equal(metadata.title, 'Reviewed Qatar title');
+    assert.equal(metadata.openGraph.description, 'Reviewed Qatar description');
+    assert.ok(sitemap().some(entry => entry.url === 'https://locatorglobal.com/qa/shahin'));
+  } finally {
+    indexing.qa.ready = false;
+    indexing.global.ready = false;
+    regulatoryNavigation.qa = original;
+    testProcess.env.SITE_ENV = 'development';
+  }
+});
+
+test('new regulatory exclusive pages require both a country menu entry and route registration', () => {
+  const { regulatoryNavigation, isRegulatoryPageAvailable } = load('src/config/regulatory.ts');
+  const { exclusivePages, getExclusivePage } = load('src/content/exclusive-pages.ts');
+  const original = regulatoryNavigation.qa;
+  const path = '/regulatory/qa-reviewed-page';
+  try {
+    assert.equal(isRegulatoryPageAvailable('qa', path), false);
+    exclusivePages[path] = { section: 'regulatory', markets: ['qa'], metadata: {}, load: async () => ({ default: () => null }) };
+    assert.equal(getExclusivePage(path, 'qa'), undefined);
+    regulatoryNavigation.qa = { ...original, items: [{ id: 'qa-reviewed-page', label: 'Reviewed page', href: path, ready: false }] };
+    assert.ok(getExclusivePage(path, 'qa'));
+    for (const code of ['global', 'kw', 'om', 'sa']) assert.equal(getExclusivePage(path, code), undefined);
+    regulatoryNavigation.qa = { ...original, items: [] };
+    assert.equal(getExclusivePage(path, 'qa'), undefined, 'removing the menu entry revokes the route');
+  } finally { regulatoryNavigation.qa = original; delete exclusivePages[path]; }
+});

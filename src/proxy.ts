@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { resolveCountry } from './config/countries';
 import { canIndex } from './config/indexing';
 import { stripCountry } from './lib/country/paths';
+import { isRegulatoryPageAvailable } from './config/regulatory';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -11,7 +12,9 @@ export function proxy(request: NextRequest) {
   const country = resolveCountry(pathname);
   const destination = request.nextUrl.clone();
   // `global` is an internal segment, never a second public global website.
-  if (pathname === '/global' || pathname.startsWith('/global/')) {
+  if (!isRegulatoryPageAvailable(country.code, stripCountry(pathname))) {
+    destination.pathname = `/${country.code}/__unavailable__`;
+  } else if (pathname === '/global' || pathname.startsWith('/global/')) {
     destination.pathname = '/global/__unavailable__';
   } else if (country.code === 'global') {
     destination.pathname = `/global${pathname === '/' ? '' : pathname}`;

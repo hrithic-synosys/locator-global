@@ -4,9 +4,10 @@ import fs from 'node:fs';
 const origin = process.env.TEST_ORIGIN || 'http://localhost:3100';
 const markets = ['', '/sa', '/qa', '/kw', '/om'];
 const manifest = JSON.parse(fs.readFileSync('.next/prerender-manifest.json', 'utf8'));
-const sharedRoutes = Object.keys(manifest.routes)
-  .filter(path => path === '/global' || path.startsWith('/global/'))
-  .map(path => path.slice('/global'.length) || '/');
+const sharedRoutes = [...new Set(Object.keys(manifest.routes)
+  .filter(path => /^\/(global|sa|qa|kw|om)(\/|$)/.test(path))
+  .map(path => path.replace(/^\/(global|sa|qa|kw|om)/, '') || '/'))];
+const globalRegulatoryRedirects = ['/shahin', '/asateel-certified-obu', '/securepath', '/securepath-premium'];
 assert.ok(sharedRoutes.length > 0, 'Build the application before testing routes');
 let checks = 0;
 async function request(path, status = 200) {
@@ -18,6 +19,11 @@ async function request(path, status = 200) {
 for (const prefix of markets) {
   for (const route of sharedRoutes) {
     const path = prefix + (route === '/' ? '' : route) || '/';
+    if (!prefix && globalRegulatoryRedirects.includes(route)) {
+      const { response } = await request(path + '?test=country', 308);
+      assert.equal(response.headers.get('location'), '/regulatory?test=country');
+      continue;
+    }
     const { response, html } = await request(path + '?test=country');
     assert.equal(html.match(/<link rel="canonical" href="([^"]+)"/)?.[1], `https://locatorglobal.com${path === '/' ? '' : path}`, `${path} canonical`);
     assert.ok(html.includes('<meta name="robots" content="noindex, follow"'), `${path} robots`);
@@ -31,7 +37,14 @@ for (const prefix of markets) {
   const { response } = await request(`${prefix}/contact.html?campaign=one`, 308);
   assert.equal(response.headers.get('location'), `${prefix}/contact?campaign=one`);
 }
-for (const route of ['/ae', '/uae', '/bh', '/bahrain', '/xx', '/global', '/global/contact', '/qa/non-existing-page', '/kw/qatar-compliance', '/qa/qatar-compliance', '/qa/api/contact', '/qa/qa', '/qa/about/newsroom/blog/non-existing', '/om/service/tracking-devices/non-existing', '/sa/industries/non-existing']) await request(route, 404);
+for (const route of ['/ae', '/uae', '/bh', '/bahrain', '/xx', '/global', '/global/contact', '/qa/non-existing-page', '/kw/qatar-compliance', '/qa/qatar-compliance', '/qa/api/contact', '/qa/qa', '/qa/about/newsroom/blog/non-existing', '/om/service/tracking-devices/non-existing', '/sa/industries/non-existing', ...markets.map(prefix => `${prefix}/regulatory/unregistered`)]) await request(route, 404);
+for (const prefix of markets) {
+  const { response } = await request(`${prefix}/shahin.html?campaign=regulatory`, 308);
+  assert.equal(response.headers.get('location'), `${prefix ? `${prefix}/shahin` : '/regulatory'}?campaign=regulatory`);
+}
+const { html: generalRegulatory } = await request('/regulatory');
+assert.ok(generalRegulatory.includes('Regulatory Compliance for'));
+assert.ok(!generalRegulatory.includes('choose the certification that matches your fleet'));
 const { html: sitemap } = await request('/sitemap.xml');
 assert.ok(!sitemap.includes('<loc>'), 'unfinished markets must not be advertised');
 const { html: robots } = await request('/robots.txt');

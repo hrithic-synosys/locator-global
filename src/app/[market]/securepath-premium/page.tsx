@@ -1,3 +1,5 @@
+import { regulatoryPaths } from '@/config/regulatory';
+import { requireRegulatoryPage } from '@/lib/country/regulatory';
 import { marketMetadata } from '@/lib/country/metadata';
 import type { CountryCode } from '@/config/countries';
 import type { Metadata } from 'next'
@@ -28,7 +30,9 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function SecurepathPremiumPage() {
+export default async function SecurepathPremiumPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
+  requireRegulatoryPage(market, regulatoryPaths.securepathPremium);
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -49,5 +53,5 @@ export default function SecurepathPremiumPage() {
 
 export async function generateMetadata({ params }: { params: Promise<{ market: CountryCode }> }): Promise<Metadata> {
   const { market } = await params;
-  return marketMetadata(pageMetadata, market, "/securepath-premium");
+  return marketMetadata(pageMetadata, market, regulatoryPaths.securepathPremium);
 }

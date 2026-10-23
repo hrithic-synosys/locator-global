@@ -6,6 +6,7 @@ import RegulatoryHeader from '@/components/regulatory/RegulatoryHeader'
 import RegulatoryGrid from '@/components/regulatory/RegulatoryGrid'
 import SoftwareCTA from '@/components/software/SoftwareCTA'
 import Footer from '@/components/layouts/Footer'
+import GlobalRegulatoryPage from '@/components/regulatory/GlobalRegulatoryPage'
 
 const pageMetadata: Metadata = {
   title: 'Regulatory GPS Certifications',
@@ -21,7 +22,9 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function RegulatoryPage() {
+export default async function RegulatoryPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
+  if (market === 'global') return <GlobalRegulatoryPage />;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -30,7 +33,7 @@ export default function RegulatoryPage() {
         title="Regulatory GPS Certifications"
         subtitle="Certified GPS tracking solutions built to meet UAE fleet regulatory requirements — choose the certification that matches your fleet."
       >
-        <RegulatoryGrid />
+        <RegulatoryGrid country={market} />
       </RegulatoryHeader>
       <SoftwareCTA />
       <Footer />
@@ -40,5 +43,15 @@ export default function RegulatoryPage() {
 
 export async function generateMetadata({ params }: { params: Promise<{ market: CountryCode }> }): Promise<Metadata> {
   const { market } = await params;
+  if (market === 'global') return marketMetadata({
+    title: 'Regulatory Compliance for Connected Fleets',
+    description: 'Explore how GPS tracking and telematics support fleet visibility, operational reporting, and regulatory readiness across different markets.',
+    openGraph: {
+      title: 'Regulatory Compliance for Connected Fleets | Locator',
+      description: 'A practical overview of fleet tracking, operational visibility, and market-specific regulatory readiness.',
+      type: 'website',
+      images: [{ url: '/software/modules/fleet-manager/fleet-manager.webp', alt: 'Locator fleet management dashboard' }],
+    },
+  }, market, '/regulatory');
   return marketMetadata(pageMetadata, market, "/regulatory");
 }

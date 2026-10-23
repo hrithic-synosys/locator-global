@@ -7,7 +7,7 @@ type Props = { params: Promise<{ market: string; exclusive: string[] }> };
 
 export function generateStaticParams({ params }: { params: { market: string } }) {
   return Object.entries(exclusivePages)
-    .filter(([, page]) => page.markets.some(market => market === params.market))
+    .filter(([path]) => isCountryCode(params.market) && getExclusivePage(path, params.market))
     .map(([path]) => ({ exclusive: path.slice(1).split('/') }));
 }
 

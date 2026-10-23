@@ -1,12 +1,14 @@
 import type { NextConfig } from "next";
 import { redirects as legacyRedirects } from './redirects';
 import { countries, countryCodes } from './src/config/countries';
+import { legacyRegulatoryPaths, regulatoryPaths } from './src/config/regulatory';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   async redirects() {
     return [
-      ...legacyRedirects,
+      ...legacyRegulatoryPaths.map(source => ({ source, destination: regulatoryPaths.overview, permanent: true })),
+      ...legacyRedirects.map(rule => legacyRegulatoryPaths.includes(rule.destination) ? { ...rule, destination: regulatoryPaths.overview } : rule),
       ...countryCodes.filter(code => code !== 'global' && countries[code].enabled).flatMap(code =>
         legacyRedirects.map(rule => ({ ...rule, source: `${countries[code].prefix}${rule.source}`, destination: `${countries[code].prefix}${rule.destination === '/' ? '' : rule.destination}` })),
       ),

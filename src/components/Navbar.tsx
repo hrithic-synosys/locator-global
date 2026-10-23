@@ -7,7 +7,8 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useCountry, useCountryRouter } from '@/components/country/CountryProvider'
 import { stripCountry } from '@/lib/country/paths'
-import { REGULATORY_PRODUCTS } from '@/components/regulatory/data'
+import { getRegulatoryNavigation, isRegulatoryNavigationActive, regulatoryPaths } from '@/config/regulatory'
+import { getRegulatoryDropdown } from '@/components/regulatory/navigation'
 import { ABOUT_PAGES } from '@/components/about/data'
 import { SERVICE_PAGES } from '@/components/service/data'
 import { SOFTWARE_MODULES } from '@/components/software/modules-data'
@@ -26,14 +27,13 @@ const navLinks = [
   { href: '/software', label: 'Software' },
   { href: '/service', label: 'Service' },
   { href: '/industries', label: 'Industries' },
-  { href: '/regulatory', label: 'Regulatory GPS Certifications' },
+  { href: regulatoryPaths.overview, label: 'Regulatory' },
   { href: '/contact', label: 'Contact' },
 ]
 
 // Nav items that open the shutter mega-menu instead of navigating directly.
-type NavDropdownItem = { slug: string; name: string; tagline: string; accent: string; icon: React.ReactNode }
+type NavDropdownItem = { slug: string; href?: string; name: string; tagline: string; accent: string; icon: React.ReactNode }
 const NAV_DROPDOWNS: Record<string, { items: NavDropdownItem[]; base: string; label: string; blurb: string; hash?: boolean; navigable?: boolean }> = {
-  '/regulatory': { items: REGULATORY_PRODUCTS, base: '',        label: 'Regulatory GPS Certifications', blurb: 'Certified GPS & OBU solutions built to meet UAE regulatory requirements.' },
   '/about':      { items: ABOUT_PAGES,         base: '/about',  label: 'About Locator',                 blurb: 'Who we are, where we’re headed, and the people behind the platform.' },
   '/software':   { items: SOFTWARE_MODULES,    base: '/software', label: 'Software Platform',           blurb: 'Jump straight to any module of the Locator fleet platform.', hash: true, navigable: true },
   '/service':    { items: SERVICE_PAGES,       base: '/service', label: 'Locator Services',              blurb: 'End-to-end fleet, video, and IoT services for every operation.' },
@@ -65,6 +65,10 @@ export default function Navbar() {
   const [megaH, setMegaH] = useState(0)
   const pathname = stripCountry(usePathname())
   const country = useCountry()
+  const regulatory = getRegulatoryNavigation(country.code)
+  const links = navLinks.map(link => link.href === regulatoryPaths.overview ? { ...link, label: regulatory.label } : link)
+  const regulatoryDropdown = getRegulatoryDropdown(country.code)
+  const dropdownFor = (href: string): (typeof NAV_DROPDOWNS)[string] | undefined => href === regulatoryPaths.overview ? regulatoryDropdown : NAV_DROPDOWNS[href]
   const router = useCountryRouter()
   // Roll height for the hover text swap. In em (not px) so the two label copies
   // track the button's fluid font-size and the pill keeps the same height as the
@@ -75,7 +79,7 @@ export default function Navbar() {
     setMounted(true)
   }, [])
 
-  useEffect(() => { setActiveMenu(null); setOpen(false) }, [pathname])
+  useEffect(() => { setActiveMenu(null); setOpen(false) }, [pathname, country.code])
 
   // Measured height of the shutter's contents, published to CSS as --mega-h.
   //
@@ -124,7 +128,7 @@ export default function Navbar() {
   const cancelClose = () => {
     if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null }
   }
-  const activeDD = renderMenu ? NAV_DROPDOWNS[renderMenu] : null
+  const activeDD = renderMenu ? dropdownFor(renderMenu) : null
   // Navbar flips to a white bar with the blue wordmark whenever the mega-menu
   // shutter or the mobile drawer is showing — matches the white panel beneath it
   // instead of leaving a blue bar floating above a white one.
@@ -353,9 +357,9 @@ export default function Navbar() {
 
           {/* Nav Links — desktop only */}
           <ul className="hn-navlinks hidden lg:flex items-center gap-6 list-none m-0 p-0">
-            {navLinks.map(l => {
-              const isActive = l.href === '/' ? pathname === '/' : pathname.startsWith(l.href)
-              const dd = NAV_DROPDOWNS[l.href]
+            {links.map(l => {
+              const isActive = l.href === regulatoryPaths.overview ? isRegulatoryNavigationActive(country.code, pathname) : l.href === '/' ? pathname === '/' : pathname.startsWith(l.href)
+              const dd = dropdownFor(l.href)
               const isCurrent = activeMenu === l.href
               return (
                 <li key={l.href}>
@@ -563,7 +567,7 @@ export default function Navbar() {
                   </div>
                   <div className="hn-mega-grid">
                     {activeDD.items.map(p => (
-                      <Link key={p.slug} href={itemHref(activeDD, p.slug)} className="hn-mega-card" role="menuitem" onClick={() => setActiveMenu(null)}>
+                      <Link key={p.slug} href={p.href ?? itemHref(activeDD, p.slug)} className="hn-mega-card" role="menuitem" onClick={() => setActiveMenu(null)}>
                         <span className="hn-mega-ic" style={{ background: `${MENU_ICON_ACCENT}14`, color: MENU_ICON_ACCENT }}>{p.icon}</span>
                         <span style={{ minWidth: 0 }}>
                           <span className="hn-mega-name">{p.name}</span>
@@ -677,9 +681,9 @@ export default function Navbar() {
               zIndex: 2,
             }}
           >
-            {navLinks.map((l, i) => {
-              const isActive = l.href === '/' ? pathname === '/' : pathname.startsWith(l.href)
-              const dd = NAV_DROPDOWNS[l.href]
+            {links.map((l, i) => {
+              const isActive = l.href === regulatoryPaths.overview ? isRegulatoryNavigationActive(country.code, pathname) : l.href === '/' ? pathname === '/' : pathname.startsWith(l.href)
+              const dd = dropdownFor(l.href)
               const isDropdown = !!dd
               return (
               <li
@@ -731,7 +735,7 @@ export default function Navbar() {
                     {dd.items.map(p => (
                       <Link
                         key={p.slug}
-                        href={itemHref(dd, p.slug)}
+                        href={p.href ?? itemHref(dd, p.slug)}
                         onClick={() => setOpen(false)}
                         style={{
                           display: 'flex', alignItems: 'center', gap: '10px',

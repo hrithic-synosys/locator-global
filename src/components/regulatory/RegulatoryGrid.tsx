@@ -1,9 +1,11 @@
 import Link from '@/components/country/CountryLink'
-import { REGULATORY_PRODUCTS } from './data'
+import type { CountryCode } from '@/config/countries'
+import { getRegulatoryNavigation } from '@/config/regulatory'
+import { regulatoryCard } from './navigation'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function RegulatoryGrid() {
+export default function RegulatoryGrid({ country }: { country: CountryCode }) {
   return (
     <>
       <style>{`
@@ -66,10 +68,10 @@ export default function RegulatoryGrid() {
       `}</style>
 
       <div className="reg-grid" data-reveal>
-        {REGULATORY_PRODUCTS.map((p, i) => (
+        {getRegulatoryNavigation(country).items.map(regulatoryCard).map((p, i) => (
           <Link
             key={p.slug}
-            href={`/${p.slug}`}
+            href={p.href}
             className="reg-card"
             style={{ '--reg-accent': p.accent } as React.CSSProperties}
             data-reveal
