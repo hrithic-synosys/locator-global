@@ -311,7 +311,7 @@ test("listings use backend pages, preserve filters/prefix, and allow empty/banne
       pagination: { page: 1, limit: 12, total: 0, pages: 0 },
     })
   );
-  assert.ok(empty.includes("No published blog articles yet"));
+  assert.ok(empty.includes("No articles yet"));
   const html = renderToStaticMarkup(
     React.createElement(View, {
       market: "qa",

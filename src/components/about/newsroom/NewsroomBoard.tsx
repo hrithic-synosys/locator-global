@@ -24,6 +24,7 @@ import {
 import { blogBase } from '@/lib/cms-blog/urls'
 import { useCountry } from '@/components/country/CountryProvider'
 import SocialPreviewCard from './SocialPreviewCard'
+import BlogStatus from './blog/BlogStatus'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
@@ -115,7 +116,7 @@ function Card({ item, size = 'md' }: { item: NewsItem; size?: 'md' | 'lg' }) {
   )
 }
 
-export default function NewsroomBoard({ blogs }: { blogs: NewsItem[] }) {
+export default function NewsroomBoard({ blogs, blogUnavailable = false }: { blogs: NewsItem[]; blogUnavailable?: boolean }) {
   const { code: market } = useCountry();
   const [tab, setTab] = useState<Tab>('all')
 
@@ -536,8 +537,8 @@ export default function NewsroomBoard({ blogs }: { blogs: NewsItem[] }) {
             )}
 
             {tab !== 'all' && tab !== 'social' && tab !== 'media' && (
-              pool.length === 0 ? (
-                <p className="nrb-empty">Nothing published in this category yet — check back soon.</p>
+              tab === 'blog' && blogUnavailable ? <BlogStatus kind="unavailable" compact showNewsroomLink={false} /> : pool.length === 0 ? (
+                <>{tab === 'blog' ? <BlogStatus kind="empty" compact showNewsroomLink={false} /> : <p className="nrb-empty">Nothing published in this category yet — check back soon.</p>}</>
               ) : (
                 <div className="nrb-grid">
                   {pool.map((item) => (

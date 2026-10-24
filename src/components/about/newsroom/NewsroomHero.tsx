@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
-import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
@@ -90,7 +89,6 @@ export default function NewsroomHero() {
       `}</style>
 
       <section className="nrh">
-        <SoftwareNavbar />
 
         <div className="nrh-crumbs-bar">
           <nav className="nrh-crumbs" aria-label="Breadcrumb">

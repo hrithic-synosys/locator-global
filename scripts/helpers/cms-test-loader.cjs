@@ -55,6 +55,7 @@ function loader({
           usePathname: () => "/qa/about/newsroom",
           useRouter: () => ({
             push: () => {},
+            refresh: () => {},
             replace: () => {},
             prefetch: () => {},
           }),

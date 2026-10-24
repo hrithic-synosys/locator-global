@@ -3,6 +3,7 @@ import Link from "next/link";
 import { blogHref, blogPageHref, dateLabel, type BlogFilters } from "@/lib/cms-blog/urls";
 import type { CmsCard, Pagination } from "@/lib/cms-blog/types";
 import type { CountryCode } from "@/config/countries";
+import BlogStatus from "./BlogStatus";
 const EASE = "cubic-bezier(.22,.61,.36,1)";
 export default function BlogListing({
   posts,
@@ -112,11 +113,7 @@ export default function BlogListing({
             )}
           </Link>
         ) : (
-          <p role="status">
-            {pagination.total
-              ? "No articles on this page."
-              : "No published blog articles yet."}
-          </p>
+          <BlogStatus kind={pagination.total || filters.q || filters.tag || filters.featured !== undefined ? "no-results" : "empty"} resetHref={pagination.total || filters.q || filters.tag || filters.featured !== undefined ? blogPageHref(market, { page: 1, q: "", tag: "" }, 1) : undefined} />
         )}
         <div className="bl-grid">
           {rest.map((p) => (

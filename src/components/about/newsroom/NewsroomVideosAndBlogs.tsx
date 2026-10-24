@@ -6,8 +6,9 @@ import type { NewsItem } from './newsroom-data'
 import type { Pagination } from '@/lib/cms-blog/types'
 import type { CountryCode } from '@/config/countries'
 import { blogBase, newsroomHref } from '@/lib/cms-blog/urls'
+import BlogStatus from './blog/BlogStatus'
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
-export default function NewsroomVideosAndBlogs({ market, blogs, pagination }: { market: CountryCode; blogs: NewsItem[]; pagination: Pagination }) {
+export default function NewsroomVideosAndBlogs({ market, blogs, pagination, unavailable = false }: { market: CountryCode; blogs: NewsItem[]; pagination: Pagination | null; unavailable?: boolean }) {
   const pageHref = (page: number) => newsroomHref(market)+(page>1?'?blogPage='+page:'');
   return <section className="nvc" aria-label="Newsroom videos and blog content">
     <style>{styles}</style>
@@ -20,9 +21,9 @@ export default function NewsroomVideosAndBlogs({ market, blogs, pagination }: { 
             {blog.image && <div className="nvc-blog-image"><img src={blog.image} alt={blog.alt || ''} loading="lazy" style={{width:'100%',height:'100%',objectFit:'cover'}} /></div>}
             <div className="nvc-blog-body"><span className="nvc-blog-date">{blog.date}</span><h3 className="nvc-blog-title">{blog.title}</h3>
               {blog.excerpt && <p className="nvc-blog-excerpt">{blog.excerpt}</p>}<span className="nvc-blog-more">Read More →</span></div>
-          </Link>) : <p className="nvc-empty" role="status">{pagination.total?'No articles on this page.':'No published blog articles yet.'}</p>}
+          </Link>) : <BlogStatus kind={unavailable ? "unavailable" : pagination?.total ? "no-results" : "empty"} compact showNewsroomLink={false} resetHref={pagination?.total ? blogBase(market) : undefined} />}
         </div></div>
-        {pagination.pages>1 && <nav aria-label="Newsroom blog pagination" className="nvc-dots" style={{gap:16}}>
+        {pagination && pagination.pages>1 && <nav aria-label="Newsroom blog pagination" className="nvc-dots" style={{gap:16}}>
           {pagination.page>1 && <Link rel="prev" href={pageHref(pagination.page-1)}>Previous</Link>}
           <span>Page {pagination.page} of {pagination.pages}</span>
           {pagination.page<pagination.pages && <Link rel="next" href={pageHref(pagination.page+1)}>Next</Link>}

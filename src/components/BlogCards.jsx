@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- Validated optional CMS media. */
 import { useCountryPath } from '@/components/country/CountryProvider';
 
+import BlogStatus from "./about/newsroom/blog/BlogStatus";
 import { useEffect, useRef, useState } from "react";
 
 export default function BlogCards({ posts, unavailable }) {
@@ -52,8 +53,8 @@ export default function BlogCards({ posts, unavailable }) {
         </div>
 
         {/* ── Two-column card row ── */}
-        {unavailable && <p role="status">Blog articles are temporarily unavailable.</p>}
-        {!unavailable && !posts.length && <p role="status">No published blog articles yet.</p>}
+        {unavailable && <BlogStatus kind="unavailable" compact showNewsroomLink={false} />}
+        {!unavailable && !posts.length && <BlogStatus kind="empty" compact showNewsroomLink={false} />}
         <div className="bs__row">
           {posts.map((post, i) => (
             <BlogCard key={i} post={post} delay={200 + i * 140} visible={visible} />

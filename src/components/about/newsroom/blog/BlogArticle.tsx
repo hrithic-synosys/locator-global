@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { contentHref, blogBase, blogHref } from "@/lib/cms-blog/urls";
 import RichText from "./RichText";
+import BlogStatus from "./BlogStatus";
 import { useEffect, useMemo, useState } from "react";
 import type { MouseEvent } from "react";
 import type {
@@ -471,10 +472,12 @@ function PreviewSidebar({
   toc,
   related,
   showThumbs,
+  unavailable,
 }: {
   toc: Array<{ id: string; label: string }>;
   related: RelatedArticle[];
   showThumbs: boolean;
+  unavailable: boolean;
 }) {
   const market = useContext(MarketContext);
   const [active, setActive] = useState(toc[0]?.id ?? "");
@@ -543,6 +546,7 @@ function PreviewSidebar({
             </ol>
           </nav>
         )}
+        {unavailable && <BlogStatus kind="unavailable" compact title="Related articles are unavailable" showNewsroomLink={false} />}
         {related.length > 0 && (
           <section className="ba-card ba-rel" aria-label="Related articles">
             <div className="ba-rel-head">
@@ -595,6 +599,7 @@ type PreviewProps = {
   author?: ArticleAuthor | null;
   summary?: ArticleSummary | null;
   relatedArticles?: RelatedArticle[];
+  relatedUnavailable?: boolean;
   categoryName?: string;
   publishedAt?: string | null;
   readingMinutes?: number;
@@ -611,6 +616,7 @@ export default function BlogArticle({
   author,
   summary,
   relatedArticles = [],
+  relatedUnavailable = false,
   categoryName,
   publishedAt,
   readingMinutes,
@@ -748,6 +754,7 @@ export default function BlogArticle({
           toc={toc}
           related={relatedArticles}
           showThumbs={Boolean(banner)}
+          unavailable={relatedUnavailable}
         />
       </div>
     </article></MarketContext.Provider>

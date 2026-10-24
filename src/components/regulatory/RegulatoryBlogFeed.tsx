@@ -2,6 +2,7 @@ import type { CountryCode } from '@/config/countries'
 /* eslint-disable @next/next/no-img-element -- Validated CMS media is served directly as in the CMS preview. */
 import Link from 'next/link'
 import { blogBase, blogHref } from '@/lib/cms-blog/urls'
+import BlogStatus from '@/components/about/newsroom/blog/BlogStatus'
 import { teaserBlogs, teaserCard } from '@/lib/cms-blog/teasers'
 
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -11,9 +12,9 @@ export default async function RegulatoryBlogFeed({ market, tag, limit = 2 }: { m
   void tag // Legacy display labels are not CMS tag slugs.
   const result = await teaserBlogs(market, limit)
   const posts = result.items.map(teaserCard)
-  if (result.unavailable) return <p role="status">Blog articles are temporarily unavailable. <Link href={blogBase(market)}>Try the blog</Link>.</p>
+  if (result.unavailable) return <div style={{maxWidth:1180,margin:"0 auto",padding:"32px 28px"}}><BlogStatus kind="unavailable" compact /></div>
 
-  if (!posts.length) return <p role="status">No published blog articles yet.</p>
+  if (!posts.length) return <div style={{maxWidth:1180,margin:"0 auto",padding:"32px 28px"}}><BlogStatus kind="empty" compact /></div>
 
   return (
     <>

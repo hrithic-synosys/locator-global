@@ -18,7 +18,10 @@ const blog = (m) => prefix(m) + "/about/newsroom/blog";
 const calls = [];
 let emptyMarket = "",
   failMarket = "",
-  newPublished = false;
+  newPublished = false,
+  offlineMarket = "",
+  relatedFailMarket = "",
+  delayMarket = "";
 const card = (m, slug = "fixture-article", banner = f.image) => ({
   ...f.card(slug, banner),
   market: m,
@@ -41,6 +44,10 @@ const server = http.createServer((req, res) => {
   }
   const [, market, suffix] = match;
   calls.push({ market, suffix, query: u.search });
+  if (market === offlineMarket) {
+    req.socket.destroy();
+    return;
+  }
   let body;
   if (!suffix) {
     const page = Number(u.searchParams.get("page") || 1),
@@ -74,9 +81,12 @@ const server = http.createServer((req, res) => {
         ...(newPublished ? ["new-after-build"] : []),
       ].map((slug) => ({ market, slug, updatedAt: "2025-02-01T00:00:00Z" })),
     };
-  else if (suffix.endsWith("/related"))
-    body = { success: true, items: [card(market, "related", null)] };
-  else if (suffix === "/outage") {
+  else if (suffix.endsWith("/related")) {
+    if (relatedFailMarket === market) {
+      res.writeHead(503);
+      body = { success: false };
+    } else body = { success: true, items: [card(market, "related", null)] };
+  } else if (suffix === "/outage") {
     res.writeHead(503);
     body = { success: false };
   } else if (suffix === "/wrong-market")
@@ -98,7 +108,9 @@ const server = http.createServer((req, res) => {
       article: detail(market, slug, slug === "plain" ? null : f.image),
     };
   }
-  res.end(JSON.stringify(body));
+  if (delayMarket === market)
+    setTimeout(() => res.end(JSON.stringify(body)), 3000);
+  else res.end(JSON.stringify(body));
 });
 function reference() {
   const file =
@@ -143,6 +155,82 @@ async function run(origin) {
   const output = process.env.SCREENSHOT_DIR;
   if (output) fs.mkdirSync(output, { recursive: true });
   try {
+    if (process.env.CMS_TEST_DEV === "true") {
+      const context = await browser.newContext({
+        viewport: { width: 390, height: 900 },
+      });
+      await context.route("**/*", (route) =>
+        route.request().url().startsWith(origin)
+          ? route.continue()
+          : route.fulfill({ contentType: "text/plain", body: "" })
+      );
+      const page = await context.newPage();
+      const errors = [];
+      page.on("pageerror", (error) => errors.push(error.message));
+      page.on("console", (message) => {
+        if (
+          message.type() === "error" &&
+          /same key|Server Components render|hydration|CMS blog.*unavailable/i.test(
+            message.text()
+          )
+        )
+          errors.push(message.text());
+      });
+      offlineMarket = "qa";
+      await page.goto(origin + "/qa/about/newsroom", {
+        waitUntil: "domcontentloaded",
+      });
+      await page
+        .locator(".nvc-column--blogs")
+        .getByRole("heading", { name: "Articles are temporarily unavailable" })
+        .waitFor();
+      assert.equal(await page.locator(".nrh-title").count(), 1);
+      for (const route of [blog("qa"), blog("qa") + "/fixture-article"]) {
+        await page.goto(origin + route, { waitUntil: "domcontentloaded" });
+        await page
+          .getByRole("heading", {
+            name: "Articles are temporarily unavailable",
+          })
+          .waitFor();
+        assert.equal(await page.locator(".swn-root").count(), 1);
+        assert.equal(await page.locator("footer").count(), 1);
+      }
+      if (process.env.CMS_EXISTING_DEV_ORIGIN) {
+        assert.deepEqual(errors, []);
+        await context.close();
+        console.log(
+          JSON.stringify({
+            passed: true,
+            development: true,
+            existingServer: true,
+            offlineNewsroomIndexAndArticle: true,
+            unhandledErrors: errors,
+          })
+        );
+        return;
+      }
+      offlineMarket = "";
+      await page
+        .getByRole("button", { name: "Try again", exact: true })
+        .click();
+      await page.locator(".ba h1").waitFor();
+      assert.equal(
+        await page.locator(".ba h1").innerText(),
+        "qa article fixture-article"
+      );
+      assert.deepEqual(errors, []);
+      await context.close();
+      console.log(
+        JSON.stringify({
+          passed: true,
+          development: true,
+          offlineNewsroomIndexAndArticle: true,
+          retryRecovered: true,
+          unhandledErrors: errors,
+        })
+      );
+      return;
+    }
     for (const width of [1440, 390]) {
       const context = await browser.newContext({
         viewport: { width, height: 1000 },
@@ -217,21 +305,110 @@ async function run(origin) {
       emptyMarket = "om";
       await page.goto(origin + blog("om"), { waitUntil: "networkidle" });
       await page
-        .getByText("No published blog articles yet.", { exact: true })
+        .getByRole("heading", { name: "No articles yet", exact: true })
         .waitFor();
       emptyMarket = "";
       failMarket = "qa";
       await page.goto(origin + blog("qa"), { waitUntil: "networkidle" });
       await page
-        .getByRole("heading", { name: "Blog temporarily unavailable" })
+        .getByRole("heading", { name: "Articles are temporarily unavailable" })
         .waitFor();
       failMarket = "";
+      await page
+        .getByRole("button", { name: "Try again", exact: true })
+        .click();
+      await page.locator(".bl-lead").waitFor();
+      assert.equal(new URL(page.url()).pathname, blog("qa"));
+      offlineMarket = "qa";
+      await page.goto(origin + "/qa/about/newsroom", {
+        waitUntil: "networkidle",
+      });
+      assert.equal(await page.locator(".nrh-title").count(), 1);
+      assert.equal(await page.locator(".swn-root").count(), 1);
+      assert.equal(await page.locator("footer").count(), 1);
+      await page
+        .locator(".nvc-column--blogs")
+        .getByRole("heading", { name: "Articles are temporarily unavailable" })
+        .waitFor();
+      await page.getByRole("tab", { name: "Blog", exact: true }).click();
+      await page
+        .locator(".nrb")
+        .getByRole("heading", { name: "Articles are temporarily unavailable" })
+        .waitFor();
+      if (output)
+        await page.locator(".nvc-column--blogs").screenshot({
+          path: path.join(output, "cms-unavailable-" + width + ".png"),
+        });
+      offlineMarket = "";
+      await page
+        .locator(".nvc-column--blogs")
+        .getByRole("button", { name: "Try again" })
+        .click();
+      await page.locator(".nvc-blog-card").first().waitFor();
+      assert.equal(new URL(page.url()).pathname, "/qa/about/newsroom");
+      emptyMarket = "qa";
+      await page.goto(origin + "/qa/about/newsroom", {
+        waitUntil: "networkidle",
+      });
+      await page
+        .locator(".nvc-column--blogs")
+        .getByRole("heading", { name: "No articles yet" })
+        .waitFor();
+      assert.equal(
+        await page
+          .locator(".nvc-column--blogs")
+          .getByRole("button", { name: "Try again" })
+          .count(),
+        0
+      );
+      if (output)
+        await page.locator(".nvc-column--blogs").screenshot({
+          path: path.join(output, "cms-empty-" + width + ".png"),
+        });
+      emptyMarket = "";
+      delayMarket = "qa";
+      await page.goto(origin + "/qa/about/newsroom", { waitUntil: "commit" });
+      await page.locator(".nrh-title").waitFor();
+      await page.locator(".cms-blog-skeleton").waitFor();
+      assert.equal(await page.locator(".swn-root").count(), 1);
+      if (output)
+        await page.screenshot({
+          path: path.join(output, "cms-newsroom-loading-" + width + ".png"),
+          fullPage: false,
+        });
+      await page.locator(".nvc-blog-card").first().waitFor();
+      await page.goto(origin + blog("qa"), { waitUntil: "commit" });
+      await page.locator(".cms-blog-skeleton").waitFor();
+      assert.equal(await page.locator(".swn-root").count(), 1);
+      if (output)
+        await page.screenshot({
+          path: path.join(output, "cms-blog-loading-" + width + ".png"),
+          fullPage: false,
+        });
+      await page.locator(".bl-lead").waitFor();
+      delayMarket = "";
+      relatedFailMarket = "qa";
+      await page.goto(origin + blog("qa") + "/fixture-article", {
+        waitUntil: "networkidle",
+      });
+      await page.locator(".ba h1").waitFor();
+      await page
+        .getByRole("heading", { name: "Related articles are unavailable" })
+        .waitFor();
+      relatedFailMarket = "";
+      await page
+        .locator(".ba-side")
+        .getByRole("button", { name: "Try again" })
+        .click();
+      await page.locator(".ba-rel-item").waitFor();
       for (const slug of ["wrong-market", "outage"]) {
         await page.goto(origin + blog("qa") + "/" + slug, {
           waitUntil: "networkidle",
         });
         await page
-          .getByRole("heading", { name: "Blog temporarily unavailable" })
+          .getByRole("heading", {
+            name: "Articles are temporarily unavailable",
+          })
           .waitFor();
       }
       newPublished = true;
@@ -288,11 +465,9 @@ async function run(origin) {
         await document.fonts.ready;
       });
       if (output)
-        await page
-          .locator(".ba")
-          .screenshot({
-            path: path.join(output, "cms-global-article-" + width + ".png"),
-          });
+        await page.locator(".ba").screenshot({
+          path: path.join(output, "cms-global-article-" + width + ".png"),
+        });
       const Reference = reference();
       if (Reference) {
         const metrics = () =>
@@ -358,11 +533,9 @@ async function run(origin) {
           "CMS preview layout differs by " + maxDelta + "px at " + width + "px"
         );
         if (output)
-          await page
-            .locator(".ba")
-            .screenshot({
-              path: path.join(output, "cms-global-reference-" + width + ".png"),
-            });
+          await page.locator(".ba").screenshot({
+            path: path.join(output, "cms-global-reference-" + width + ".png"),
+          });
         results.push({
           width,
           referenceBlocks: actual.length,
@@ -408,55 +581,66 @@ async function run(origin) {
     await browser.close();
   }
 }
-server.listen(0, "127.0.0.1", () => {
-  const port = 35000 + Math.floor(Math.random() * 5000),
-    api = "http://127.0.0.1:" + server.address().port + "/api/v1";
-  const child = spawn(
-    process.execPath,
-    ["node_modules/next/dist/bin/next", "start", "-p", String(port)],
-    {
-      env: {
-        ...process.env,
-        CMS_API_BASE_URL: api,
-        NEXT_PUBLIC_SITE_URL: "https://locatorglobal.com",
-        TURNSTILE_SECRET_KEY: "",
-      },
-      windowsHide: true,
-      stdio: ["ignore", "pipe", "pipe"],
-    }
-  );
-  let started = false;
-  const timeout = setTimeout(() => {
-    console.error("Start timeout");
-    child.kill();
-    server.close();
+if (process.env.CMS_EXISTING_DEV_ORIGIN) {
+  run(process.env.CMS_EXISTING_DEV_ORIGIN).catch((error) => {
+    console.error(error);
     process.exitCode = 1;
-  }, 60000);
-  child.stdout.on("data", async (chunk) => {
-    if (!started && chunk.toString().includes("Ready")) {
-      started = true;
-      clearTimeout(timeout);
-      try {
-        await run("http://127.0.0.1:" + port);
-      } catch (e) {
-        console.error(e);
-        process.exitCode = 1;
-      } finally {
-        child.kill();
-        server.close();
+  });
+} else
+  server.listen(0, "127.0.0.1", () => {
+    const port = 35000 + Math.floor(Math.random() * 5000),
+      api = "http://127.0.0.1:" + server.address().port + "/api/v1";
+    const child = spawn(
+      process.execPath,
+      [
+        "node_modules/next/dist/bin/next",
+        process.env.CMS_TEST_DEV === "true" ? "dev" : "start",
+        "-p",
+        String(port),
+      ],
+      {
+        env: {
+          ...process.env,
+          CMS_API_BASE_URL: api,
+          NEXT_PUBLIC_SITE_URL: "https://locatorglobal.com",
+          TURNSTILE_SECRET_KEY: "",
+        },
+        windowsHide: true,
+        stdio: ["ignore", "pipe", "pipe"],
       }
-    }
-  });
-  child.stderr.on("data", (chunk) => {
-    const text = chunk.toString();
-    if (!/CMS blog|digest|at |\}/.test(text)) process.stderr.write(text);
-  });
-  child.on("exit", (code) => {
-    if (!started) {
-      clearTimeout(timeout);
-      console.error("Next server exited before startup", code);
+    );
+    let started = false;
+    const timeout = setTimeout(() => {
+      console.error("Start timeout");
+      child.kill();
       server.close();
       process.exitCode = 1;
-    }
+    }, 60000);
+    child.stdout.on("data", async (chunk) => {
+      if (!started && chunk.toString().includes("Ready")) {
+        started = true;
+        clearTimeout(timeout);
+        try {
+          await run("http://127.0.0.1:" + port);
+        } catch (e) {
+          console.error(e);
+          process.exitCode = 1;
+        } finally {
+          child.kill();
+          server.close();
+        }
+      }
+    });
+    child.stderr.on("data", (chunk) => {
+      const text = chunk.toString();
+      if (!/CMS blog|digest|at |\}/.test(text)) process.stderr.write(text);
+    });
+    child.on("exit", (code) => {
+      if (!started) {
+        clearTimeout(timeout);
+        console.error("Next server exited before startup", code);
+        server.close();
+        process.exitCode = 1;
+      }
+    });
   });
-});

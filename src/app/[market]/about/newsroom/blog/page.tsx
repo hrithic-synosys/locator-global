@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { countries, type CountryCode } from "@/config/countries";
 import { marketMetadata } from "@/lib/country/metadata";
 import { countryPath } from "@/lib/country/paths";
-import { listBlogs } from "@/lib/cms-blog/client";
+import { loadBlogFeed } from "@/lib/cms-blog/availability";
+import BlogStatus from "@/components/about/newsroom/blog/BlogStatus";
 import {
   assertMarket,
   blogBase,
@@ -15,11 +16,7 @@ import {
 import { absoluteImage } from "@/lib/cms-blog/seo";
 import { siteConfig, siteUrl } from "@/config/site";
 import ScrollReveal from "@/components/software/ScrollReveal";
-import SoftwareNavbar from "@/components/software/SoftwareNavbar";
 import BlogListing from "@/components/about/newsroom/blog/BlogListing";
-import NewsroomSubscribe from "@/components/about/newsroom/NewsroomSubscribe";
-import AboutPillarNav from "@/components/about/AboutPillarNav";
-import Footer from "@/components/layouts/Footer";
 export const dynamic = "force-dynamic";
 const TITLE = "Locator Blog | Fleet Tracking & GPS Solutions";
 const DESCRIPTION =
@@ -57,8 +54,19 @@ export async function generateMetadata({
     "/about/newsroom/blog"
   );
   const url = siteUrl + blogPageHref(market, filters, filters.page);
+  const result = await loadBlogFeed(
+    market,
+    filters.page,
+    12,
+    filters.q,
+    filters.tag,
+    filters.featured
+  );
   return {
     ...metadata,
+    ...(result.state === "unavailable"
+      ? { robots: { index: false, follow: true } }
+      : {}),
     alternates: { canonical: url, languages: undefined },
     openGraph: { ...metadata.openGraph, url },
   };
@@ -67,7 +75,7 @@ export default async function BlogIndexPage({ params, searchParams }: Props) {
   const { market } = await params;
   assertMarket(market);
   const filters = readBlogFilters(await searchParams);
-  const result = await listBlogs(
+  const result = await loadBlogFeed(
     market,
     filters.page,
     12,
@@ -75,6 +83,18 @@ export default async function BlogIndexPage({ params, searchParams }: Props) {
     filters.tag,
     filters.featured
   );
+  if (result.state === "unavailable")
+    return (
+      <main
+        style={{
+          minHeight: "60vh",
+          background: "#fff",
+          padding: "clamp(36px,6vw,80px) 24px",
+        }}
+      >
+        <BlogStatus kind="unavailable" headingLevel="h1" />
+      </main>
+    );
   const url = siteUrl + blogPageHref(market, filters, filters.page);
   const jsonLd = {
     "@context": "https://schema.org",
@@ -117,16 +137,12 @@ export default async function BlogIndexPage({ params, searchParams }: Props) {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <ScrollReveal />
-      <SoftwareNavbar />
       <BlogListing
         market={market}
         posts={result.items}
         pagination={result.pagination}
         filters={filters}
       />
-      <NewsroomSubscribe />
-      <AboutPillarNav current="newsroom" />
-      <Footer />
     </main>
   );
 }
