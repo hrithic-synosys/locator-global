@@ -1,0 +1,15 @@
+{
+  "entries": [
+    {
+      "articleId": "000000000000000000000003",
+      "httpStatus": 410,
+      "reason": "withdrawn",
+      "removedAt": "2026-01-02T00:00:00.000Z",
+      "slug": "shared-slug"
+    }
+  ],
+  "market": "sa",
+  "releaseId": "r000000000002-fixture-sa-two",
+  "revision": 2,
+  "schemaVersion": 1
+}

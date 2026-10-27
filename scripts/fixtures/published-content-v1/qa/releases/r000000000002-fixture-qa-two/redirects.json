@@ -1,0 +1,15 @@
+{
+  "entries": [
+    {
+      "articleId": "000000000000000000000004",
+      "from": "shared-slug",
+      "httpStatus": 308,
+      "publicUrl": "https://locatorglobal.com/qa/about/newsroom/blog/new-slug",
+      "to": "new-slug"
+    }
+  ],
+  "market": "qa",
+  "releaseId": "r000000000002-fixture-qa-two",
+  "revision": 2,
+  "schemaVersion": 1
+}

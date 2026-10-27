@@ -14,7 +14,7 @@ export default async function NewsroomFeed({
   page: number;
 }) {
   const result = await loadBlogFeed(market, page, 3);
-  const unavailable = result.state === "unavailable";
+  const unavailable = result.state === "unavailable" && !result.notInitialized;
   const blogs = result.state === "ready" ? result.items.map(newsroomCard) : [];
   return (
     <>

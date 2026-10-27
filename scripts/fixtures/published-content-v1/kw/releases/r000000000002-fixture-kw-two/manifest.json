@@ -1,0 +1,24 @@
+{
+  "articleCount": 1,
+  "files": {
+    "articles/000000000000000000000005.json": "9681d7b38cca6399e9085110355e2d929281ace8bc5181c616c44b16c48ae698",
+    "catalogue.json": "6bebc812f64cf5261d381138b27764a581a8104e3e8f78e415c6355c96740795",
+    "redirects.json": "2edc44ae4c0975bb50c83099ef8c475a3c6ab3f301e47db73208583863e748d6",
+    "removals.json": "2edc44ae4c0975bb50c83099ef8c475a3c6ab3f301e47db73208583863e748d6"
+  },
+  "generatedAt": "2026-01-02T00:00:00.000Z",
+  "market": "kw",
+  "media": [
+    {
+      "bytes": 68,
+      "mime": "image/png",
+      "path": "published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "sha256": "8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd",
+      "url": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png"
+    }
+  ],
+  "releaseId": "r000000000002-fixture-kw-two",
+  "revision": 2,
+  "schemaVersion": 1,
+  "sourceHash": "d45cfbf2b8ff794e9ba742578bb36ecc3a7f55e050d0d50c543c65d824100e0e"
+}

@@ -1,0 +1,8 @@
+{
+  "activatedAt": "2026-01-02T00:00:00.000Z",
+  "manifestSha256": "f4545847d652a6ddebb0ca1847f4ea3afdceacff7031f301e4dda9eea6546637",
+  "market": "qa",
+  "releaseId": "r000000000002-fixture-qa-two",
+  "revision": 2,
+  "schemaVersion": 1
+}

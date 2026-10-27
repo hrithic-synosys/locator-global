@@ -1,0 +1,3 @@
+# CMS fixture checksums cover raw bytes. Do not convert JSON to CRLF on checkout.
+scripts/fixtures/published-content-v1/** -text
+src/lib/cms-blog/publication/schema-v1.json -text

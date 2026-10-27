@@ -1,0 +1,137 @@
+{
+  "generatedAt": "2026-01-02T00:00:00.000Z",
+  "items": [
+    {
+      "card": {
+        "banner": {
+          "alt": "Synthetic one-pixel image",
+          "caption": "Synthetic caption",
+          "height": 1,
+          "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+          "width": 1
+        },
+        "category": {
+          "allowedFormats": [
+            "article"
+          ],
+          "description": null,
+          "id": "111111111111111111111111",
+          "name": "Blog",
+          "slug": "blog",
+          "sortOrder": 0
+        },
+        "date": "2025-01-01",
+        "dateLabel": "January 1, 2025",
+        "description": "Synthetic description",
+        "excerpt": "Synthetic fixture, not real editorial content",
+        "format": "article",
+        "hero": {
+          "alt": "Synthetic one-pixel image",
+          "caption": "Synthetic caption",
+          "height": 1,
+          "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+          "width": 1
+        },
+        "id": "000000000000000000000001",
+        "keywords": [
+          "synthetic"
+        ],
+        "legacyUrl": "",
+        "market": "ae",
+        "publishedAt": "2025-01-01T00:00:00.000Z",
+        "readingMinutes": 2,
+        "seoTitle": "Synthetic SEO",
+        "slug": "shared-slug",
+        "sourceOutlet": null,
+        "sourceUrl": null,
+        "tag": "Blog",
+        "tags": [
+          {
+            "id": "222222222222222222222222",
+            "name": "Fleet",
+            "slug": "fleet"
+          }
+        ],
+        "title": "Synthetic ae article",
+        "videoUrl": null,
+        "webinar": null
+      },
+      "editorialRevision": "733c3daa17019c424ac8c2ce7a54a032a0264a12a7823d68f088e91923453a14",
+      "featured": true,
+      "id": "000000000000000000000001",
+      "modifiedAt": "2025-01-02T00:00:00.000Z",
+      "publicUrl": "https://locator.ae/about/newsroom/blog/shared-slug",
+      "relatedIds": [
+        "000000000000000000000010"
+      ],
+      "slug": "shared-slug"
+    },
+    {
+      "card": {
+        "banner": {
+          "alt": "Synthetic one-pixel image",
+          "caption": "Synthetic caption",
+          "height": 1,
+          "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+          "width": 1
+        },
+        "category": {
+          "allowedFormats": [
+            "article"
+          ],
+          "description": null,
+          "id": "111111111111111111111111",
+          "name": "Blog",
+          "slug": "blog",
+          "sortOrder": 0
+        },
+        "date": "2025-01-01",
+        "dateLabel": "January 1, 2025",
+        "description": "Synthetic description",
+        "excerpt": "Synthetic fixture, not real editorial content",
+        "format": "article",
+        "hero": {
+          "alt": "Synthetic one-pixel image",
+          "caption": "Synthetic caption",
+          "height": 1,
+          "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+          "width": 1
+        },
+        "id": "000000000000000000000010",
+        "keywords": [
+          "synthetic"
+        ],
+        "legacyUrl": "",
+        "market": "ae",
+        "publishedAt": "2025-01-01T00:00:00.000Z",
+        "readingMinutes": 2,
+        "seoTitle": "Synthetic SEO",
+        "slug": "related",
+        "sourceOutlet": null,
+        "sourceUrl": null,
+        "tag": "Blog",
+        "tags": [
+          {
+            "id": "222222222222222222222222",
+            "name": "Fleet",
+            "slug": "fleet"
+          }
+        ],
+        "title": "Synthetic ae article",
+        "videoUrl": null,
+        "webinar": null
+      },
+      "editorialRevision": "bf4e565727f373310bf5d99fcc64833fad6e6fdfa7a2bd012dac04049743d8b4",
+      "featured": true,
+      "id": "000000000000000000000010",
+      "modifiedAt": "2025-01-02T00:00:00.000Z",
+      "publicUrl": "https://locator.ae/about/newsroom/blog/related",
+      "relatedIds": [],
+      "slug": "related"
+    }
+  ],
+  "market": "ae",
+  "releaseId": "r000000000002-fixture-ae-two",
+  "revision": 2,
+  "schemaVersion": 1
+}

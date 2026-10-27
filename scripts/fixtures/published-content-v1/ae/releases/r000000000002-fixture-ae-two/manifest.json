@@ -1,0 +1,25 @@
+{
+  "articleCount": 2,
+  "files": {
+    "articles/000000000000000000000001.json": "0d50d12be8bbd0284ab708d2d62463e108f4f77f5a61363ae0a715afbea5eed0",
+    "articles/000000000000000000000010.json": "ec646c2622a6ea359e829a69e20a283949bc8d8f77083fb5dae25bc8941aca22",
+    "catalogue.json": "ab46572c701463687a069db365ebf2779d6abd925e7a33e0fdf5e061a6fcc7e6",
+    "redirects.json": "4ac9c0838750f672de3e5fd36a4eb40f2ad38b741b74e2b4272ea040b7d27d49",
+    "removals.json": "4ac9c0838750f672de3e5fd36a4eb40f2ad38b741b74e2b4272ea040b7d27d49"
+  },
+  "generatedAt": "2026-01-02T00:00:00.000Z",
+  "market": "ae",
+  "media": [
+    {
+      "bytes": 68,
+      "mime": "image/png",
+      "path": "published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "sha256": "8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd",
+      "url": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png"
+    }
+  ],
+  "releaseId": "r000000000002-fixture-ae-two",
+  "revision": 2,
+  "schemaVersion": 1,
+  "sourceHash": "c3db5f5d2036db95974492f54908ab7beae31f85170f98478677c8f0aa15bc3e"
+}

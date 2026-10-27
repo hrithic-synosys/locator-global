@@ -1,0 +1,60 @@
+{
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "items": [
+    {
+      "card": {
+        "banner": null,
+        "category": {
+          "allowedFormats": [
+            "article"
+          ],
+          "description": null,
+          "id": "111111111111111111111111",
+          "name": "Blog",
+          "slug": "blog",
+          "sortOrder": 0
+        },
+        "date": "2025-01-01",
+        "dateLabel": "January 1, 2025",
+        "description": "Synthetic description",
+        "excerpt": "Synthetic fixture, not real editorial content",
+        "format": "article",
+        "hero": null,
+        "id": "000000000000000000000002",
+        "keywords": [
+          "synthetic"
+        ],
+        "legacyUrl": "",
+        "market": "global",
+        "publishedAt": "2025-01-01T00:00:00.000Z",
+        "readingMinutes": 2,
+        "seoTitle": "Synthetic SEO",
+        "slug": "shared-slug",
+        "sourceOutlet": null,
+        "sourceUrl": null,
+        "tag": "Blog",
+        "tags": [
+          {
+            "id": "222222222222222222222222",
+            "name": "Fleet",
+            "slug": "fleet"
+          }
+        ],
+        "title": "Synthetic global article",
+        "videoUrl": null,
+        "webinar": null
+      },
+      "editorialRevision": "85bda4ce12ac02b62f111b11d261e867e0ca91dbefb179078ad9388850570ff5",
+      "featured": true,
+      "id": "000000000000000000000002",
+      "modifiedAt": "2025-01-02T00:00:00.000Z",
+      "publicUrl": "https://locatorglobal.com/about/newsroom/blog/shared-slug",
+      "relatedIds": [],
+      "slug": "shared-slug"
+    }
+  ],
+  "market": "global",
+  "releaseId": "r000000000001-fixture-global-one",
+  "revision": 1,
+  "schemaVersion": 1
+}

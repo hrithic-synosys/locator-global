@@ -1,0 +1,24 @@
+{
+  "articleCount": 1,
+  "files": {
+    "articles/000000000000000000000002.json": "f7c42258cbdf107d5a8612291b9efa06886e7a022dc1534da9463e939bfe6efe",
+    "catalogue.json": "9183ca10314384479993143ca2f37336fec1c0dac00fcf43610d4bf7dafe1da0",
+    "redirects.json": "22053e59ba8cf96b1f7309b5bc4510f6387a5e0799bd1ba7f1ccbff9f3fe61e1",
+    "removals.json": "22053e59ba8cf96b1f7309b5bc4510f6387a5e0799bd1ba7f1ccbff9f3fe61e1"
+  },
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "market": "global",
+  "media": [
+    {
+      "bytes": 68,
+      "mime": "image/png",
+      "path": "published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "sha256": "8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd",
+      "url": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png"
+    }
+  ],
+  "releaseId": "r000000000001-fixture-global-one",
+  "revision": 1,
+  "schemaVersion": 1,
+  "sourceHash": "950532379b583437a80f12076ee077ad87a2ac9ffd619ccd31bc2bf50764e911"
+}

@@ -1,0 +1,24 @@
+{
+  "articleCount": 1,
+  "files": {
+    "articles/000000000000000000000005.json": "c325ada3eec919d44b2d08c282797351b50d2fd3178a8f113f322d7e915213e7",
+    "catalogue.json": "ecaabffca5562f7ff396c1fba2a72fb05cd0e8a264bd92f59caaa4a7d77f6c9c",
+    "redirects.json": "5d8be58a6dfefc97bf4d688ec3414788accc5f9fc7650928c1c88c6119b09e17",
+    "removals.json": "5d8be58a6dfefc97bf4d688ec3414788accc5f9fc7650928c1c88c6119b09e17"
+  },
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "market": "kw",
+  "media": [
+    {
+      "bytes": 68,
+      "mime": "image/png",
+      "path": "published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "sha256": "8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd",
+      "url": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png"
+    }
+  ],
+  "releaseId": "r000000000001-fixture-kw-one",
+  "revision": 1,
+  "schemaVersion": 1,
+  "sourceHash": "d45cfbf2b8ff794e9ba742578bb36ecc3a7f55e050d0d50c543c65d824100e0e"
+}

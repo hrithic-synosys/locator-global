@@ -1,0 +1,24 @@
+{
+  "articleCount": 1,
+  "files": {
+    "articles/000000000000000000000004.json": "fe99547d187a7aeeb4332770bf2de3ebfcc0a4753ee4d63b5f0e1e33cf8913f2",
+    "catalogue.json": "12a470a8c452726378ec29b08a73d2f8c3836b8f38b76bfa620cd3cadc079291",
+    "redirects.json": "efaaea154889e4c6c3ee03e2fdc56a961fe05e1b96ceca725381d95896b94e95",
+    "removals.json": "79f29d64be2c4ad52f15ce509b724cee7f2f5568051edfa66b032344052d3db1"
+  },
+  "generatedAt": "2026-01-02T00:00:00.000Z",
+  "market": "qa",
+  "media": [
+    {
+      "bytes": 68,
+      "mime": "image/png",
+      "path": "published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "sha256": "8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd",
+      "url": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png"
+    }
+  ],
+  "releaseId": "r000000000002-fixture-qa-two",
+  "revision": 2,
+  "schemaVersion": 1,
+  "sourceHash": "01a69e49d4ab50e62b3e6850d6809638891b25323188c80344660507aae1f103"
+}

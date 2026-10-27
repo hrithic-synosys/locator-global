@@ -4,6 +4,13 @@ import { connection } from "next/server";
 import type { CountryCode } from "../../config/countries";
 import { assertMarket } from "./urls";
 import { parseCards, parseDetail, parseList, parseSlugs } from "./validation";
+import { blogContentSource } from "./source";
+import { siteUrl } from "../../config/site";
+
+async function stored(market: CountryCode) {
+  assertMarket(market);
+  return (await import("./publication/request")).publishedRelease(market);
+}
 
 export class CmsRequestError extends Error {
   constructor(public readonly status?: number) {
@@ -87,6 +94,7 @@ export const listBlogs = cache(
     tag = "",
     featured?: boolean
   ) => {
+    assertMarket(market);
     bounded(page, Number.MAX_SAFE_INTEGER);
     bounded(limit, 50);
     if (
@@ -97,6 +105,11 @@ export const listBlogs = cache(
       (featured !== undefined && typeof featured !== "boolean")
     )
       throw new CmsRequestError(400);
+    if (blogContentSource() === "published") {
+      const release = await stored(market);
+      const result = release.list({ page, limit, q, tag, featured });
+      return parseList({ success: true, ...result }, siteUrl, market);
+    }
     const query: Record<string, string> = {
       page: String(page),
       limit: String(limit),
@@ -112,6 +125,18 @@ export const listBlogs = cache(
   }
 );
 export const getBlog = cache(async (market: CountryCode, slug: string) => {
+  assertMarket(market);
+  articleSegment(slug);
+  if (blogContentSource() === "published") {
+    const result = (await stored(market)).lookup(slug);
+    return result.status === 200
+      ? parseDetail(
+          { success: true, article: result.value.article },
+          siteUrl,
+          market
+        )
+      : null; // Proxy owns exact 308/410/404 HTTP responses before streaming.
+  }
   const r = await request(market, `/${articleSegment(slug)}`, {}, true);
   const article = r.data === null ? null : parseDetail(r.data, r.base, market);
   if (article && article.slug !== slug) throw new CmsRequestError();
@@ -119,7 +144,19 @@ export const getBlog = cache(async (market: CountryCode, slug: string) => {
 });
 export const getFeaturedBlogs = cache(
   async (market: CountryCode, limit = 6) => {
+    assertMarket(market);
     bounded(limit, 50);
+    if (blogContentSource() === "published") {
+      const items = (await stored(market)).list({
+        featured: true,
+        limit,
+      }).items;
+      return parseCards(
+        { success: true, items },
+        siteUrl,
+        market
+      ) as import("./types").CmsCard[];
+    }
     const r = await request(market, "/featured", { limit: String(limit) });
     const items = parseCards(r.data, r.base, market);
     if (items.length > limit) throw new CmsRequestError();
@@ -127,12 +164,21 @@ export const getFeaturedBlogs = cache(
   }
 );
 export const getBlogSlugs = cache(async (market: CountryCode) => {
+  assertMarket(market);
+  if (blogContentSource() === "published")
+    return (await stored(market)).slugs();
   const r = await request(market, "/slugs");
   return parseSlugs(r.data, market);
 });
 export const getRelatedBlogs = cache(
   async (market: CountryCode, slug: string, limit = 3) => {
+    assertMarket(market);
     bounded(limit, 12);
+    articleSegment(slug);
+    if (blogContentSource() === "published") {
+      const items = (await stored(market)).related(slug, limit);
+      return parseCards({ success: true, items }, siteUrl, market, true);
+    }
     const r = await request(
       market,
       `/${articleSegment(slug)}/related`,

@@ -1,0 +1,15 @@
+{
+  "articleCount": 0,
+  "files": {
+    "catalogue.json": "5f08291b1fcca875b69fc4c5dec510112399a1c6dfd84361bf8589c64fd855f0",
+    "redirects.json": "1d861eba71ae446dae66a3a44e3aaba62323b49d601caca69c7e1b310a78d5b1",
+    "removals.json": "28fc1a767f11bc5c351c2fdab575bc9a97831b5a5bb42c3b688ab8a8e9c4c714"
+  },
+  "generatedAt": "2026-01-02T00:00:00.000Z",
+  "market": "sa",
+  "media": [],
+  "releaseId": "r000000000002-fixture-sa-two",
+  "revision": 2,
+  "schemaVersion": 1,
+  "sourceHash": "2b5a1431c30be7f35dfe33aba34e8d770fa5bd62ee878b7645c4131721efdeca"
+}

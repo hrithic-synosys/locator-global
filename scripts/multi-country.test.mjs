@@ -15,12 +15,13 @@ function load(filename) {
   const exports = {};
   cache.set(file, exports);
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
   }).outputText;
-  vm.runInNewContext(code, { exports, URL, process: testProcess, require: id => {
+  vm.runInNewContext(code, { exports, URL, Headers, Buffer, console, process: testProcess, require: id => {
     if (id === '@/lib/cms-blog/client') return { getBlogSlugs: async () => [] };
     if (id.startsWith('.') || id.startsWith('@/')) {
       const target = id.startsWith('@/') ? path.resolve('src', id.slice(2)) : path.resolve(path.dirname(file), id);
+      if (target.endsWith('.json')) return JSON.parse(fs.readFileSync(target, 'utf8'));
       return load(`${target}.ts`);
     }
     return nodeRequire(id);
@@ -110,16 +111,16 @@ test('metadata preserves copy, scopes canonical/OG, defaults to noindex and emit
   testProcess.env.SITE_ENV = 'development';
 });
 
-test('proxy rewrites only global page URLs and preserves queries; API/assets stay at root', () => {
+test('proxy rewrites only global page URLs and preserves queries; API/assets stay at root', async () => {
   const { proxy } = load('src/proxy.ts');
   const { NextRequest } = nodeRequire('next/server');
-  const response = proxy(new NextRequest('https://locatorglobal.com/contact?campaign=one'));
+  const response = await proxy(new NextRequest('https://locatorglobal.com/contact?campaign=one'));
   assert.equal(response.headers.get('x-middleware-rewrite'), 'https://locatorglobal.com/global/contact?campaign=one');
   assert.equal(response.headers.get('x-robots-tag'), 'noindex, follow');
   for (const route of ['/qa/contact', '/api/contact', '/_next/image', '/flags/qatar.svg', '/sitemap.xml']) {
-    assert.equal(proxy(new NextRequest(`https://locatorglobal.com${route}`)).headers.get('x-middleware-rewrite'), null);
+    assert.equal((await proxy(new NextRequest(`https://locatorglobal.com${route}`))).headers.get('x-middleware-rewrite'), null);
   }
-  assert.equal(proxy(new NextRequest('https://locatorglobal.com/global/contact')).headers.get('x-middleware-rewrite'), 'https://locatorglobal.com/global/__unavailable__');
+  assert.equal((await proxy(new NextRequest('https://locatorglobal.com/global/contact'))).headers.get('x-middleware-rewrite'), 'https://locatorglobal.com/global/__unavailable__');
 });
 
 test('sitemap and robots advertise only explicitly ready real market pages', async () => {
@@ -159,7 +160,7 @@ test('global regulatory navigation is one link; all countries temporarily share 
   }
 });
 
-test('removing a Qatar entry blocks its route and leaves every other market unchanged', () => {
+test('removing a Qatar entry blocks its route and leaves every other market unchanged', async () => {
   const { regulatoryNavigation, isRegulatoryPageAvailable } = load('src/config/regulatory.ts');
   const { requireRegulatoryPage } = load('src/lib/country/regulatory.ts');
   const { proxy } = load('src/proxy.ts');
@@ -169,7 +170,7 @@ test('removing a Qatar entry blocks its route and leaves every other market unch
     regulatoryNavigation.qa = { ...original, items: original.items.filter(item => item.id !== 'shahin') };
     assert.equal(isRegulatoryPageAvailable('qa', '/shahin'), false);
     assert.throws(() => requireRegulatoryPage('qa', '/shahin'), error => error.digest?.includes('404'));
-    assert.equal(proxy(new NextRequest('https://locatorglobal.com/qa/shahin')).headers.get('x-middleware-rewrite'), 'https://locatorglobal.com/qa/__unavailable__');
+    assert.equal((await proxy(new NextRequest('https://locatorglobal.com/qa/shahin'))).headers.get('x-middleware-rewrite'), 'https://locatorglobal.com/qa/__unavailable__');
     for (const code of ['kw', 'om', 'sa']) assert.equal(isRegulatoryPageAvailable(code, '/shahin'), true);
     assert.equal(isRegulatoryPageAvailable('global', '/shahin'), false);
   } finally { regulatoryNavigation.qa = original; }

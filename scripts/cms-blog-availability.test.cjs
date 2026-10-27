@@ -111,6 +111,26 @@ test("article outages render a retry card and no article JSON-LD; metadata is no
   );
 });
 
+test("a missing recommendation endpoint cannot remove a successfully loaded article", async () => {
+  const l = loader({
+    fetchImpl: async (url) =>
+      url.pathname.endsWith("/related")
+        ? new Response("", { status: 404 })
+        : Response.json({
+            success: true,
+            article: { ...fixture.detail("example"), market: "qa" },
+          }),
+  });
+  const route = l.load("src/app/[market]/about/newsroom/blog/[slug]/page.tsx");
+  const html = renderToStaticMarkup(
+    await route.default({
+      params: Promise.resolve({ market: "qa", slug: "example" }),
+    })
+  );
+  assert.ok(html.includes("Fixture article example"));
+  assert.ok(html.includes("Related articles are unavailable"));
+});
+
 test("empty and loading UI are accessible styled states rather than page-wide loading text", () => {
   const l = loader();
   const State = l.load(

@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import type { CountryCode } from "../../config/countries";
 import { assertMarket } from "./urls";
 import { getBlog, getRelatedBlogs, listBlogs } from "./client";
+import { PublicationUnavailable } from "./publication/errors";
 
 // Recover expected delivery failures at the presentation boundary. The strict
 // API client still distinguishes outages, invalid payloads and genuine absence.
@@ -22,8 +23,13 @@ export const loadBlogFeed = cache(
     try {
       const result = await listBlogs(market, page, limit, q, tag, featured);
       return { state: "ready" as const, ...result };
-    } catch {
-      return { state: "unavailable" as const };
+    } catch (error) {
+      return {
+        state: "unavailable" as const,
+        notInitialized:
+          error instanceof PublicationUnavailable &&
+          error.reason === "not-initialized",
+      };
     }
   }
 );

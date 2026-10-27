@@ -1,0 +1,15 @@
+{
+  "articleCount": 0,
+  "files": {
+    "catalogue.json": "f4287b8a011c037d3f2dbec0f3470322fec978204123427102395b472b707c06",
+    "redirects.json": "0a90551e0367bf91388c59ba4e03438a7da4bc5bece467dc2e6828d0c615ac77",
+    "removals.json": "0a90551e0367bf91388c59ba4e03438a7da4bc5bece467dc2e6828d0c615ac77"
+  },
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "market": "om",
+  "media": [],
+  "releaseId": "r000000000001-fixture-om-one",
+  "revision": 1,
+  "schemaVersion": 1,
+  "sourceHash": "3db2acc589bb9df5443e48945852715ee74b0ca907b41ba0375706f10da6f1ec"
+}

@@ -1,0 +1,24 @@
+{
+  "articleCount": 1,
+  "files": {
+    "articles/000000000000000000000001.json": "01ea0de3513d7b7ca9f5ae6fa62c70ecf379543da5dddc0efd7469cc7e7c04b6",
+    "catalogue.json": "ee2aed46b1a136dd3e4dc760dd3bbcb3b92636f50ab6afb9c730fc104c3e1b32",
+    "redirects.json": "72ce31652172f64ba0cf43f3b6fc4244af1d7201ddd77a4bad5d9a1b0a721d9d",
+    "removals.json": "72ce31652172f64ba0cf43f3b6fc4244af1d7201ddd77a4bad5d9a1b0a721d9d"
+  },
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "market": "ae",
+  "media": [
+    {
+      "bytes": 68,
+      "mime": "image/png",
+      "path": "published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "sha256": "8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd",
+      "url": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png"
+    }
+  ],
+  "releaseId": "r000000000001-fixture-ae-one",
+  "revision": 1,
+  "schemaVersion": 1,
+  "sourceHash": "7b7924f8da3f6cc4e6a2bc20836c2e85f04212259731a9decf800ab0b7ee731f"
+}

@@ -54,7 +54,6 @@ export default async function BlogArticlePage({ params }: Props) {
     );
   const post = result.article;
   const related = await loadRelatedBlogs(post.market, post.slug);
-  if (related.state === "not-found") notFound();
   return (
     <main style={{ background: "#fff", minHeight: "100vh", overflowX: "clip" }}>
       <script
@@ -75,7 +74,7 @@ export default async function BlogArticlePage({ params }: Props) {
         author={post.author}
         summary={post.summary}
         relatedArticles={related.state === "ready" ? related.items : []}
-        relatedUnavailable={related.state === "unavailable"}
+        relatedUnavailable={related.state !== "ready"}
         categoryName={post.category.name}
         publishedAt={post.publishedAt}
         readingMinutes={post.readingMinutes}

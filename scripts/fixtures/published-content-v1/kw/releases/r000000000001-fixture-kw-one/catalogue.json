@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "items": [
+    {
+      "card": {
+        "banner": {
+          "alt": "Synthetic one-pixel image",
+          "caption": "Synthetic caption",
+          "height": 1,
+          "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+          "width": 1
+        },
+        "category": {
+          "allowedFormats": [
+            "article"
+          ],
+          "description": null,
+          "id": "111111111111111111111111",
+          "name": "Blog",
+          "slug": "blog",
+          "sortOrder": 0
+        },
+        "date": "2025-01-01",
+        "dateLabel": "January 1, 2025",
+        "description": "Synthetic description",
+        "excerpt": "Synthetic fixture, not real editorial content",
+        "format": "article",
+        "hero": {
+          "alt": "Synthetic one-pixel image",
+          "caption": "Synthetic caption",
+          "height": 1,
+          "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+          "width": 1
+        },
+        "id": "000000000000000000000005",
+        "keywords": [
+          "synthetic"
+        ],
+        "legacyUrl": "",
+        "market": "kw",
+        "publishedAt": "2025-01-01T00:00:00.000Z",
+        "readingMinutes": 2,
+        "seoTitle": "Synthetic SEO",
+        "slug": "shared-slug",
+        "sourceOutlet": null,
+        "sourceUrl": null,
+        "tag": "Blog",
+        "tags": [
+          {
+            "id": "222222222222222222222222",
+            "name": "Fleet",
+            "slug": "fleet"
+          }
+        ],
+        "title": "Synthetic kw article",
+        "videoUrl": null,
+        "webinar": null
+      },
+      "editorialRevision": "b7feb5fd7972628f8261ca4ef118aecbdc9de3ffd9547f5137c3380e69d33ca0",
+      "featured": true,
+      "id": "000000000000000000000005",
+      "modifiedAt": "2025-01-02T00:00:00.000Z",
+      "publicUrl": "https://locatorglobal.com/kw/about/newsroom/blog/shared-slug",
+      "relatedIds": [],
+      "slug": "shared-slug"
+    }
+  ],
+  "market": "kw",
+  "releaseId": "r000000000001-fixture-kw-one",
+  "revision": 1,
+  "schemaVersion": 1
+}

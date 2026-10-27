@@ -1,0 +1,24 @@
+{
+  "articleCount": 1,
+  "files": {
+    "articles/000000000000000000000003.json": "f62dd5e9ae9c83df84d0faba14ffbb216afd9cbdcb2d99592496b46895efae9b",
+    "catalogue.json": "6ce32918ab6322f8f7be7c355a57ba6a10f9f67b7a6e0d23a10026371711ebad",
+    "redirects.json": "cdd212fdd5233d9c029d26d1d614f6a0bd9f9f03ccd1ce2b889a02c22ce094e2",
+    "removals.json": "cdd212fdd5233d9c029d26d1d614f6a0bd9f9f03ccd1ce2b889a02c22ce094e2"
+  },
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "market": "sa",
+  "media": [
+    {
+      "bytes": 68,
+      "mime": "image/png",
+      "path": "published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "sha256": "8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd",
+      "url": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png"
+    }
+  ],
+  "releaseId": "r000000000001-fixture-sa-one",
+  "revision": 1,
+  "schemaVersion": 1,
+  "sourceHash": "1841dc891604f25e41fc451d99d88443fdaaf904e5ad2ca744b99a988a960f33"
+}

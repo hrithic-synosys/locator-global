@@ -1,0 +1,24 @@
+{
+  "articleCount": 1,
+  "files": {
+    "articles/000000000000000000000002.json": "bbf51dd05570946af714fb156891459acd687bdf71e2e1999f451beac00e291d",
+    "catalogue.json": "8270e4bf95610e43fded4e4bbdcfed9da3c7ad578265108021d7bbc084f45f66",
+    "redirects.json": "4b815255c5ed58d94f7dc59dbe0fa5c9825fec5370d3e48247965c5b4c47df83",
+    "removals.json": "4b815255c5ed58d94f7dc59dbe0fa5c9825fec5370d3e48247965c5b4c47df83"
+  },
+  "generatedAt": "2026-01-02T00:00:00.000Z",
+  "market": "global",
+  "media": [
+    {
+      "bytes": 68,
+      "mime": "image/png",
+      "path": "published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "sha256": "8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd",
+      "url": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png"
+    }
+  ],
+  "releaseId": "r000000000002-fixture-global-two",
+  "revision": 2,
+  "schemaVersion": 1,
+  "sourceHash": "950532379b583437a80f12076ee077ad87a2ac9ffd619ccd31bc2bf50764e911"
+}

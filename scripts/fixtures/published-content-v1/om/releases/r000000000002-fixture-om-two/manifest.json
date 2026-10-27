@@ -1,0 +1,15 @@
+{
+  "articleCount": 0,
+  "files": {
+    "catalogue.json": "cc3c1b531ad2d3302c2df6dd51ae02ec1fc88c88fd974cf504643a2256bb08ce",
+    "redirects.json": "f561fd5f003c8c357f5c3bf6256ea087c56e2102d35718fcbdce3bae38a1395e",
+    "removals.json": "f561fd5f003c8c357f5c3bf6256ea087c56e2102d35718fcbdce3bae38a1395e"
+  },
+  "generatedAt": "2026-01-02T00:00:00.000Z",
+  "market": "om",
+  "media": [],
+  "releaseId": "r000000000002-fixture-om-two",
+  "revision": 2,
+  "schemaVersion": 1,
+  "sourceHash": "3db2acc589bb9df5443e48945852715ee74b0ca907b41ba0375706f10da6f1ec"
+}

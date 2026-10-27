@@ -10,6 +10,7 @@ function loader({
   fetchImpl = async () => Response.json(fixture.list([])),
   env = {},
   previewPath,
+  requestHeaders = new Headers(),
 } = {}) {
   const modules = new Map(),
     requests = [];
@@ -65,11 +66,24 @@ function loader({
           __esModule: true,
           default: (props) => React.createElement("a", props, props.children),
         };
-      if (id === "next/server") return { connection: async () => {} };
+      if (id === "next/server")
+        return {
+          connection: async () => {},
+          NextResponse: require("next/server").NextResponse,
+        };
+      if (id === "next/headers") return { headers: async () => requestHeaders };
+      if (
+        id.startsWith("node:") ||
+        id === "ajv/dist/2020" ||
+        id === "ajv-formats"
+      )
+        return require(id);
       if (id.startsWith("@/") || id.startsWith(".")) {
         const abs = id.startsWith("@/")
           ? path.resolve("src", id.slice(2))
           : path.resolve(path.dirname(file), id);
+        if (abs.endsWith(".json"))
+          return JSON.parse(fs.readFileSync(abs, "utf8"));
         const target = ["", ".ts", ".tsx", ".js", ".jsx"]
           .map((ext) => abs + ext)
           .find((f) => fs.existsSync(f) && fs.statSync(f).isFile());
@@ -92,6 +106,7 @@ function loader({
         Date,
         Set,
         Map,
+        Buffer,
         fetch: async (...args) => {
           requests.push(args);
           return fetchImpl(...args);

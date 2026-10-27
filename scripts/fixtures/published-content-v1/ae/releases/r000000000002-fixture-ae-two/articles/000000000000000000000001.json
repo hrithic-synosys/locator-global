@@ -1,0 +1,205 @@
+{
+  "article": {
+    "author": {
+      "avatar": null,
+      "name": "Synthetic author",
+      "role": "Writer"
+    },
+    "banner": {
+      "alt": "Synthetic one-pixel image",
+      "caption": "Synthetic caption",
+      "height": 1,
+      "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "width": 1
+    },
+    "category": {
+      "allowedFormats": [
+        "article"
+      ],
+      "description": null,
+      "id": "111111111111111111111111",
+      "name": "Blog",
+      "slug": "blog",
+      "sortOrder": 0
+    },
+    "content": [
+      {
+        "anchor": "heading",
+        "html": "Heading",
+        "level": 2,
+        "tocLabel": "Contents",
+        "type": "heading"
+      },
+      {
+        "html": "A <strong>synthetic</strong> paragraph",
+        "type": "p"
+      },
+      {
+        "cite": "Synthetic source",
+        "html": "Quote",
+        "type": "quote"
+      },
+      {
+        "items": [
+          "Checked"
+        ],
+        "style": "check",
+        "type": "ul"
+      },
+      {
+        "items": [
+          "First"
+        ],
+        "type": "ol"
+      },
+      {
+        "caption": "Table",
+        "head": [
+          "A"
+        ],
+        "rows": [
+          [
+            "B"
+          ]
+        ],
+        "type": "table"
+      },
+      {
+        "image": {
+          "alt": "Synthetic one-pixel image",
+          "caption": "Synthetic caption",
+          "height": 1,
+          "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+          "width": 1
+        },
+        "type": "image"
+      },
+      {
+        "align": "right",
+        "blocks": [
+          {
+            "html": "Overlay text",
+            "type": "p"
+          }
+        ],
+        "cta": {
+          "href": "/get-a-quote",
+          "label": "Learn"
+        },
+        "image": {
+          "alt": "Synthetic one-pixel image",
+          "caption": "Synthetic caption",
+          "height": 1,
+          "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+          "width": 1
+        },
+        "kicker": "Overlay",
+        "type": "overlay"
+      },
+      {
+        "blocks": [
+          {
+            "html": "Nested",
+            "level": 3,
+            "type": "heading"
+          }
+        ],
+        "media": {
+          "kind": "table",
+          "table": {
+            "head": [
+              "A"
+            ],
+            "rows": [
+              [
+                "B"
+              ]
+            ]
+          }
+        },
+        "mediaSide": "left",
+        "tone": "tint",
+        "type": "split"
+      },
+      {
+        "blocks": [
+          {
+            "html": "Split text",
+            "type": "p"
+          }
+        ],
+        "media": {
+          "image": {
+            "alt": "Synthetic one-pixel image",
+            "caption": "Synthetic caption",
+            "height": 1,
+            "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+            "width": 1
+          },
+          "kind": "image"
+        },
+        "mediaSide": "right",
+        "type": "split"
+      }
+    ],
+    "contentVersion": 2,
+    "date": "2025-01-01",
+    "dateLabel": "January 1, 2025",
+    "description": "Synthetic description",
+    "excerpt": "Synthetic fixture, not real editorial content",
+    "format": "article",
+    "hero": {
+      "alt": "Synthetic one-pixel image",
+      "caption": "Synthetic caption",
+      "height": 1,
+      "src": "http://localhost:5100/published/8217fc1f6e70592322ea3c247b743884b495c454da3c29b662e091e4acd5e6fd.png",
+      "width": 1
+    },
+    "id": "000000000000000000000001",
+    "keywords": [
+      "synthetic"
+    ],
+    "legacyUrl": "",
+    "market": "ae",
+    "publishedAt": "2025-01-01T00:00:00.000Z",
+    "readingMinutes": 2,
+    "seo": {
+      "description": "Synthetic description",
+      "keywords": [
+        "synthetic"
+      ],
+      "title": "Synthetic SEO"
+    },
+    "seoTitle": "Synthetic SEO",
+    "slug": "shared-slug",
+    "sourceOutlet": null,
+    "sourceUrl": null,
+    "summary": {
+      "heading": null,
+      "icon": "pin",
+      "text": "Synthetic summary"
+    },
+    "tag": "Blog",
+    "tags": [
+      {
+        "id": "222222222222222222222222",
+        "name": "Fleet",
+        "slug": "fleet"
+      }
+    ],
+    "title": "Synthetic ae article",
+    "updatedAt": "2025-01-02T00:00:00.000Z",
+    "videoUrl": null,
+    "webinar": null
+  },
+  "editorialRevision": "733c3daa17019c424ac8c2ce7a54a032a0264a12a7823d68f088e91923453a14",
+  "market": "ae",
+  "modifiedAt": "2025-01-02T00:00:00.000Z",
+  "publicUrl": "https://locator.ae/about/newsroom/blog/shared-slug",
+  "relatedIds": [
+    "000000000000000000000010"
+  ],
+  "releaseId": "r000000000002-fixture-ae-two",
+  "revision": 2,
+  "schemaVersion": 1
+}

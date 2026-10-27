@@ -12,11 +12,16 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
     "clean": "rimraf .next out",
-    "test:cms-blog": "node --test scripts/cms-global-blog.test.cjs scripts/cms-blog-availability.test.cjs",
+    "test:cms-blog": "node --test scripts/cms-global-blog.test.cjs scripts/cms-blog-availability.test.cjs scripts/cms-published-store.test.cjs",
+    "test:cms-published": "node --test scripts/cms-published-store.test.cjs",
+    "test:cms-published:browser": "node scripts/cms-published-browser.cjs",
+    "cms:published:check": "node --env-file=.env scripts/cms-published-inspect.cjs",
     "test:cms-blog:browser": "node scripts/cms-global-blog-browser.cjs"
   },
   "dependencies": {
     "@next/third-parties": "^16.4.2",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",

@@ -602,6 +602,7 @@ if (process.env.CMS_EXISTING_DEV_ORIGIN) {
         env: {
           ...process.env,
           CMS_API_BASE_URL: api,
+            BLOG_CONTENT_SOURCE: "api",
           NEXT_PUBLIC_SITE_URL: "https://locatorglobal.com",
           TURNSTILE_SECRET_KEY: "",
         },
