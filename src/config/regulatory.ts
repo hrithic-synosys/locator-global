@@ -1,5 +1,7 @@
 import type { CountryCode } from './countries';
 
+export const globalRegulatoryPath = '/gps-tracking-regulatory-compliance';
+
 export const regulatoryPaths = {
   overview: '/regulatory',
   shahin: '/shahin',
@@ -65,12 +67,13 @@ export function getRegulatoryEntry(country: CountryCode, path: string) {
 
 /** Regulatory ownership includes removed legacy paths and all configured new paths. */
 export function isRegulatoryPath(path: string): boolean {
-  return path === regulatoryPaths.overview || path.startsWith(`${regulatoryPaths.overview}/`) || legacyRegulatoryPaths.includes(path) ||
+  return path === globalRegulatoryPath || path.startsWith(`${globalRegulatoryPath}/`) || path === regulatoryPaths.overview || path.startsWith(`${regulatoryPaths.overview}/`) || legacyRegulatoryPaths.includes(path) ||
     Object.values(regulatoryNavigation).some(menu => menu.items.some(item => item.href === path));
 }
 
 export function isRegulatoryPageAvailable(country: CountryCode, path: string): boolean {
   if (!isRegulatoryPath(path)) return true;
+  if (path === globalRegulatoryPath) return country === 'global';
   if (path === regulatoryPaths.overview) return true;
   return !!getRegulatoryEntry(country, path);
 }
@@ -78,11 +81,11 @@ export function isRegulatoryPageAvailable(country: CountryCode, path: string): b
 export function isRegulatoryPageReady(country: CountryCode, path: string): boolean {
   if (!isRegulatoryPath(path)) return true;
   if (!isRegulatoryPageAvailable(country, path)) return false;
-  return path === regulatoryPaths.overview
+  return path === regulatoryPaths.overview || path === globalRegulatoryPath
     ? getRegulatoryNavigation(country).overviewReady
     : getRegulatoryEntry(country, path)?.ready === true;
 }
 
 export function isRegulatoryNavigationActive(country: CountryCode, path: string): boolean {
-  return path === regulatoryPaths.overview || !!getRegulatoryEntry(country, path);
+  return (country === 'global' && path === globalRegulatoryPath) || path === regulatoryPaths.overview || !!getRegulatoryEntry(country, path);
 }

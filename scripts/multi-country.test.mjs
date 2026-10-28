@@ -222,3 +222,39 @@ test('new regulatory exclusive pages require both a country menu entry and route
     assert.equal(getExclusivePage(path, 'qa'), undefined, 'removing the menu entry revokes the route');
   } finally { regulatoryNavigation.qa = original; delete exclusivePages[path]; }
 });
+
+test('the new Global regulatory URL scopes links and country switches without moving country pages', () => {
+  const url = '/gps-tracking-regulatory-compliance';
+  assert.equal(countryPath('/regulatory', 'global'), url);
+  assert.equal(countryPath('/regulatory?source=nav#faq', 'global'), url + '?source=nav#faq');
+  for (const country of ['sa', 'qa', 'kw', 'om']) {
+    assert.equal(countryPath('/regulatory', country), `/${country}/regulatory`);
+    assert.equal(switchCountryPath(url, country), `/${country}/regulatory`);
+    assert.equal(switchCountryPath(`/${country}/regulatory`, 'global'), url);
+    const regulatory = load('src/config/regulatory.ts');
+    assert.equal(regulatory.isRegulatoryPageAvailable(country, url), false);
+    assert.equal(regulatory.isRegulatoryNavigationActive(country, '/regulatory'), true);
+  }
+  const regulatory = load('src/config/regulatory.ts');
+  assert.equal(regulatory.isRegulatoryPageAvailable('global', url), true);
+  assert.equal(regulatory.isRegulatoryNavigationActive('global', url), true);
+});
+
+test('Global regulatory metadata and sitemap use the new canonical while readiness remains explicit', async () => {
+  const url = '/gps-tracking-regulatory-compliance';
+  const { globalRegulatoryMetadata } = load('src/content/global-regulatory.ts');
+  const metadata = load('src/lib/country/metadata.ts').marketMetadata(globalRegulatoryMetadata, 'global', url);
+  assert.equal(metadata.title.absolute, 'GPS Tracking & Regulatory Compliance Solutions | Locator');
+  assert.equal(metadata.alternates.canonical, 'https://locatorglobal.com' + url);
+  assert.equal(metadata.robots.index, false);
+  assert.ok(metadata.keywords.includes('GPS tracking for regulatory compliance'));
+  const { indexing } = load('src/config/indexing.ts');
+  const old = indexing.global;
+  testProcess.env.SITE_ENV = 'production';
+  indexing.global = { ready: false, pages: [url] };
+  try {
+    const entries = await load('src/app/sitemap.ts').default();
+    assert.ok(entries.some(e => e.url === 'https://locatorglobal.com' + url));
+    assert.ok(!entries.some(e => e.url === 'https://locatorglobal.com/regulatory'));
+  } finally { indexing.global = old; testProcess.env.SITE_ENV = 'development'; }
+});

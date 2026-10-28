@@ -6,7 +6,9 @@ import RegulatoryHeader from '@/components/regulatory/RegulatoryHeader'
 import RegulatoryGrid from '@/components/regulatory/RegulatoryGrid'
 import SoftwareCTA from '@/components/software/SoftwareCTA'
 import Footer from '@/components/layouts/Footer'
-import GlobalRegulatoryPage from '@/components/regulatory/GlobalRegulatoryPage'
+import { permanentRedirect } from 'next/navigation';
+import { globalRegulatoryPath } from '@/config/regulatory';
+import { globalRegulatoryMetadata } from '@/content/global-regulatory';
 
 const pageMetadata: Metadata = {
   title: 'Regulatory GPS Certifications',
@@ -24,7 +26,7 @@ const pageMetadata: Metadata = {
 
 export default async function RegulatoryPage({ params }: { params: Promise<{ market: CountryCode }> }) {
   const { market } = await params;
-  if (market === 'global') return <GlobalRegulatoryPage />;
+  if (market === 'global') permanentRedirect(globalRegulatoryPath);
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
@@ -43,15 +45,6 @@ export default async function RegulatoryPage({ params }: { params: Promise<{ mar
 
 export async function generateMetadata({ params }: { params: Promise<{ market: CountryCode }> }): Promise<Metadata> {
   const { market } = await params;
-  if (market === 'global') return marketMetadata({
-    title: 'Regulatory Compliance for Connected Fleets',
-    description: 'Explore how GPS tracking and telematics support fleet visibility, operational reporting, and regulatory readiness across different markets.',
-    openGraph: {
-      title: 'Regulatory Compliance for Connected Fleets | Locator',
-      description: 'A practical overview of fleet tracking, operational visibility, and market-specific regulatory readiness.',
-      type: 'website',
-      images: [{ url: '/software/modules/fleet-manager/fleet-manager.webp', alt: 'Locator fleet management dashboard' }],
-    },
-  }, market, '/regulatory');
+  if (market === 'global') return marketMetadata(globalRegulatoryMetadata, market, globalRegulatoryPath);
   return marketMetadata(pageMetadata, market, "/regulatory");
 }

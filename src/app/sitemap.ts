@@ -9,6 +9,7 @@ import { countries, countryCodes } from "@/config/countries";
 import { canIndex, hasIndexableMarkets } from "@/config/indexing";
 import { countryPath } from "@/lib/country/paths";
 import { exclusivePages, getExclusivePage } from "@/content/exclusive-pages";
+import { globalRegulatoryPath, regulatoryPaths } from "@/config/regulatory";
 
 // Every live route. Add new entries here as routes are added.
 const ROUTES: { path: string; priority: number }[] = [
@@ -82,6 +83,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           .filter((path) => getExclusivePage(path, country))
           .map((path) => ({ path, priority: 0.6 })),
       ]
+        .map(route => country === 'global' && route.path === regulatoryPaths.overview ? { ...route, path: globalRegulatoryPath } : route)
         .filter(({ path }) => canIndex(country, path || "/"))
         .map(({ path, priority }) => ({
           url: siteUrl + countryPath(path || "/", country),
