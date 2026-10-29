@@ -1,4 +1,5 @@
 "use client";
+import { ViewportNativeImage } from "@/components/common/ViewportImage";
 
 import { useEffect, useRef, useState } from "react";
 import Link from '@/components/country/CountryLink';
@@ -520,7 +521,7 @@ function FeaturePreview({ type, customImage }) {
   // the bug the client is reporting.
   if (customImage) {
     return (
-      <img
+      <ViewportNativeImage
         src={customImage}
         alt=""
         decoding="async"

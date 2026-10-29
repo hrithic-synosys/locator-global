@@ -1,17 +1,29 @@
 "use client";
-import Link from "@/components/country/CountryLink";
-export default function NewsroomError() {
+import ContentState from "@/components/about/newsroom/ContentState";
+import SoftwareNavbar from "@/components/software/SoftwareNavbar";
+import Footer from "@/components/layouts/Footer";
+export default function NewsroomError({ reset }: { reset: () => void }) {
   return (
-    <section
-      role="alert"
-      style={{ maxWidth: 760, margin: "80px auto", padding: 28 }}
-    >
-      <h1>Blog temporarily unavailable</h1>
-      <p>We could not load the blog. Please try again shortly.</p>
-      <button type="button" onClick={() => window.location.reload()}>
-        Try again
-      </button>{" "}
-      <Link href="/about/newsroom">Back to newsroom</Link>
-    </section>
+    <main style={{ background: "#fff", minHeight: "100vh" }}>
+      <SoftwareNavbar />
+      <section
+        style={{
+          maxWidth: 1180,
+          margin: "48px auto",
+          padding: "0 28px",
+          minHeight: 300,
+        }}
+      >
+        <h1 style={{ color: "#16294b", marginBottom: 24 }}>Locator Newsroom</h1>
+        <ContentState
+          state="unavailable"
+          title="We couldn’t open this page"
+          description="Please try again, or return to the newsroom to explore more stories."
+          href="/about/newsroom"
+          onRetry={reset}
+        />
+      </section>
+      <Footer />
+    </main>
   );
 }

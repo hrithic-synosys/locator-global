@@ -3,6 +3,9 @@ import { countries, type CountryCode } from "@/config/countries";
 import { marketMetadata } from "@/lib/country/metadata";
 import { countryPath } from "@/lib/country/paths";
 import { listBlogs } from "@/lib/cms-blog/client";
+import { loadCmsResource } from "@/lib/cms-blog/resource";
+import { Suspense } from "react";
+import ContentState from "@/components/about/newsroom/ContentState";
 import {
   assertMarket,
   blogBase,
@@ -11,6 +14,7 @@ import {
   newsroomHref,
   readBlogFilters,
   serializeJsonLd,
+  type BlogFilters,
 } from "@/lib/cms-blog/urls";
 import { absoluteImage } from "@/lib/cms-blog/seo";
 import { siteConfig, siteUrl } from "@/config/site";
@@ -67,14 +71,54 @@ export default async function BlogIndexPage({ params, searchParams }: Props) {
   const { market } = await params;
   assertMarket(market);
   const filters = readBlogFilters(await searchParams);
-  const result = await listBlogs(
-    market,
-    filters.page,
-    12,
-    filters.q,
-    filters.tag,
-    filters.featured
+  return (
+    <main style={{ background: "#fff", minHeight: "100vh", overflowX: "clip" }}>
+      <ScrollReveal />
+      <SoftwareNavbar />
+      <Suspense
+        key={JSON.stringify([market, filters])}
+        fallback={
+          <div
+            style={{ maxWidth: 1180, margin: "32px auto", padding: "0 28px" }}
+          >
+            <ContentState state="loading" />
+          </div>
+        }
+      >
+        <BlogResults market={market} filters={filters} />
+      </Suspense>
+      <NewsroomSubscribe />
+      <AboutPillarNav current="newsroom" />
+      <Footer />
+    </main>
   );
+}
+
+async function BlogResults({
+  market,
+  filters,
+}: {
+  market: CountryCode;
+  filters: BlogFilters;
+}) {
+  const resource = await loadCmsResource(() =>
+    listBlogs(
+      market,
+      filters.page,
+      12,
+      filters.q,
+      filters.tag,
+      filters.featured
+    )
+  );
+  if (resource.status === "unavailable")
+    return (
+      <div style={{ maxWidth: 1180, margin: "32px auto", padding: "0 28px" }}>
+        <h1 style={{ color: "#16294b", marginBottom: 24 }}>Locator Blog</h1>
+        <ContentState state="unavailable" href={newsroomHref(market)} />
+      </div>
+    );
+  const result = resource.data;
   const url = siteUrl + blogPageHref(market, filters, filters.page);
   const jsonLd = {
     "@context": "https://schema.org",
@@ -111,22 +155,17 @@ export default async function BlogIndexPage({ params, searchParams }: Props) {
     ],
   };
   return (
-    <main style={{ background: "#fff", minHeight: "100vh", overflowX: "clip" }}>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
-      <ScrollReveal />
-      <SoftwareNavbar />
       <BlogListing
         market={market}
         posts={result.items}
         pagination={result.pagination}
         filters={filters}
       />
-      <NewsroomSubscribe />
-      <AboutPillarNav current="newsroom" />
-      <Footer />
-    </main>
+    </>
   );
 }

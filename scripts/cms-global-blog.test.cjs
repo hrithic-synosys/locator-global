@@ -311,7 +311,7 @@ test("listings use backend pages, preserve filters/prefix, and allow empty/banne
       pagination: { page: 1, limit: 12, total: 0, pages: 0 },
     })
   );
-  assert.ok(empty.includes("No published blog articles yet"));
+  assert.ok(empty.includes("No articles yet"));
   const html = renderToStaticMarkup(
     React.createElement(View, {
       market: "qa",
@@ -329,6 +329,95 @@ test("listings use backend pages, preserve filters/prefix, and allow empty/banne
     1
   );
 });
+test("CMS resources distinguish outages, invalid payloads, empty lists and genuine missing articles", async () => {
+  for (const fetchImpl of [
+    async () => {
+      throw new TypeError("connection refused");
+    },
+    async () => {
+      throw new DOMException("Timed out", "TimeoutError");
+    },
+    async () => new Response("offline", { status: 503 }),
+    async () => new Response("not JSON"),
+    async () => Response.json({ success: true, items: [card("om")] }),
+    async () =>
+      Response.json(
+        f.list([
+          card("qa", "unsafe", { ...f.image, src: "javascript:invalid" }),
+        ])
+      ),
+  ]) {
+    const l = loader({ fetchImpl });
+    const { loadCmsResource } = l.load("src/lib/cms-blog/resource.ts");
+    const api = l.load("src/lib/cms-blog/client.ts");
+    assert.equal(
+      (await loadCmsResource(() => api.listBlogs("qa"))).status,
+      "unavailable"
+    );
+  }
+  const l = loader();
+  const { loadCmsResource } = l.load("src/lib/cms-blog/resource.ts");
+  const ready = await loadCmsResource(() =>
+    l.load("src/lib/cms-blog/client.ts").listBlogs("qa")
+  );
+  assert.equal(ready.status, "ready");
+  assert.equal(ready.data.items.length, 0);
+  const missing = loader({
+    fetchImpl: async () => new Response("{}", { status: 404 }),
+  });
+  const result = await missing
+    .load("src/lib/cms-blog/resource.ts")
+    .loadCmsResource(() =>
+      missing.load("src/lib/cms-blog/client.ts").getBlog("qa", "missing")
+    );
+  assert.equal(result.status, "ready");
+  assert.equal(result.data, null);
+  await assert.rejects(
+    loadCmsResource(async () => {
+      throw new Error("programming error");
+    }),
+    /programming error/
+  );
+});
+
+test("empty blog states preserve filter recovery and never masquerade as an outage", () => {
+  const View = loader().load(
+    "src/components/about/newsroom/blog/BlogListing.tsx"
+  ).default;
+  for (const [filters, title] of [
+    [{ page: 1, q: "fleet", tag: "" }, "No matching articles"],
+    [{ page: 8, q: "", tag: "" }, "No articles on this page"],
+  ]) {
+    const html = renderToStaticMarkup(
+      React.createElement(View, {
+        market: "qa",
+        posts: [],
+        pagination: {
+          page: filters.page,
+          limit: 12,
+          total: filters.page > 1 ? 2 : 0,
+          pages: 1,
+        },
+        filters,
+      })
+    );
+    assert.ok(html.includes(title));
+    assert.ok(html.includes('href="/qa/about/newsroom/blog"'));
+    assert.ok(!html.includes('data-content-state="unavailable"'));
+  }
+});
+
+test("retry controls wait for hydration rather than exposing an inert server-rendered button", () => {
+  const State = loader().load(
+    "src/components/about/newsroom/ContentState.tsx"
+  ).default;
+  const html = renderToStaticMarkup(
+    React.createElement(State, { state: "unavailable", headingLevel: 1 })
+  );
+  assert.match(html, /<button[^>]*disabled/);
+  assert.ok(html.includes("<h1>Articles temporarily unavailable</h1>"));
+});
+
 test("metadata/JSON-LD contain the exact market URL and real optional data, without invented hreflang", () => {
   const seo = loader().load("src/lib/cms-blog/seo.ts");
   for (const m of markets) {

@@ -131,6 +131,7 @@ async function check(origin) {
         const t = await setup(path, true);
         await field(t.page, action).getByText('Security verification is temporarily unavailable.', { exact: false }).waitFor();
         assert.equal(await form(t.page, action).locator('button[type=submit]').isDisabled(), true);
+        await t.page.locator('footer').scrollIntoViewIfNeeded();
         assert.equal(await form(t.page, 'quick_contact').locator('button[type=submit]').isDisabled(), true);
         assert.equal(t.scriptRequests(), 0);
         await field(t.page, action).scrollIntoViewIfNeeded();
@@ -202,6 +203,7 @@ async function check(origin) {
     }
 
     const footer = await setup('/contact');
+    await footer.page.locator('footer').scrollIntoViewIfNeeded();
     const quick = form(footer.page, 'quick_contact');
     assert.equal(await quick.locator('button[type=submit]').isDisabled(), true);
     await complete(footer.page, 'quick_contact');
@@ -268,7 +270,7 @@ async function check(origin) {
       await field(navigation.page, action).getByRole('button', { name: 'Complete test security check' }).waitFor();
       await navigation.page.waitForFunction(action => {
         const widgets = [...window.__turnstileTest.widgets.values()];
-        return widgets.length === 2 && widgets.some(w => w.options.action === action) && widgets.some(w => w.options.action === 'quick_contact');
+        return widgets.filter(w => w.options.action === action).length === 1 && widgets.filter(w => w.options.action === 'quick_contact').length <= 1 && widgets.every(w => w.options.action === action || w.options.action === 'quick_contact');
       }, action);
       assert.equal(await navigation.page.evaluate(() => window.__testDocument), 'retained', 'Exercise Next.js navigation rather than full reloads');
       await complete(navigation.page, action);

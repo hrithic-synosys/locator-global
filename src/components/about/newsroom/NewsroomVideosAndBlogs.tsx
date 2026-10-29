@@ -2,12 +2,13 @@
 /* eslint-disable @next/next/no-img-element -- Validated CMS media URLs. */
 import Link from 'next/link'
 import CustomerReviewVideos from './CustomerReviewVideos'
+import type { ReactNode } from 'react'
 import type { NewsItem } from './newsroom-data'
 import type { Pagination } from '@/lib/cms-blog/types'
 import type { CountryCode } from '@/config/countries'
 import { blogBase, newsroomHref } from '@/lib/cms-blog/urls'
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
-export default function NewsroomVideosAndBlogs({ market, blogs, pagination }: { market: CountryCode; blogs: NewsItem[]; pagination: Pagination }) {
+export default function NewsroomVideosAndBlogs({ market, blogs = [], pagination = { page: 1, limit: 3, total: 0, pages: 0 }, blogContent }: { market: CountryCode; blogs?: NewsItem[]; pagination?: Pagination; blogContent?: ReactNode }) {
   const pageHref = (page: number) => newsroomHref(market)+(page>1?'?blogPage='+page:'');
   return <section className="nvc" aria-label="Newsroom videos and blog content">
     <style>{styles}</style>
@@ -15,7 +16,7 @@ export default function NewsroomVideosAndBlogs({ market, blogs, pagination }: { 
       <div className="nvc-column nvc-column--videos"><CustomerReviewVideos /></div>
       <div className="nvc-column nvc-column--blogs">
         <div className="nvc-head"><h2>From the Locator Blog</h2><Link href={blogBase(market)}>View All →</Link></div>
-        <div className="nvc-blog-stage"><div className="nvc-blog-list">
+        {blogContent || <><div className="nvc-blog-stage"><div className="nvc-blog-list">
           {blogs.length ? blogs.map(blog => <Link key={blog.id} href={blog.href} className="nvc-blog-card" style={!blog.image?{gridTemplateColumns:'1fr'}:undefined}>
             {blog.image && <div className="nvc-blog-image"><img src={blog.image} alt={blog.alt || ''} loading="lazy" style={{width:'100%',height:'100%',objectFit:'cover'}} /></div>}
             <div className="nvc-blog-body"><span className="nvc-blog-date">{blog.date}</span><h3 className="nvc-blog-title">{blog.title}</h3>
@@ -26,7 +27,7 @@ export default function NewsroomVideosAndBlogs({ market, blogs, pagination }: { 
           {pagination.page>1 && <Link rel="prev" href={pageHref(pagination.page-1)}>Previous</Link>}
           <span>Page {pagination.page} of {pagination.pages}</span>
           {pagination.page<pagination.pages && <Link rel="next" href={pageHref(pagination.page+1)}>Next</Link>}
-        </nav>}
+        </nav>}</>}
       </div>
     </div>
   </section>

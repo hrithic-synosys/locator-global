@@ -1,6 +1,7 @@
 'use client'
 
 import PrivacyNotice from '@/components/common/PrivacyNotice'
+import TurnstileField from '@/components/common/TurnstileField'
 import { useRef, useState } from 'react'
 import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
@@ -24,6 +25,9 @@ export default function JobDetail({ job }: { job: Job }) {
   const [tab, setTab] = useState<'overview' | 'application'>('overview')
   const [sent, setSent] = useState(false)
   const [sending, setSending] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [verificationAttempt, setVerificationAttempt] = useState(0)
+  const submissionInFlight = useRef(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -34,7 +38,11 @@ export default function JobDetail({ job }: { job: Job }) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (sending) return
+    if (tab !== 'application' || submissionInFlight.current) return
+    if (!turnstileToken) {
+      setSubmitError('Please complete the security check before submitting.')
+      return
+    }
     const formData = new FormData(e.currentTarget)
     formData.set('jobSlug', job.slug)
     const resume = formData.get('resume')
@@ -43,6 +51,7 @@ export default function JobDetail({ job }: { job: Job }) {
       return
     }
     setSending(true)
+    submissionInFlight.current = true
     setSubmitError(null)
     try {
       const response = await fetch('/api/career-application', { method: 'POST', body: formData })
@@ -56,7 +65,10 @@ export default function JobDetail({ job }: { job: Job }) {
     } catch {
       setSubmitError('Unable to send your application. Please try again.')
     } finally {
+      submissionInFlight.current = false
       setSending(false)
+      setTurnstileToken('')
+      setVerificationAttempt(value => value + 1)
     }
   }
 
@@ -263,7 +275,7 @@ export default function JobDetail({ job }: { job: Job }) {
         </div>
 
         <div className="jd-body">
-          {tab === 'overview' ? (
+          {tab === 'overview' && (
             <div>
               <div className="jd-ov-head">
                 <h2 className="jd-ov-h3">Description</h2>
@@ -293,8 +305,9 @@ export default function JobDetail({ job }: { job: Job }) {
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
               </button>
             </div>
-          ) : sent ? (
-            <div className="jd-success">
+          )}
+          {sent ? (
+            <div className="jd-success" hidden={tab !== 'application'}>
               <div className="jd-check">
                 <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
               </div>
@@ -303,7 +316,7 @@ export default function JobDetail({ job }: { job: Job }) {
               <button className="jd-apply-cta" onClick={() => setTab('overview')}>Back to job details</button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} aria-busy={sending}>
+            <form onSubmit={handleSubmit} aria-busy={sending} hidden={tab !== 'application'}>
               {/* Autofill banner — shares the same hidden input as Resume below,
                   so picking a file here really does fill that field too. */}
               <div className="jd-autofill">
@@ -427,7 +440,8 @@ export default function JobDetail({ job }: { job: Job }) {
               {submitError && (
                 <p role="alert" style={{ color: '#b42318', marginBottom: '12px' }}>{submitError}</p>
               )}
-              <button type="submit" className="jd-submit" disabled={sending}>
+              {tab === 'application' && <TurnstileField action="career_application" onTokenChange={setTurnstileToken} resetKey={verificationAttempt} />}
+              <button type="submit" className="jd-submit" disabled={sending || !turnstileToken}>
                 {sending ? 'Sending application…' : 'Submit application'}
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
               </button>

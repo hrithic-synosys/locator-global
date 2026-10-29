@@ -2,7 +2,7 @@
 
 import CountryAnchor from '@/components/country/CountryAnchor'
 import Link from '@/components/country/CountryLink';
-import Image from "next/image";
+import Image from "@/components/common/ViewportImage";
 import TurnstileField from "@/components/common/TurnstileField";
 import PrivacyNotice from "@/components/common/PrivacyNotice";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -132,6 +132,23 @@ export default function Footer() {
       setForm((p) => ({ ...p, [k]: e.target.value }));
 
   const [turnstileToken, setTurnstileToken] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const [verificationActive, setVerificationActive] = useState(false);
+  useEffect(() => {
+    const formElement = formRef.current;
+    if (!formElement) return;
+    if (typeof IntersectionObserver === "undefined") {
+      const timer = window.setTimeout(() => setVerificationActive(true), 0);
+      return () => window.clearTimeout(timer);
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setVerificationActive(true);
+      observer.disconnect();
+    }, { rootMargin: "600px 0px" });
+    observer.observe(formElement);
+    return () => observer.disconnect();
+  }, []);
   const [quickContactState, formAction, isPending] = useActionState(
     sendQuickContact,
     initialState
@@ -221,14 +238,14 @@ export default function Footer() {
       >
         {/* ── Secondary brand mark — same logo used across the Software pages ── */}
         <div style={{ marginBottom: "36px", paddingLeft: "24px" }}>
-          {/* eager: small, and lazy left an empty gap where the brand mark goes
-              for as long as the footer was on screen mid-download. */}
+          {/* Actual source ratio; choose a small variant for the 48px-high mark.
+              ViewportImage starts it before the footer becomes visible. */}
           <Image
             src="/brand/logo-wordmark.png"
             alt="Locator"
-            width={2617}
-            height={911}
-            loading="eager"
+            width={6049}
+            height={2840}
+            sizes="103px"
             style={{ width: "auto", height: "48px" }}
           />
         </div>
@@ -289,6 +306,8 @@ export default function Footer() {
             </h3>
 
             <form
+              ref={formRef}
+              onFocusCapture={() => setVerificationActive(true)}
               action={formAction}
               style={{ display: "flex", flexDirection: "column", gap: "8px" }}
             >
@@ -367,7 +386,7 @@ export default function Footer() {
                 </p>
               )}
               <PrivacyNotice />
-                <TurnstileField action="quick_contact" onTokenChange={setTurnstileToken} resetKey={quickContactState} />
+                {verificationActive ? <TurnstileField action="quick_contact" onTokenChange={setTurnstileToken} resetKey={quickContactState} /> : <div style={{ minHeight: 65 }} aria-live="polite"><p style={{ fontSize: 12, color: "#526071" }}>Security verification starts when you use this form.</p></div>}
               <button
                 className="footer-btn-primary"
                 type="submit"

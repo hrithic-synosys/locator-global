@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- Validated CMS images keep their original host. */
 
 import CountryAnchor from '@/components/country/CountryAnchor'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import NewsroomRail from './NewsroomRail'
@@ -115,7 +115,9 @@ function Card({ item, size = 'md' }: { item: NewsItem; size?: 'md' | 'lg' }) {
   )
 }
 
-export default function NewsroomBoard({ blogs }: { blogs: NewsItem[] }) {
+export { Card as NewsroomCard }
+
+export default function NewsroomBoard({ blogs = [], blogPanel }: { blogs?: NewsItem[]; blogPanel?: ReactNode }) {
   const { code: market } = useCountry();
   const [tab, setTab] = useState<Tab>('all')
 
@@ -536,7 +538,7 @@ export default function NewsroomBoard({ blogs }: { blogs: NewsItem[] }) {
             )}
 
             {tab !== 'all' && tab !== 'social' && tab !== 'media' && (
-              pool.length === 0 ? (
+              tab === 'blog' && blogPanel ? blogPanel : pool.length === 0 ? (
                 <p className="nrb-empty">Nothing published in this category yet — check back soon.</p>
               ) : (
                 <div className="nrb-grid">

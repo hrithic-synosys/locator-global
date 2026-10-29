@@ -3,6 +3,8 @@ import Link from "next/link";
 import { blogHref, blogPageHref, dateLabel, type BlogFilters } from "@/lib/cms-blog/urls";
 import type { CmsCard, Pagination } from "@/lib/cms-blog/types";
 import type { CountryCode } from "@/config/countries";
+import ContentState from "../ContentState";
+import { blogBase, newsroomHref } from "@/lib/cms-blog/urls";
 const EASE = "cubic-bezier(.22,.61,.36,1)";
 export default function BlogListing({
   posts,
@@ -112,11 +114,11 @@ export default function BlogListing({
             )}
           </Link>
         ) : (
-          <p role="status">
-            {pagination.total
-              ? "No articles on this page."
-              : "No published blog articles yet."}
-          </p>
+          <ContentState state="empty"
+            title={filters.q || filters.tag || filters.featured !== undefined ? "No matching articles" : pagination.total ? "No articles on this page" : "No articles yet"}
+            description={filters.q || filters.tag || filters.featured !== undefined ? "Try another search or explore all published articles." : pagination.total ? "Explore the latest published articles from the first page." : undefined}
+            href={filters.q || filters.tag || filters.featured !== undefined || filters.page > 1 ? blogBase(market) : newsroomHref(market)}
+            linkLabel={filters.q || filters.tag || filters.featured !== undefined || filters.page > 1 ? "View all articles" : "Explore the newsroom"} />
         )}
         <div className="bl-grid">
           {rest.map((p) => (
@@ -152,7 +154,7 @@ export default function BlogListing({
             </Link>
           ))}
         </div>
-        {pagination.pages > 1 && (
+        {posts.length > 0 && pagination.pages > 1 && (
           <nav
             aria-label="Blog pagination"
             style={{ display: "flex", gap: 20, paddingBottom: 40 }}

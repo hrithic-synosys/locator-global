@@ -219,8 +219,8 @@ export default function RoadSection() {
           src="/home/road/road.png"
           alt="Road"
           fill
+          sizes="100vw"
           className="object-cover object-top"
-          priority
         />
       </div>
 
@@ -293,7 +293,6 @@ export default function RoadSection() {
               width={182}
               height={153}
               className="object-contain"
-              priority
             />
           </div>
         </div>

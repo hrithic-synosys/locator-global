@@ -48,7 +48,7 @@ export default async function JobDetailPage({
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
       <SoftwareNavbar />
-      <JobDetail job={job} />
+      <JobDetail key={job.slug} job={job} />
       {/* current="career" so a job page offers the other five pillars rather
           than a link back to the careers index the reader just came from. */}
       <AboutPillarNav current="career" />

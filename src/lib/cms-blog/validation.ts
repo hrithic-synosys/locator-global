@@ -8,7 +8,7 @@ import type {
   ImageData,
   RelatedArticle,
 } from "./types";
-import { mediaUrl, safeHref } from "./urls";
+import { mediaUrl as resolveMediaUrl, safeHref } from "./urls";
 export class CmsPayloadError extends Error {
   constructor() {
     super("CMS blog returned an invalid or out-of-scope payload");
@@ -18,6 +18,13 @@ export class CmsPayloadError extends Error {
 const fail = (): never => {
   throw new CmsPayloadError();
 };
+function mediaUrl(value: string, base: string): string {
+  try {
+    return resolveMediaUrl(value, base);
+  } catch {
+    return fail();
+  }
+}
 const obj = (v: unknown): Record<string, unknown> =>
   v && typeof v === "object" && !Array.isArray(v)
     ? (v as Record<string, unknown>)

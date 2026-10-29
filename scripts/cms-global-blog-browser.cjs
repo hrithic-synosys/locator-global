@@ -18,6 +18,9 @@ const blog = (m) => prefix(m) + "/about/newsroom/blog";
 const calls = [];
 let emptyMarket = "",
   failMarket = "",
+  listMode = "",
+  relatedMode = "",
+  allOffline = false,
   newPublished = false;
 const card = (m, slug = "fixture-article", banner = f.image) => ({
   ...f.card(slug, banner),
@@ -28,7 +31,7 @@ const detail = (m, slug = "fixture-article", banner = f.image) => ({
   ...f.detail(slug, banner),
   ...card(m, slug, banner),
 });
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, "http://localhost"),
     match = u.pathname.match(
       /^\/api\/v1\/sites\/(global|sa|qa|kw|om)\/blogs(.*)$/
@@ -41,6 +44,22 @@ const server = http.createServer((req, res) => {
   }
   const [, market, suffix] = match;
   calls.push({ market, suffix, query: u.search });
+  if (allOffline) return req.socket.destroy();
+  if (!suffix && listMode === "slow")
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  if (!suffix && listMode === "malformed") return res.end("invalid JSON");
+  if (!suffix && listMode === "wrong-market")
+    return res.end(
+      JSON.stringify(f.list([card(market === "om" ? "qa" : "om")]))
+    );
+  if (!suffix && listMode === "invalid-media")
+    return res.end(
+      JSON.stringify(
+        f.list([
+          card(market, "unsafe", { ...f.image, src: "javascript:invalid" }),
+        ])
+      )
+    );
   let body;
   if (!suffix) {
     const page = Number(u.searchParams.get("page") || 1),
@@ -56,12 +75,12 @@ const server = http.createServer((req, res) => {
       body = { success: false };
     } else
       body = f.list(
-        emptyMarket === market
+        emptyMarket === market || u.searchParams.has("q")
           ? []
           : all.slice((page - 1) * limit, page * limit),
         page,
         limit,
-        emptyMarket === market ? 0 : all.length
+        emptyMarket === market || u.searchParams.has("q") ? 0 : all.length
       );
   } else if (suffix === "/featured")
     body = { success: true, items: [card(market)] };
@@ -74,12 +93,29 @@ const server = http.createServer((req, res) => {
         ...(newPublished ? ["new-after-build"] : []),
       ].map((slug) => ({ market, slug, updatedAt: "2025-02-01T00:00:00Z" })),
     };
-  else if (suffix.endsWith("/related"))
-    body = { success: true, items: [card(market, "related", null)] };
-  else if (suffix === "/outage") {
+  else if (suffix.endsWith("/related")) {
+    if (relatedMode === "slow")
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    if (relatedMode === "offline" || relatedMode === "missing") {
+      res.writeHead(relatedMode === "missing" ? 404 : 503);
+      body = { success: false };
+    } else body = { success: true, items: [card(market, "related", null)] };
+  } else if (suffix === "/outage") {
     res.writeHead(503);
     body = { success: false };
-  } else if (suffix === "/wrong-market")
+  } else if (suffix === "/invalid-canonical")
+    body = {
+      success: true,
+      article: {
+        ...detail(market, "invalid-canonical"),
+        seo: {
+          ...f.detail().seo,
+          canonicalUrl:
+            "https://locator.ae/about/newsroom/blog/invalid-canonical",
+        },
+      },
+    };
+  else if (suffix === "/wrong-market")
     body = {
       success: true,
       article: detail(market === "qa" ? "global" : "qa", "wrong-market"),
@@ -143,7 +179,9 @@ async function run(origin) {
   const output = process.env.SCREENSHOT_DIR;
   if (output) fs.mkdirSync(output, { recursive: true });
   try {
-    for (const width of [1440, 390]) {
+    for (const width of process.env.CMS_TEST_WIDTHS
+      ? process.env.CMS_TEST_WIDTHS.split(",").map(Number)
+      : [1440, 390]) {
       const context = await browser.newContext({
         viewport: { width, height: 1000 },
         reducedMotion: "reduce",
@@ -159,6 +197,8 @@ async function run(origin) {
           : route.fulfill({ contentType: "text/plain", body: "" })
       );
       const page = await context.newPage();
+      const pageErrors = [];
+      page.on("pageerror", (error) => pageErrors.push(error.message));
       for (const market of markets) {
         await page.goto(origin + blog(market), { waitUntil: "networkidle" });
         assert.equal(
@@ -217,23 +257,189 @@ async function run(origin) {
       emptyMarket = "om";
       await page.goto(origin + blog("om"), { waitUntil: "networkidle" });
       await page
-        .getByText("No published blog articles yet.", { exact: true })
+        .getByRole("heading", { name: "No articles yet", exact: true })
         .waitFor();
       emptyMarket = "";
       failMarket = "qa";
       await page.goto(origin + blog("qa"), { waitUntil: "networkidle" });
       await page
-        .getByRole("heading", { name: "Blog temporarily unavailable" })
+        .getByRole("heading", { name: "Articles temporarily unavailable" })
         .waitFor();
       failMarket = "";
-      for (const slug of ["wrong-market", "outage"]) {
+      await page
+        .getByRole("button", { name: "Try again", exact: true })
+        .click();
+      try {
+        await page.locator(".bl-lead").waitFor();
+      } catch (error) {
+        if (output)
+          await page.screenshot({
+            path: path.join(output, "retry-failure-" + width + ".png"),
+          });
+        console.error(
+          JSON.stringify({
+            width,
+            pageErrors,
+            recentCalls: calls.slice(-5),
+            retryButtons: await page
+              .getByRole("button", { name: /Try|Trying/ })
+              .evaluateAll((elements) =>
+                elements.map((element) => element.outerHTML)
+              ),
+            headings: await page.locator("h1,h2").allTextContents(),
+          })
+        );
+        throw error;
+      }
+      for (const slug of ["wrong-market", "outage", "invalid-canonical"]) {
         await page.goto(origin + blog("qa") + "/" + slug, {
           waitUntil: "networkidle",
         });
         await page
-          .getByRole("heading", { name: "Blog temporarily unavailable" })
+          .getByRole("heading", {
+            name: "This article is temporarily unavailable",
+          })
           .waitFor();
       }
+      // Slow CMS responses must not block the rest of the newsroom, and the
+      // selected Blog tab must survive the streamed feed arriving.
+      listMode = "slow";
+      await page.goto(origin + "/qa/about/newsroom", { waitUntil: "commit" });
+      // Incoming streamed content can coexist with a hidden loading tree.
+      await page.locator(".nrh-title:visible").waitFor();
+      await page.getByRole("tab", { name: "Blog", exact: true }).click();
+      await page.locator('.nrb-main [data-content-state="loading"]').waitFor();
+      if (output)
+        await page.screenshot({
+          path: path.join(output, "newsroom-loading-" + width + ".png"),
+        });
+      await page.locator(".nrb-grid .nrb-card-title").first().waitFor();
+      assert.equal(
+        await page
+          .getByRole("tab", { name: "Blog", exact: true })
+          .getAttribute("aria-selected"),
+        "true"
+      );
+      listMode = "";
+
+      // Real empty content and service failure have different messages. News,
+      // videos and other tabs remain available even with the CMS disconnected.
+      allOffline = true;
+      await page.goto(origin + "/qa/about/newsroom", {
+        waitUntil: "networkidle",
+      });
+      await page
+        .getByRole("heading", {
+          name: "Articles temporarily unavailable",
+          exact: true,
+        })
+        .waitFor();
+      assert.ok(await page.locator(".nrb-hero-title").isVisible());
+      await page.getByRole("tab", { name: "Blog", exact: true }).click();
+      await page
+        .locator('.nrb-main [data-content-state="unavailable"]')
+        .waitFor();
+      assert.equal(
+        await page
+          .getByRole("heading", { name: "No articles yet", exact: true })
+          .count(),
+        0
+      );
+      if (output)
+        await page.screenshot({
+          path: path.join(output, "newsroom-offline-" + width + ".png"),
+        });
+      allOffline = false;
+      await page
+        .getByRole("button", { name: "Try again", exact: true })
+        .first()
+        .click();
+      await page.locator(".nvc-blog-card").first().waitFor();
+
+      for (const mode of ["malformed", "wrong-market", "invalid-media"]) {
+        listMode = mode;
+        await page.goto(origin + blog("om"), { waitUntil: "networkidle" });
+        await page
+          .getByRole("heading", {
+            name: "Articles temporarily unavailable",
+            exact: true,
+          })
+          .waitFor();
+        assert.equal(await page.locator(".bl-lead").count(), 0);
+      }
+      listMode = "";
+      await page.goto(origin + blog("om") + "?q=unmatched", {
+        waitUntil: "networkidle",
+      });
+      await page
+        .getByRole("heading", { name: "No matching articles", exact: true })
+        .waitFor();
+      assert.equal(
+        await page
+          .getByRole("link", { name: "View all articles", exact: true })
+          .getAttribute("href"),
+        blog("om")
+      );
+      await page.goto(origin + blog("om") + "?page=999", {
+        waitUntil: "networkidle",
+      });
+      await page
+        .getByRole("heading", { name: "No articles on this page", exact: true })
+        .waitFor();
+
+      for (const mode of ["offline", "missing"]) {
+        relatedMode = mode;
+        await page.goto(origin + blog("qa") + "/fixture-article", {
+          waitUntil: "networkidle",
+        });
+        assert.equal(
+          await page.locator(".ba h1").innerText(),
+          "qa article fixture-article"
+        );
+        assert.equal(await page.locator(".ba-table").count(), 2);
+        assert.equal(await page.locator(".ba-rel-item").count(), 0);
+      }
+      relatedMode = "slow";
+      await page.goto(origin + blog("qa") + "/fixture-article", {
+        waitUntil: "commit",
+      });
+      await page.locator(".ba h1").waitFor();
+      assert.equal(await page.locator(".ba-rel-item").count(), 0);
+      await page.locator(".ba-rel-item").waitFor();
+      relatedMode = "";
+
+      allOffline = true;
+      await page.goto(origin + blog("qa") + "/fixture-article", {
+        waitUntil: "networkidle",
+      });
+      await page
+        .getByRole("heading", {
+          name: "This article is temporarily unavailable",
+          exact: true,
+        })
+        .waitFor();
+      assert.equal(
+        await page
+          .getByRole("link", { name: "Back to newsroom", exact: true })
+          .getAttribute("href"),
+        "/qa/about/newsroom"
+      );
+      assert.equal(await page.locator(".ba").count(), 0);
+      if (output)
+        await page.screenshot({
+          path: path.join(output, "article-offline-" + width + ".png"),
+        });
+      allOffline = false;
+      await page
+        .getByRole("button", { name: "Try again", exact: true })
+        .click();
+      await page.locator(".ba h1").waitFor();
+      assert.equal(
+        new URL(page.url()).pathname,
+        blog("qa") + "/fixture-article"
+      );
+      assert.deepEqual(pageErrors, []);
+
       newPublished = true;
       await page.goto(origin + blog("qa") + "/new-after-build", {
         waitUntil: "networkidle",
@@ -288,11 +494,9 @@ async function run(origin) {
         await document.fonts.ready;
       });
       if (output)
-        await page
-          .locator(".ba")
-          .screenshot({
-            path: path.join(output, "cms-global-article-" + width + ".png"),
-          });
+        await page.locator(".ba").screenshot({
+          path: path.join(output, "cms-global-article-" + width + ".png"),
+        });
       const Reference = reference();
       if (Reference) {
         const metrics = () =>
@@ -358,11 +562,9 @@ async function run(origin) {
           "CMS preview layout differs by " + maxDelta + "px at " + width + "px"
         );
         if (output)
-          await page
-            .locator(".ba")
-            .screenshot({
-              path: path.join(output, "cms-global-reference-" + width + ".png"),
-            });
+          await page.locator(".ba").screenshot({
+            path: path.join(output, "cms-global-reference-" + width + ".png"),
+          });
         results.push({
           width,
           referenceBlocks: actual.length,

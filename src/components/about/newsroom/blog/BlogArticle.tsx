@@ -5,7 +5,7 @@ import Link from "next/link";
 import { contentHref, blogBase, blogHref } from "@/lib/cms-blog/urls";
 import RichText from "./RichText";
 import { useEffect, useMemo, useState } from "react";
-import type { MouseEvent } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import type {
   ArticleAuthor,
   ArticleSummary,
@@ -471,12 +471,13 @@ function PreviewSidebar({
   toc,
   related,
   showThumbs,
+  relatedContent,
 }: {
   toc: Array<{ id: string; label: string }>;
   related: RelatedArticle[];
   showThumbs: boolean;
+  relatedContent?: ReactNode;
 }) {
-  const market = useContext(MarketContext);
   const [active, setActive] = useState(toc[0]?.id ?? "");
 
   useEffect(() => {
@@ -543,7 +544,15 @@ function PreviewSidebar({
             </ol>
           </nav>
         )}
-        {related.length > 0 && (
+        {relatedContent ?? <RelatedArticles articles={related} showThumbs={showThumbs} />}
+      </div>
+    </aside>
+  );
+}
+
+export function RelatedArticles({ articles: related, showThumbs }: { articles: RelatedArticle[]; showThumbs: boolean }) {
+  const market = useContext(MarketContext);
+  return related.length > 0 ? (
           <section className="ba-card ba-rel" aria-label="Related articles">
             <div className="ba-rel-head">
               <h2 className="ba-card-title">Related articles</h2>
@@ -578,10 +587,7 @@ function PreviewSidebar({
               ))}
             </ul>
           </section>
-        )}
-      </div>
-    </aside>
-  );
+        ) : null;
 }
 
 type PreviewProps = {
@@ -595,6 +601,7 @@ type PreviewProps = {
   author?: ArticleAuthor | null;
   summary?: ArticleSummary | null;
   relatedArticles?: RelatedArticle[];
+  relatedContent?: ReactNode;
   categoryName?: string;
   publishedAt?: string | null;
   readingMinutes?: number;
@@ -611,6 +618,7 @@ export default function BlogArticle({
   author,
   summary,
   relatedArticles = [],
+  relatedContent,
   categoryName,
   publishedAt,
   readingMinutes,
@@ -747,6 +755,7 @@ export default function BlogArticle({
         <PreviewSidebar
           toc={toc}
           related={relatedArticles}
+          relatedContent={relatedContent}
           showThumbs={Boolean(banner)}
         />
       </div>

@@ -5,6 +5,7 @@ import { countries } from "../../config/countries";
 import { canIndex } from "../../config/indexing";
 import { countryPath } from "../country/paths";
 import { siteConfig, siteUrl } from "../../config/site";
+import { CmsPayloadError } from "./validation";
 export const publicArticleUrl = (market: CmsDetail["market"], slug: string) =>
   new URL(blogHref(market, slug), siteUrl).href;
 export const absoluteImage = (url: string) => new URL(url, siteUrl).href;
@@ -12,9 +13,7 @@ export const absoluteImage = (url: string) => new URL(url, siteUrl).href;
 export function articleCanonical(post: CmsDetail): string {
   const expected = publicArticleUrl(post.market, post.slug);
   if (post.seo.canonicalUrl && post.seo.canonicalUrl !== expected)
-    throw new Error(
-      "CMS blog canonical differs from its public market URL; review CMS metadata before publishing"
-    );
+    throw new CmsPayloadError();
   return expected;
 }
 export function articleMetadata(post: CmsDetail): Metadata {

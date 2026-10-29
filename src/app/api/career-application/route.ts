@@ -1,6 +1,7 @@
 import { getJob } from '@/components/about/career/jobs-data'
 import { sendMail } from '@/lib/email/send-mail'
 import { careerApplicationTemplate } from '@/lib/email/templates/career-application'
+import { verifyTurnstile } from '@/lib/turnstile'
 
 export const runtime = 'nodejs'
 
@@ -50,6 +51,11 @@ export async function POST(request: Request) {
   } catch {
     return failure('Unable to read your application. Please try again.')
   }
+
+  // Parsing is bounded above; do not read/process resume bytes, render mail or
+  // perform any delivery side effect until the single-use token is verified.
+  const verification = await verifyTurnstile(form, 'career_application')
+  if (!verification.success) return failure(verification.error)
 
   const text = (key: string) => {
     const value = form.get(key)
