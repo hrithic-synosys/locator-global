@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, useTransition } from "react";
+import { useState, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "@/components/country/CountryLink";
 
@@ -29,9 +29,11 @@ export default function ContentState({
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [reloading, setReloading] = useState(false);
+  const retrying = pending || reloading;
   // Do not offer an inert retry button while its client code is hydrating.
   const ready = useSyncExternalStore(subscribe, clientReady, serverReady);
-  const loading = state === "loading" || pending;
+  const loading = state === "loading" || retrying;
   const Heading = headingLevel === 1 ? "h1" : "h2";
   return (
     <div
@@ -85,15 +87,23 @@ export default function ContentState({
           {state === "unavailable" && (
             <button
               type="button"
-              disabled={!ready || pending}
-              onClick={() =>
-                startTransition(() => {
-                  router.refresh();
-                  onRetry?.();
-                })
-              }
+              disabled={!ready || retrying}
+              onClick={() => {
+                if (onRetry) {
+                  startTransition(() => {
+                    router.refresh();
+                    onRetry();
+                  });
+                } else {
+                  // A new document reliably recovers the CMS section even if
+                  // an earlier streamed/soft-refresh transition was interrupted.
+                  // Keep the exact market, search parameters and article URL.
+                  setReloading(true);
+                  window.location.reload();
+                }
+              }}
             >
-              {pending ? "Trying again…" : "Try again"}
+              {retrying ? "Trying again…" : "Try again"}
             </button>
           )}
           {href && <Link href={href}>{linkLabel || "Back to newsroom"}</Link>}

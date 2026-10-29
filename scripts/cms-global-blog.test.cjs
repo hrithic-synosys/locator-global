@@ -115,7 +115,8 @@ test("every public API preserves /api/v1 and its explicit market, including iden
     assert.equal(opts.credentials, "omit");
     assert.equal(opts.redirect, "error");
     assert.equal(opts.cache, "no-store");
-    assert.equal(opts.headers, undefined);
+    assert.equal(opts.headers["Cache-Control"], "no-cache, no-store, max-age=0");
+    assert.ok(u.searchParams.get("_locator_fresh"));
   }
   for (const invalid of ["ae", "bh", "all", "xx", undefined])
     await assert.rejects(api.listBlogs(invalid));

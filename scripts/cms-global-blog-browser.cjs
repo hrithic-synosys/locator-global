@@ -196,10 +196,41 @@ async function run(origin) {
           ? route.continue()
           : route.fulfill({ contentType: "text/plain", body: "" })
       );
-      const page = await context.newPage();
+      let page;
       const pageErrors = [];
-      page.on("pageerror", (error) => pageErrors.push(error.message));
+      const pendingRequests = new Set();
+      const freshPage = async () => {
+        if (page) await page.close();
+        pendingRequests.clear();
+        page = await context.newPage();
+        // This rendering suite changes synthetic publication/availability states.
+        // Notify the real cache before each direct navigation, as the CMS will.
+        const originalGoto = page.goto.bind(page);
+        page.goto = async (...args) => {
+          for (const market of markets) {
+            const response = await fetch(origin + "/api/revalidate/blogs", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + fixtureSecret,
+              },
+              body: JSON.stringify({ market, slug: "fixture-article" }),
+            });
+            assert.equal(response.status, 200);
+          }
+          return originalGoto(...args);
+        };
+        page.on("request", (request) => pendingRequests.add(request.url()));
+        page.on("requestfinished", (request) =>
+          pendingRequests.delete(request.url())
+        );
+        page.on("requestfailed", (request) =>
+          pendingRequests.delete(request.url())
+        );
+        page.on("pageerror", (error) => pageErrors.push(error.message));
+      };
       for (const market of markets) {
+        await freshPage();
         await page.goto(origin + blog(market), { waitUntil: "networkidle" });
         assert.equal(
           await page.locator(".bl-lead").getAttribute("href"),
@@ -255,12 +286,14 @@ async function run(origin) {
         }
       }
       emptyMarket = "om";
+      await freshPage();
       await page.goto(origin + blog("om"), { waitUntil: "networkidle" });
       await page
         .getByRole("heading", { name: "No articles yet", exact: true })
         .waitFor();
       emptyMarket = "";
       failMarket = "qa";
+      await freshPage();
       await page.goto(origin + blog("qa"), { waitUntil: "networkidle" });
       await page
         .getByRole("heading", { name: "Articles temporarily unavailable" })
@@ -281,6 +314,7 @@ async function run(origin) {
             width,
             pageErrors,
             recentCalls: calls.slice(-5),
+            pendingRequests: [...pendingRequests],
             retryButtons: await page
               .getByRole("button", { name: /Try|Trying/ })
               .evaluateAll((elements) =>
@@ -304,6 +338,7 @@ async function run(origin) {
       // Slow CMS responses must not block the rest of the newsroom, and the
       // selected Blog tab must survive the streamed feed arriving.
       listMode = "slow";
+      await freshPage();
       await page.goto(origin + "/qa/about/newsroom", { waitUntil: "commit" });
       // Incoming streamed content can coexist with a hidden loading tree.
       await page.locator(".nrh-title:visible").waitFor();
@@ -325,6 +360,7 @@ async function run(origin) {
       // Real empty content and service failure have different messages. News,
       // videos and other tabs remain available even with the CMS disconnected.
       allOffline = true;
+      await freshPage();
       await page.goto(origin + "/qa/about/newsroom", {
         waitUntil: "networkidle",
       });
@@ -610,6 +646,7 @@ async function run(origin) {
     await browser.close();
   }
 }
+const fixtureSecret = "isolated-blog-rendering-fixture-secret-32-plus";
 server.listen(0, "127.0.0.1", () => {
   const port = 35000 + Math.floor(Math.random() * 5000),
     api = "http://127.0.0.1:" + server.address().port + "/api/v1";
@@ -622,6 +659,7 @@ server.listen(0, "127.0.0.1", () => {
         CMS_API_BASE_URL: api,
         NEXT_PUBLIC_SITE_URL: "https://locatorglobal.com",
         TURNSTILE_SECRET_KEY: "",
+        CMS_BLOG_REVALIDATION_SECRET: fixtureSecret,
       },
       windowsHide: true,
       stdio: ["ignore", "pipe", "pipe"],

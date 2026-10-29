@@ -10,6 +10,8 @@ function loader({
   fetchImpl = async () => Response.json(fixture.list([])),
   env = {},
   previewPath,
+  cacheImpl = (fn) => fn,
+  revalidateTag = () => {},
 } = {}) {
   const modules = new Map(),
     requests = [];
@@ -35,6 +37,9 @@ function loader({
     }).outputText;
     const requireLocal = (id) => {
       if (id === "server-only") return {};
+      if (id === "node:crypto") return require(id);
+      if (id === "next/cache")
+        return { unstable_cache: cacheImpl, revalidateTag };
       if (id === "react") return { ...React, cache: (fn) => fn };
       if (id === "react/jsx-runtime") return require(id);
       if (id === "next/image")
@@ -88,6 +93,7 @@ function loader({
         AbortSignal,
         console,
         Response,
+        Buffer,
         Date,
         Set,
         Map,
