@@ -45,7 +45,7 @@ export default async function CarTrackingSystemPage({ params }: { params: Promis
       <CarTrackingBenefits />
       <WhoWeAreNumbers />
       <CarTrackingWhyChoose />
-      <TrackingVoices />
+      {market !== 'global' && <TrackingVoices />}
       <ServiceVideo
         eyebrow=""
         title="All your Vehicles, Assets & Staffs on One Software"

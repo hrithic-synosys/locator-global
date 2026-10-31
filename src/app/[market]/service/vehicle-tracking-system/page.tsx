@@ -44,7 +44,7 @@ export default async function VehicleTrackingSystemPage({ params }: { params: Pr
       <VehicleTrackingFeatures />
       <WhoWeAreNumbers />
       <VehicleTrackingWhy />
-      <TrackingVoices />
+      {market !== 'global' && <TrackingVoices />}
       <VehicleTrackingBenefits />
       <ServiceVideo
         eyebrow=""
