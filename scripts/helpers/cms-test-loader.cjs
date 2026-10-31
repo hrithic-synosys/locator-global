@@ -94,6 +94,7 @@ function loader({
         console,
         Response,
         Buffer,
+        structuredClone,
         Date,
         Set,
         Map,

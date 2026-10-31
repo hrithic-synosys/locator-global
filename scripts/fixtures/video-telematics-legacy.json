@@ -1,0 +1,310 @@
+{
+  "seo": {
+    "title": "Video Telematics — AI Dash Cameras & MDVR | Service",
+    "description": "AI-powered fleet dash cameras and MDVR safety systems — real-time driver monitoring, cargo surveillance, and multi-camera recording for trucks, taxis, buses, and commercial fleets.",
+    "ogTitle": "Video Telematics | Locator",
+    "ogDescription": "AI-powered dash cameras and MDVR recording for commercial fleets — collision prevention, driver monitoring, and cost savings.",
+    "keywords": []
+  },
+  "sectionOrder": [
+    "hero",
+    "description",
+    "driverAlerts",
+    "showcase",
+    "industries",
+    "video",
+    "faq",
+    "blogs",
+    "finalCta"
+  ],
+  "enabled": {
+    "hero": true,
+    "description": true,
+    "introFeatures": false,
+    "driverAlerts": true,
+    "showcase": true,
+    "journeySteps": false,
+    "industries": true,
+    "whyChoose": false,
+    "video": true,
+    "faq": true,
+    "blogs": true,
+    "finalCta": true
+  },
+  "hero": {
+    "label": "Video Telematics",
+    "heading": "AI-Powered Fleet Dash Cameras & MDVR Safety Systems",
+    "paragraphs": [
+      "Real-time driver monitoring, cargo surveillance, and multi-camera recording for trucks, taxis, buses, and commercial fleets."
+    ],
+    "image": "/services/dashcam-hero-banner.webp",
+    "primaryCta": {
+      "label": "Get a free quote",
+      "href": "/get-a-quote"
+    },
+    "secondaryCta": {
+      "label": "Get a demo",
+      "href": "/get-a-free-demo"
+    }
+  },
+  "description": {
+    "paragraphs": [
+      "LOCATOR offers AI Fleet Dash Cameras and MDVR Recording Systems (Mobile Digital Video Recorders) designed specifically for fleet safety, cargo protection, and commercial vehicle monitoring.",
+      "These systems help businesses monitor vehicles on the road, drivers en-route, cargo areas, loading operations, and parking yards or vehicle depots — offering full visibility for logistics companies, transport fleets, trucks, taxis, buses, and delivery vehicles."
+    ],
+    "emphasis": [
+      "AI Fleet Dash Cameras",
+      "MDVR Recording Systems (Mobile Digital Video Recorders)"
+    ]
+  },
+  "introFeatures": {
+    "heading": "",
+    "paragraphs": [],
+    "order": [],
+    "items": {}
+  },
+  "driverAlerts": {
+    "heading": "Prevent Road Incidents with ",
+    "accent": "AI-Powered Dashcam Alerts",
+    "paragraphs": [],
+    "order": [
+      "yawning",
+      "seatbelt",
+      "smoking",
+      "nodding",
+      "droopy-eyes",
+      "talking",
+      "phoneUse",
+      "looking-away"
+    ],
+    "items": {
+      "yawning": {
+        "title": "Frequent\nYawning",
+        "image": "/services/ai-alerts/yawning.png",
+        "imageW": 1671,
+        "imageH": 941
+      },
+      "seatbelt": {
+        "title": "Not Wearing\nSeatbelt",
+        "image": "/services/ai-alerts/seatbelt.png",
+        "imageW": 1672,
+        "imageH": 941
+      },
+      "smoking": {
+        "title": "Smoking\nin the Cabin",
+        "image": "/services/ai-alerts/smoking.png",
+        "imageW": 1672,
+        "imageH": 941
+      },
+      "nodding": {
+        "title": "Nodding\nOff",
+        "image": "/services/ai-alerts/nodding-off.png",
+        "imageW": 1672,
+        "imageH": 941
+      },
+      "droopy-eyes": {
+        "title": "Droopy\nEyes",
+        "image": "/services/ai-alerts/droopy-eyes.png",
+        "imageW": 1672,
+        "imageH": 941
+      },
+      "talking": {
+        "title": "Talking\n& Distraction",
+        "image": "/services/ai-alerts/talking-distraction.png",
+        "imageW": 1672,
+        "imageH": 941
+      },
+      "phoneUse": {
+        "title": "Texting on\na Phone",
+        "image": "/services/ai-alerts/texting.png",
+        "imageW": 1672,
+        "imageH": 941
+      },
+      "looking-away": {
+        "title": "Looking\nAway",
+        "image": "/services/ai-alerts/looking-away.png",
+        "imageW": 1672,
+        "imageH": 941
+      }
+    }
+  },
+  "showcase": {
+    "heading": "Enhance Fleet Visibility with Video Telematics",
+    "eyebrow": "Video Telematics",
+    "paragraphs": [
+      "Live HD video insights to monitor drivers, road conditions, and on-road operations with ease."
+    ],
+    "subheading": "AI-Powered Fleet Dash Cameras & MDVR Safety",
+    "secondaryParagraphs": [
+      "Real-time driver monitoring, cargo surveillance, and multi-camera recording for trucks, taxis, buses, and commercial fleets."
+    ],
+    "image": "/showcase/video-telematics-dashboard.webp",
+    "imageAlt": "Live multi-camera fleet dashcam feeds — road and cabin views",
+    "order": [
+      "liveVideo",
+      "collisionPrevention",
+      "driverMonitoring",
+      "cargoProtection"
+    ],
+    "items": {
+      "liveVideo": {
+        "title": "Live HD Video",
+        "description": "Stream real-time HD road and driver footage to improve driver behavior, retrieve video on-demand, and enforce safer driving across your fleet.",
+        "icon": "camera"
+      },
+      "collisionPrevention": {
+        "title": "Collision Prevention",
+        "description": "Analyze incidents with video evidence and deploy AI audible alerts to warn drivers instantly, reducing future collision risks.",
+        "icon": "shield"
+      },
+      "driverMonitoring": {
+        "title": "Operational Efficiency",
+        "description": "AI driver monitoring detects drowsiness and distraction (yawning, eye closure, phone use, looking away), helping managers take proactive safety actions.",
+        "icon": "monitor"
+      },
+      "cargoProtection": {
+        "title": "Cost Savings",
+        "description": "Cut costs from accidents, insurance claims, vehicle damage, and fraud disputes with undeniable recorded proof that protects your business.",
+        "icon": "cargo"
+      }
+    }
+  },
+  "journeySteps": {
+    "heading": "",
+    "paragraphs": [],
+    "order": [],
+    "items": {},
+    "cta": {
+      "label": "Book a Live Demo",
+      "href": "/get-a-free-demo"
+    }
+  },
+  "industries": {
+    "heading": "Revolutionizing Industries with AI Camera & Video Telematics",
+    "paragraphs": [],
+    "order": [
+      "transport",
+      "warehouse",
+      "school",
+      "waste",
+      "fieldServices"
+    ],
+    "items": {
+      "transport": {
+        "title": "Transportation & Logistics",
+        "description": "Prevent cargo loss with AI theft detection and HD video proof, speeding claims, reducing fraud disputes, and improving fleet safety across deliveries and loading hubs.",
+        "image": "/services/industries-we-serve/transportation-and-logistics.webp"
+      },
+      "warehouse": {
+        "title": "Warehouse",
+        "description": "Enable 24/7 AI video monitoring for forklifts and machines, preventing equipment damage, boosting operator accountability, and strengthening warehouse incident reporting.",
+        "image": "/services/industries-we-serve/warehouse.webp"
+      },
+      "school": {
+        "title": "School Districts",
+        "description": "Protect students and drivers with AI behavior monitoring and stop-arm violation evidence, improving road safety, driver training, and regulatory enforcement.",
+        "image": "/services/industries-we-serve/school-districtse.webp"
+      },
+      "waste": {
+        "title": "Waste Management",
+        "description": "Resolve complaints faster using real-time HD video and portal retrieval, improving driver coaching, service quality, and customer issue resolution.",
+        "image": "/services/industries-we-serve/waste-management.webp"
+      },
+      "fieldServices": {
+        "title": "Field Services & Recovery",
+        "description": "Provide premium safety assurance with AI-protected video telematics for high-value vehicle transport, validating service completion and adding customer trust through recorded proof.",
+        "image": "/services/industries-we-serve/field-services-and-recovery-vehicles.webp"
+      }
+    },
+    "eyebrow": "Industries we serve"
+  },
+  "whyChoose": {
+    "heading": "",
+    "paragraphs": [],
+    "order": [],
+    "items": {},
+    "eyebrow": ""
+  },
+  "faq": {
+    "heading": "Frequently Asked Questions",
+    "order": [
+      "question-01",
+      "question-02",
+      "question-03",
+      "question-04",
+      "question-05",
+      "question-06",
+      "question-07",
+      "question-08",
+      "question-09",
+      "question-10",
+      "question-11",
+      "question-12",
+      "question-13",
+      "question-14",
+      "question-15"
+    ],
+    "items": {
+      "question-01": {
+        "q": "What is ADAS and DMS?",
+        "a": "ADAS (Advanced Driver Assistance System) detects road risks like lane departure and collisions. DMS (Driver Monitoring System) tracks driver fatigue and distraction using AI to trigger instant alerts."
+      },
+      "question-02": {
+        "q": "What AI fleet dash camera options does LOCATOR have?",
+        "a": "LOCATOR offers AI dash cams, multi-camera dash cams, and 4–16 channel MDVR systems, including front, cabin, side, and driver-monitoring cameras for full fleet visibility."
+      },
+      "question-03": {
+        "q": "Who should consider implementing AI Dashcam for their fleet?",
+        "a": "Companies managing trucks, taxis, buses, delivery, logistics, recovery, construction, school transport, and service fleets should adopt AI dash cams for safety, compliance, and incident proof."
+      },
+      "question-04": {
+        "q": "Why are dash cams important for commercial fleets?",
+        "a": "Dash cams provide video evidence for accidents, cargo incidents, driver coaching, insurance claims, and dispute protection, improving accountability and reducing business risk."
+      },
+      "question-05": {
+        "q": "What is the advantage of LOCATOR’s dash cam solutions?",
+        "a": "LOCATOR adds value through AI driver alerts, HD evidence, secure cloud video retrieval, and telematics integration, helping fleets operate safer and smarter."
+      },
+      "question-06": {
+        "q": "How do fleet dash cam systems work? When is video saved?",
+        "a": "Cameras record continuously. Video is saved automatically when AI detects events like harsh braking, collision, or driver drowsiness, or when triggered manually by managers."
+      },
+      "question-07": {
+        "q": "Can I download the videos?",
+        "a": "You cannot download directly to the device, but you can request video retrieval from the LOCATOR portal, and our support team can provide approved footage if needed."
+      },
+      "question-08": {
+        "q": "How do I check my dash cam footage?",
+        "a": "Footage can be viewed via the LOCATOR video telematics dashboard/portal using vehicle and event filters for quick incident playback."
+      },
+      "question-09": {
+        "q": "Does a dash cam drain battery?",
+        "a": "No, fleet dash cams are optimized for vehicle power systems and do not drain battery during normal operation. Parking mode power usage is also protected by cut-off safety."
+      },
+      "question-10": {
+        "q": "Does a dash cam drain battery? How is power managed?",
+        "a": "LOCATOR dash cams include voltage and ignition-based power control, preventing battery drain even when vehicles are idle or parked."
+      },
+      "question-11": {
+        "q": "What features should I consider when choosing a fleet dash camera?",
+        "a": "Look for AI alerts (DMS/ADAS), multi-camera support, night vision, GPS tagging, event-triggered saving, cloud video access, and MDVR channel scalability."
+      },
+      "question-12": {
+        "q": "How can AI dash cams improve driver behavior and safety?",
+        "a": "AI dash cams detect drowsiness, distraction, harsh driving, and road hazards, issuing real-time alerts and enabling data-backed driver coaching to reduce accidents."
+      },
+      "question-13": {
+        "q": "What are the best practices for implementing dash cam systems in fleets?",
+        "a": "Best practices include: set AI alert thresholds, integrate driver training, review events weekly, enforce safety policies, use video for claims, and protect data via secure access controls."
+      },
+      "question-14": {
+        "q": "How do I check my dash cam footage from the portal?",
+        "a": "Use LOCATOR’s HD video telematics portal, filter by date, vehicle, or event, and play footage instantly without removing the SD card."
+      },
+      "question-15": {
+        "q": "Does a dash cam drain battery when the vehicle is parked?",
+        "a": "No. LOCATOR cameras use smart power management and auto cut-off protection to ensure zero battery drain risk."
+      }
+    }
+  }
+}

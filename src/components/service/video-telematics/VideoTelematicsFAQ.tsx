@@ -1,76 +1,22 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from '@/components/country/CountryLink'
+import { useState } from "react";
+import Link from "@/components/country/CountryLink";
 
-const EASE = 'cubic-bezier(.22,.61,.36,1)'
+const EASE = "cubic-bezier(.22,.61,.36,1)";
 
-const FAQS = [
-  {
-    q: 'What is ADAS and DMS?',
-    a: 'ADAS (Advanced Driver Assistance System) detects road risks like lane departure and collisions. DMS (Driver Monitoring System) tracks driver fatigue and distraction using AI to trigger instant alerts.',
-  },
-  {
-    q: 'What AI fleet dash camera options does LOCATOR have?',
-    a: 'LOCATOR offers AI dash cams, multi-camera dash cams, and 4–16 channel MDVR systems, including front, cabin, side, and driver-monitoring cameras for full fleet visibility.',
-  },
-  {
-    q: 'Who should consider implementing AI Dashcam for their fleet?',
-    a: 'Companies managing trucks, taxis, buses, delivery, logistics, recovery, construction, school transport, and service fleets should adopt AI dash cams for safety, compliance, and incident proof.',
-  },
-  {
-    q: 'Why are dash cams important for commercial fleets?',
-    a: 'Dash cams provide video evidence for accidents, cargo incidents, driver coaching, insurance claims, and dispute protection, improving accountability and reducing business risk.',
-  },
-  {
-    q: 'What is the advantage of LOCATOR’s dash cam solutions?',
-    a: 'LOCATOR adds value through AI driver alerts, HD evidence, secure cloud video retrieval, and telematics integration, helping fleets operate safer and smarter.',
-  },
-  {
-    q: 'How do fleet dash cam systems work? When is video saved?',
-    a: 'Cameras record continuously. Video is saved automatically when AI detects events like harsh braking, collision, or driver drowsiness, or when triggered manually by managers.',
-  },
-  {
-    q: 'Can I download the videos?',
-    a: 'You cannot download directly to the device, but you can request video retrieval from the LOCATOR portal, and our support team can provide approved footage if needed.',
-  },
-  {
-    q: 'How do I check my dash cam footage?',
-    a: 'Footage can be viewed via the LOCATOR video telematics dashboard/portal using vehicle and event filters for quick incident playback.',
-  },
-  {
-    q: 'Does a dash cam drain battery?',
-    a: 'No, fleet dash cams are optimized for vehicle power systems and do not drain battery during normal operation. Parking mode power usage is also protected by cut-off safety.',
-  },
-  {
-    q: 'Does a dash cam drain battery? How is power managed?',
-    a: 'LOCATOR dash cams include voltage and ignition-based power control, preventing battery drain even when vehicles are idle or parked.',
-  },
-  {
-    q: 'What features should I consider when choosing a fleet dash camera?',
-    a: 'Look for AI alerts (DMS/ADAS), multi-camera support, night vision, GPS tagging, event-triggered saving, cloud video access, and MDVR channel scalability.',
-  },
-  {
-    q: 'How can AI dash cams improve driver behavior and safety?',
-    a: 'AI dash cams detect drowsiness, distraction, harsh driving, and road hazards, issuing real-time alerts and enabling data-backed driver coaching to reduce accidents.',
-  },
-  {
-    q: 'What are the best practices for implementing dash cam systems in fleets?',
-    a: 'Best practices include: set AI alert thresholds, integrate driver training, review events weekly, enforce safety policies, use video for claims, and protect data via secure access controls.',
-  },
-  {
-    q: 'How do I check my dash cam footage from the portal?',
-    a: 'Use LOCATOR’s HD video telematics portal, filter by date, vehicle, or event, and play footage instantly without removing the SD card.',
-  },
-  {
-    q: 'Does a dash cam drain battery when the vehicle is parked?',
-    a: 'No. LOCATOR cameras use smart power management and auto cut-off protection to ensure zero battery drain risk.',
-  },
-]
+import { sharedVideoTelematics } from "@/content/pages/video-telematics/shared";
+import type { VideoTelematicsContent } from "@/content/pages/video-telematics/schema";
 
-export default function VideoTelematicsFAQ() {
-  const [openIdx, setOpenIdx] = useState<number>(0)
-  const toggle = (i: number) => setOpenIdx(p => (p === i ? -1 : i))
+export default function VideoTelematicsFAQ({
+  content = sharedVideoTelematics.faq,
+}: {
+  content?: VideoTelematicsContent["faq"];
+}) {
+  const FAQS = content.order.map((id) => ({ ...content.items[id], id }));
+
+  const [openIdx, setOpenIdx] = useState<number>(0);
+  const toggle = (i: number) => setOpenIdx((p) => (p === i ? -1 : i));
 
   return (
     <>
@@ -141,50 +87,100 @@ export default function VideoTelematicsFAQ() {
         }
       `}</style>
 
-      <section id="faq" style={{ padding: 'clamp(56px,7vw,80px) 28px', background: '#fff' }}>
+      <section
+        id="faq"
+        style={{ padding: "clamp(56px,7vw,80px) 28px", background: "#fff" }}
+      >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'FAQPage',
-              mainEntity: FAQS.map(f => ({
-                '@type': 'Question',
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: FAQS.map((f) => ({
+                "@type": "Question",
                 name: f.q,
-                acceptedAnswer: { '@type': 'Answer', text: f.a },
+                acceptedAnswer: { "@type": "Answer", text: f.a },
               })),
             }),
           }}
         />
-        <div style={{ maxWidth: 'var(--w-900)', margin: '0 auto' }}>
-
-          <div data-reveal style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <span style={{
-              fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em',
-              color: '#1360ee', textTransform: 'uppercase' as const,
-              display: 'block', marginBottom: '16px',
-            }}>
-              <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
+        <div style={{ maxWidth: "var(--w-900)", margin: "0 auto" }}>
+          <div
+            data-reveal
+            style={{ textAlign: "center", marginBottom: "40px" }}
+          >
+            <span
+              style={{
+                fontSize: "max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))",
+                fontWeight: 800,
+                letterSpacing: ".04em",
+                color: "#1360ee",
+                textTransform: "uppercase" as const,
+                display: "block",
+                marginBottom: "16px",
+              }}
+            >
+              <span style={{ display: "block", marginBottom: "12px" }}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "34px",
+                    height: "3px",
+                    background: "#1360ee",
+                    borderRadius: "2px",
+                  }}
+                />
+              </span>
               FAQ
             </span>
-            <h2 style={{ margin: 0, fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-.015em', color: '#1d1d1f' }}>
-              Frequently Asked Questions
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))",
+                fontWeight: 800,
+                lineHeight: 1.08,
+                letterSpacing: "-.015em",
+                color: "#1d1d1f",
+              }}
+            >
+              {content.heading}
             </h2>
           </div>
 
-          <div data-reveal data-reveal-delay="80" style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+          <div
+            data-reveal
+            data-reveal-delay="80"
+            style={{ display: "flex", flexDirection: "column", gap: "7px" }}
+          >
             {FAQS.map((item, i) => (
-              <div key={item.q} className={`vtfq-item${openIdx === i ? ' on' : ''}`}>
-                <button className="vtfq-trig" onClick={() => toggle(i)}>
-                  <span className="vtfq-num">{String(i + 1).padStart(2, '0')}</span>
+              <div
+                key={item.id}
+                className={`vtfq-item${openIdx === i ? " on" : ""}`}
+              >
+                <button
+                  className="vtfq-trig"
+                  aria-expanded={openIdx === i}
+                  aria-controls={`vt-faq-${item.id}`}
+                  onClick={() => toggle(i)}
+                >
+                  <span className="vtfq-num">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <span className="vtfq-qtext">{item.q}</span>
                   <span className="vtfq-icon" aria-hidden="true">
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-                      <path d="M1.5 3.5 5.5 7.5l4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                      <path
+                        d="M1.5 3.5 5.5 7.5l4-4"
+                        stroke="currentColor"
+                        strokeWidth="1.7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </span>
                 </button>
-                <div className="vtfq-body">
+                <div id={`vt-faq-${item.id}`} className="vtfq-body">
                   <div className="vtfq-inner">
                     <p className="vtfq-ans">{item.a}</p>
                   </div>
@@ -193,16 +189,31 @@ export default function VideoTelematicsFAQ() {
             ))}
           </div>
 
-          <p data-reveal style={{ margin: '24px 0 0', textAlign: 'center', fontSize: 'var(--f-13)', color: '#a1a1a6', lineHeight: 1.55 }}>
-            Can&apos;t find what you&apos;re looking for?{' '}
-            <Link href="/contact" style={{ color: '#1360ee', fontWeight: 700, textDecoration: 'none' }}>
+          <p
+            data-reveal
+            style={{
+              margin: "24px 0 0",
+              textAlign: "center",
+              fontSize: "var(--f-13)",
+              color: "#a1a1a6",
+              lineHeight: 1.55,
+            }}
+          >
+            Can&apos;t find what you&apos;re looking for?{" "}
+            <Link
+              href="/contact"
+              style={{
+                color: "#1360ee",
+                fontWeight: 700,
+                textDecoration: "none",
+              }}
+            >
               Contact our team
-            </Link>
-            {' '}— we&apos;re happy to help.
+            </Link>{" "}
+            — we&apos;re happy to help.
           </p>
-
         </div>
       </section>
     </>
-  )
+  );
 }

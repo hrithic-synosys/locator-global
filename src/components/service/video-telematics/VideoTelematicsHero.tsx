@@ -1,8 +1,15 @@
-import Image from 'next/image'
-import Link from '@/components/country/CountryLink'
-import SoftwareNavbar from '@/components/software/SoftwareNavbar'
+import Image from "next/image";
+import Link from "@/components/country/CountryLink";
+import SoftwareNavbar from "@/components/software/SoftwareNavbar";
 
-export default function VideoTelematicsHero() {
+import { sharedVideoTelematics } from "@/content/pages/video-telematics/shared";
+import type { VideoTelematicsContent } from "@/content/pages/video-telematics/schema";
+
+export default function VideoTelematicsHero({
+  content = sharedVideoTelematics.hero,
+}: {
+  content?: VideoTelematicsContent["hero"];
+}) {
   return (
     <>
       <style>{`
@@ -65,6 +72,12 @@ export default function VideoTelematicsHero() {
            edges, and at container width the headline ran right into them; 760px
            keeps every line inside the clear centre of the photo. */
         .vt-copy { text-align: center; max-width: 760px; width: 100%; }
+        @media (max-width:600px) {
+          .vt-hero-body[data-extended-copy="true"] { padding-top:120px; }
+          .vt-hero-body[data-extended-copy="true"] .vt-copy {
+            padding:18px; border-radius:18px; background:rgba(255,255,255,.96);
+          }
+        }
         .vt-copy-glow {
           text-shadow:
             0 1px 2px #fff, 0 0 8px #fff, 0 0 16px #fff,
@@ -97,43 +110,106 @@ export default function VideoTelematicsHero() {
         <div className="vt-pin">
           <div className="vt-hero-bg" aria-hidden="true">
             <Image
-              src="/services/dashcam-hero-banner.webp"
+              src={content.image}
               alt=""
               fill
               priority
               sizes="100vw"
-              style={{ objectFit: 'contain', objectPosition: 'center center' }}
+              style={{ objectFit: "contain", objectPosition: "center center" }}
             />
           </div>
 
           <SoftwareNavbar />
 
-          <div className="vt-hero-body">
+          <div
+            className="vt-hero-body"
+            data-extended-copy={content.paragraphs.join(" ").length > 200}
+          >
             <div className="vt-copy">
-              <p className="vt-copy-glow" style={{ display: 'block', fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', textTransform: 'uppercase', color: '#1360ee', marginBottom: 'clamp(6px,1vh,10px)' }}>
-                <span style={{ display: 'block', marginBottom: '6px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-                Video Telematics
+              <p
+                className="vt-copy-glow"
+                style={{
+                  display: "block",
+                  fontSize: "max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))",
+                  fontWeight: 800,
+                  letterSpacing: ".04em",
+                  textTransform: "uppercase",
+                  color: "#1360ee",
+                  marginBottom: "clamp(6px,1vh,10px)",
+                }}
+              >
+                <span style={{ display: "block", marginBottom: "6px" }}>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: "34px",
+                      height: "3px",
+                      background: "#1360ee",
+                      borderRadius: "2px",
+                    }}
+                  />
+                </span>
+                {content.label}
               </p>
               {/* 32ch (not 24ch) is what lets the headline set as two lines
                   rather than three, and balance keeps the two close to equal
                   instead of a long line over a one-word stub. */}
-              <h1 className="vt-copy-glow" style={{ fontSize: 'max(clamp(21px,2.5vw,28px), min(1.944vw, 40.6px))', fontWeight: 800, lineHeight: 1.18, letterSpacing: '-.015em', color: '#1d1d1f', maxWidth: '32ch', textWrap: 'balance', margin: '0 auto' }}>
-                AI-Powered Fleet Dash Cameras &amp; MDVR Safety Systems
+              <h1
+                className="vt-copy-glow"
+                style={{
+                  fontSize: "max(clamp(21px,2.5vw,28px), min(1.944vw, 40.6px))",
+                  fontWeight: 800,
+                  lineHeight: 1.18,
+                  letterSpacing: "-.015em",
+                  color: "#1d1d1f",
+                  maxWidth: "32ch",
+                  textWrap: "balance",
+                  margin: "0 auto",
+                }}
+              >
+                {content.heading}
               </h1>
               {/* Same treatment as the headline above: wide enough that the
                   sentence sets as two lines rather than three, with balance
                   keeping the pair close to equal. */}
-              <p className="vt-copy-glow" style={{ maxWidth: '720px', textWrap: 'balance', margin: 'clamp(6px,1vh,10px) auto 0', fontSize: 'max(clamp(13px,1.35vw,16px), min(1.111vw, 23.2px))', lineHeight: 1.5, color: '#3a3a3c' }}>
-                Real-time driver monitoring, cargo surveillance, and multi-camera recording for trucks, taxis, buses, and commercial fleets.
-              </p>
-              <div className="vt-cta-row" style={{ marginTop: 'clamp(18px,2.8vh,30px)' }}>
-                <Link href="/get-a-quote" className="vt-btn vt-btn-primary">Get a free quote</Link>
-                <Link href="/get-a-free-demo" className="vt-btn vt-btn-outline">Get a demo</Link>
+              {content.paragraphs.map((paragraph, index) => (
+                <p
+                  key={index}
+                  className="vt-copy-glow"
+                  style={{
+                    maxWidth: "720px",
+                    textWrap: "balance",
+                    margin: "clamp(6px,1vh,10px) auto 0",
+                    fontSize:
+                      "max(clamp(13px,1.35vw,16px), min(1.111vw, 23.2px))",
+                    lineHeight: 1.5,
+                    color: "#3a3a3c",
+                  }}
+                >
+                  {paragraph}
+                </p>
+              ))}
+              <div
+                className="vt-cta-row"
+                style={{ marginTop: "clamp(18px,2.8vh,30px)" }}
+              >
+                <Link
+                  href={content.primaryCta.href}
+                  className="vt-btn vt-btn-primary"
+                >
+                  {content.primaryCta.label}
+                </Link>
+                <Link
+                  href={content.secondaryCta.href}
+                  className="vt-btn vt-btn-outline"
+                >
+                  {content.secondaryCta.label}
+                </Link>
               </div>
             </div>
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }

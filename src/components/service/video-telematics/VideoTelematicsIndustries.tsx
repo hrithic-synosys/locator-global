@@ -1,43 +1,25 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Image from 'next/image'
+import { useState } from "react";
+import Image from "next/image";
 
-const EASE = 'cubic-bezier(.22,.61,.36,1)'
+const EASE = "cubic-bezier(.22,.61,.36,1)";
 
 // Real AI-dashcam screenshots from the client — each has its own REC/HUD
 // overlay baked in (timestamp, resolution badge, detection boxes), so the
 // image uses object-fit: contain rather than cover — nothing gets cropped.
-const INDUSTRIES = [
-  {
-    title: 'Transportation & Logistics',
-    desc: 'Prevent cargo loss with AI theft detection and HD video proof, speeding claims, reducing fraud disputes, and improving fleet safety across deliveries and loading hubs.',
-    image: '/services/industries-we-serve/transportation-and-logistics.webp',
-  },
-  {
-    title: 'Warehouse',
-    desc: 'Enable 24/7 AI video monitoring for forklifts and machines, preventing equipment damage, boosting operator accountability, and strengthening warehouse incident reporting.',
-    image: '/services/industries-we-serve/warehouse.webp',
-  },
-  {
-    title: 'School Districts',
-    desc: 'Protect students and drivers with AI behavior monitoring and stop-arm violation evidence, improving road safety, driver training, and regulatory enforcement.',
-    image: '/services/industries-we-serve/school-districtse.webp',
-  },
-  {
-    title: 'Waste Management',
-    desc: 'Resolve complaints faster using real-time HD video and portal retrieval, improving driver coaching, service quality, and customer issue resolution.',
-    image: '/services/industries-we-serve/waste-management.webp',
-  },
-  {
-    title: 'Field Services & Recovery',
-    desc: 'Provide premium safety assurance with AI-protected video telematics for high-value vehicle transport, validating service completion and adding customer trust through recorded proof.',
-    image: '/services/industries-we-serve/field-services-and-recovery-vehicles.webp',
-  },
-]
 
-export default function VideoTelematicsIndustries() {
-  const [active, setActive] = useState(0)
+import { sharedVideoTelematics } from "@/content/pages/video-telematics/shared";
+import type { VideoTelematicsContent } from "@/content/pages/video-telematics/schema";
+
+export default function VideoTelematicsIndustries({
+  content = sharedVideoTelematics.industries,
+}: {
+  content?: VideoTelematicsContent["industries"];
+}) {
+  const INDUSTRIES = content.order.map((id) => ({ ...content.items[id], id }));
+
+  const [active, setActive] = useState(0);
 
   return (
     <>
@@ -157,22 +139,72 @@ export default function VideoTelematicsIndustries() {
         }
       `}</style>
 
-      <section style={{ padding: 'clamp(56px,7vw,88px) 28px', background: '#fff' }}>
-        <div style={{ maxWidth: 'var(--w-1180)', margin: '0 auto' }}>
-          <div data-reveal style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto clamp(36px,5vw,52px)' }}>
-            <span style={{ fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', color: '#1360ee', textTransform: 'uppercase', display: 'block', marginBottom: '16px' }}>
-              <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-              Industries we serve
+      <section
+        style={{ padding: "clamp(56px,7vw,88px) 28px", background: "#fff" }}
+      >
+        <div style={{ maxWidth: "var(--w-1180)", margin: "0 auto" }}>
+          <div
+            data-reveal
+            style={{
+              textAlign: "center",
+              maxWidth: "680px",
+              margin: "0 auto clamp(36px,5vw,52px)",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))",
+                fontWeight: 800,
+                letterSpacing: ".04em",
+                color: "#1360ee",
+                textTransform: "uppercase",
+                display: "block",
+                marginBottom: "16px",
+              }}
+            >
+              <span style={{ display: "block", marginBottom: "12px" }}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "34px",
+                    height: "3px",
+                    background: "#1360ee",
+                    borderRadius: "2px",
+                  }}
+                />
+              </span>
+              {content.eyebrow}
             </span>
-            <h2 style={{ margin: 0, fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.015em', color: '#1d1d1f' }}>
-              Revolutionizing Industries with AI Camera &amp; Video Telematics
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))",
+                fontWeight: 800,
+                lineHeight: 1.1,
+                letterSpacing: "-.015em",
+                color: "#1d1d1f",
+              }}
+            >
+              {content.heading}
             </h2>
+            {content.paragraphs.map((paragraph, i) => (
+              <p
+                key={i}
+                style={{
+                  margin: "18px 0 0",
+                  color: "#6e6e73",
+                  lineHeight: 1.75,
+                }}
+              >
+                {paragraph}
+              </p>
+            ))}
           </div>
 
           <div className="vti-rail" data-reveal>
             {INDUSTRIES.map((ind, i) => (
               <button
-                key={ind.title}
+                key={ind.id}
                 className="vti-panel"
                 aria-expanded={i === active}
                 aria-label={ind.title}
@@ -182,11 +214,11 @@ export default function VideoTelematicsIndustries() {
               >
                 <div className="vti-media">
                   <Image
-                    src={ind.image}
+                    src={ind.image!}
                     alt=""
                     fill
                     sizes="(max-width: 860px) 100vw, 60vw"
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: "contain" }}
                   />
                   <span className="vti-veil" />
                   <span className="vti-spine">{ind.title}</span>
@@ -194,7 +226,7 @@ export default function VideoTelematicsIndustries() {
 
                 <div className="vti-body">
                   <h3>{ind.title}</h3>
-                  <p>{ind.desc}</p>
+                  <p>{ind.description}</p>
                 </div>
               </button>
             ))}
@@ -202,5 +234,5 @@ export default function VideoTelematicsIndustries() {
         </div>
       </section>
     </>
-  )
+  );
 }

@@ -1,176 +1,129 @@
-'use client'
-import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
+"use client";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 
-const EASE = 'cubic-bezier(.22,.61,.36,1)'
-const BLUE = '#1360ee'
+const EASE = "cubic-bezier(.22,.61,.36,1)";
+const BLUE = "#1360ee";
 
 // ── AI driver-monitoring alerts — one heading + one image per slide ──────────
 
-interface Alert {
-  id: string
-  num: string
-  title: string
-  image: string
-  imageW: number
-  imageH: number
-}
+const IMG_SIZES = "(max-width: 800px) 0px, 46vw";
 
-const ALERTS: Alert[] = [
-  {
-    id: 'yawning',
-    num: '01',
-    title: 'Frequent\nYawning',
-    image: '/services/ai-alerts/yawning.png',
-    imageW: 1671,
-    imageH: 941,
-  },
-  {
-    id: 'seatbelt',
-    num: '02',
-    title: 'Not Wearing\nSeatbelt',
-    image: '/services/ai-alerts/seatbelt.png',
-    imageW: 1672,
-    imageH: 941,
-  },
-  {
-    id: 'smoking',
-    num: '03',
-    title: 'Smoking\nin the Cabin',
-    image: '/services/ai-alerts/smoking.png',
-    imageW: 1672,
-    imageH: 941,
-  },
-  {
-    id: 'nodding',
-    num: '04',
-    title: 'Nodding\nOff',
-    image: '/services/ai-alerts/nodding-off.png',
-    imageW: 1672,
-    imageH: 941,
-  },
-  {
-    id: 'droopy-eyes',
-    num: '05',
-    title: 'Droopy\nEyes',
-    image: '/services/ai-alerts/droopy-eyes.png',
-    imageW: 1672,
-    imageH: 941,
-  },
-  {
-    id: 'talking',
-    num: '06',
-    title: 'Talking\n& Distraction',
-    image: '/services/ai-alerts/talking-distraction.png',
-    imageW: 1672,
-    imageH: 941,
-  },
-  {
-    id: 'texting',
-    num: '07',
-    title: 'Texting on\na Phone',
-    image: '/services/ai-alerts/texting.png',
-    imageW: 1672,
-    imageH: 941,
-  },
-  {
-    id: 'looking-away',
-    num: '08',
-    title: 'Looking\nAway',
-    image: '/services/ai-alerts/looking-away.png',
-    imageW: 1672,
-    imageH: 941,
-  },
-]
+const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1);
 
-const N = ALERTS.length
-const IMAGE_LIST = Array.from(new Set(ALERTS.map(a => a.image)))
-const IMG_SIZES = '(max-width: 800px) 0px, 46vw'
+import { sharedVideoTelematics } from "@/content/pages/video-telematics/shared";
+import type { VideoTelematicsContent } from "@/content/pages/video-telematics/schema";
 
-const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1)
+export default function VideoTelematicsAlertsScroll({
+  content = sharedVideoTelematics.driverAlerts,
+}: {
+  content?: VideoTelematicsContent["driverAlerts"];
+}) {
+  const ALERTS = useMemo(
+    () =>
+      content.order.map((id, i) => ({
+        ...content.items[id],
+        id,
+        num: String(i + 1).padStart(2, "0"),
+      })),
+    [content]
+  );
+  const N = ALERTS.length;
+  const IMAGE_LIST = useMemo(
+    () => Array.from(new Set(ALERTS.map((a) => a.image))),
+    [ALERTS]
+  );
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const vizPxRef = useRef<HTMLDivElement>(null);
+  const fillRef = useRef<HTMLDivElement>(null);
 
-export default function VideoTelematicsAlertsScroll() {
-  const wrapRef  = useRef<HTMLDivElement>(null)
-  const vizPxRef = useRef<HTMLDivElement>(null)
-  const fillRef  = useRef<HTMLDivElement>(null)
+  const [displayIdx, setDisplayIdx] = useState(0);
+  const [dirDown, setDirDown] = useState(true);
+  const [loaded, setLoaded] = useState<Record<string, boolean>>({});
+  const markLoaded = (src: string) =>
+    setLoaded((l) => (l[src] ? l : { ...l, [src]: true }));
 
-  const [displayIdx, setDisplayIdx] = useState(0)
-  const [dirDown,    setDirDown]    = useState(true)
-  const [loaded,     setLoaded]     = useState<Record<string, boolean>>({})
-  const markLoaded = (src: string) => setLoaded(l => (l[src] ? l : { ...l, [src]: true }))
-
-  const idxRef   = useRef(0)
-  const dirRef   = useRef<1 | -1>(1)
-  const lastYRef = useRef(0)
+  const idxRef = useRef(0);
+  const dirRef = useRef<1 | -1>(1);
+  const lastYRef = useRef(0);
 
   useEffect(() => {
-    const wrap = wrapRef.current
-    if (!wrap) return
-    lastYRef.current = window.scrollY
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    lastYRef.current = window.scrollY;
 
-    const html = document.documentElement
-    const prevSnap = html.style.scrollSnapType
-    html.style.scrollSnapType = 'y proximity'
+    const html = document.documentElement;
+    const prevSnap = html.style.scrollSnapType;
+    html.style.scrollSnapType = "y proximity";
 
-    let raf = 0
+    let raf = 0;
     const apply = () => {
-      raf = 0
-      const rect  = wrap.getBoundingClientRect()
-      const vh    = window.innerHeight
-      const range = (N - 1) * vh
-      const scrolled = Math.min(Math.max(-rect.top, 0), range)
-      const p = range > 0 ? scrolled / range : 0
-      const f = scrolled / vh
-      const idx = Math.min(Math.max(Math.round(f), 0), N - 1)
-      const t = clamp01(f - Math.floor(f))
+      raf = 0;
+      const rect = wrap.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const range = (N - 1) * vh;
+      const scrolled = Math.min(Math.max(-rect.top, 0), range);
+      const p = range > 0 ? scrolled / range : 0;
+      const f = scrolled / vh;
+      const idx = Math.min(Math.max(Math.round(f), 0), N - 1);
+      const t = clamp01(f - Math.floor(f));
 
-      if (vizPxRef.current) vizPxRef.current.style.transform = `translateY(${(t - 0.5) * -26}px)`
-      if (fillRef.current)  fillRef.current.style.transform  = `scaleX(${p.toFixed(4)})`
+      if (vizPxRef.current)
+        vizPxRef.current.style.transform = `translateY(${(t - 0.5) * -26}px)`;
+      if (fillRef.current)
+        fillRef.current.style.transform = `scaleX(${p.toFixed(4)})`;
 
-      if (idx !== idxRef.current) { idxRef.current = idx; setDisplayIdx(idx) }
-    }
+      if (idx !== idxRef.current) {
+        idxRef.current = idx;
+        setDisplayIdx(idx);
+      }
+    };
 
     const onScroll = () => {
-      const y = window.scrollY
-      const nd = y > lastYRef.current ? 1 : -1
+      const y = window.scrollY;
+      const nd = y > lastYRef.current ? 1 : -1;
       if (y !== lastYRef.current && nd !== dirRef.current) {
-        dirRef.current = nd
-        setDirDown(nd === 1)
+        dirRef.current = nd;
+        setDirDown(nd === 1);
       }
-      lastYRef.current = y
-      if (!raf) raf = requestAnimationFrame(apply)
-    }
+      lastYRef.current = y;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
 
-    apply()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
+    apply();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      html.style.scrollSnapType = prevSnap
-      if (raf) cancelAnimationFrame(raf)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [])
+      html.style.scrollSnapType = prevSnap;
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [N]);
 
-  const alert = ALERTS[displayIdx]
+  const alert = ALERTS[displayIdx];
 
   // Jump straight to a behaviour's anchor — one viewport per alert.
   const jumpTo = (i: number) => {
-    const wrap = wrapRef.current
-    if (!wrap) return
-    const absTop = wrap.getBoundingClientRect().top + window.scrollY
-    window.scrollTo({ top: Math.max(absTop + i * window.innerHeight, 0), behavior: 'smooth' })
-  }
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const absTop = wrap.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: Math.max(absTop + i * window.innerHeight, 0),
+      behavior: "smooth",
+    });
+  };
 
   const handleSkip = () => {
-    const wrap = wrapRef.current
-    if (!wrap) return
-    const absTop = wrap.getBoundingClientRect().top + window.scrollY
-    const target = dirRef.current < 0
-      ? absTop - window.innerHeight - 2
-      : absTop + wrap.offsetHeight + 2
-    window.scrollTo({ top: Math.max(target, 0), behavior: 'smooth' })
-  }
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const absTop = wrap.getBoundingClientRect().top + window.scrollY;
+    const target =
+      dirRef.current < 0
+        ? absTop - window.innerHeight - 2
+        : absTop + wrap.offsetHeight + 2;
+    window.scrollTo({ top: Math.max(target, 0), behavior: "smooth" });
+  };
 
   return (
     <>
@@ -242,6 +195,8 @@ export default function VideoTelematicsAlertsScroll() {
           text-wrap: balance;
         }
         .vta-section-h span { color: ${BLUE}; }
+        .vta-intro { max-width: 850px; margin: 14px auto 0; color: #64748b; font-size: clamp(12px,1.1vw,15px); line-height: 1.65; }
+        .vta-description { color: #64748b; font-size: clamp(13px,1.2vw,16px); line-height: 1.7; max-width: 50ch; margin: 20px 0 0; }
 
         .vta-top-meta {
           position: absolute; top: 50%; right: clamp(24px,5vw,64px);
@@ -345,58 +300,129 @@ export default function VideoTelematicsAlertsScroll() {
         @media (max-width: 520px) { .vta-main-body { padding: 0 22px !important; } }
       `}</style>
 
-      <section ref={wrapRef} id="ai-alerts" aria-label="Prevent road incidents with AI-powered dashcam alerts" style={{ position: 'relative' }}>
+      <section
+        ref={wrapRef}
+        id="ai-alerts"
+        aria-label="Prevent road incidents with AI-powered dashcam alerts"
+        style={{ position: "relative" }}
+      >
         {/* Preload every slide image so each appears instantly */}
-        <div aria-hidden="true" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', opacity: 0, pointerEvents: 'none', top: 0, left: -9999 }}>
-          {IMAGE_LIST.map(src => (
-            <Image key={src} src={src} alt="" width={880} height={560} sizes={IMG_SIZES} loading="eager" onLoad={() => markLoaded(src)} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            width: 1,
+            height: 1,
+            overflow: "hidden",
+            opacity: 0,
+            pointerEvents: "none",
+            top: 0,
+            left: -9999,
+          }}
+        >
+          {IMAGE_LIST.map((src) => (
+            <Image
+              key={src}
+              src={src}
+              alt=""
+              width={880}
+              height={560}
+              sizes={IMG_SIZES}
+              loading="eager"
+              onLoad={() => markLoaded(src)}
+            />
           ))}
         </div>
 
-        <div style={{
-          position: 'sticky', top: 0,
-          height: '100vh',
-          overflow: 'hidden',
-          background: 'linear-gradient(180deg, #ffffff 0%, #f5f8fd 26%, #eef4fc 60%, #f6f9fd 84%, #ffffff 100%)',
-          display: 'flex', flexDirection: 'column',
-          isolation: 'isolate', zIndex: 1,
-        }}>
-
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "100vh",
+            overflow: "hidden",
+            background:
+              "linear-gradient(180deg, #ffffff 0%, #f5f8fd 26%, #eef4fc 60%, #f6f9fd 84%, #ffffff 100%)",
+            display: "flex",
+            flexDirection: "column",
+            isolation: "isolate",
+            zIndex: 1,
+          }}
+        >
           {/* Top bar */}
           <div className="vta-top">
             <h2 className="vta-section-h">
-              Prevent Road Incidents with <span>AI-Powered Dashcam Alerts</span>
+              {content.heading}
+              <span>{content.accent}</span>
             </h2>
+            {content.paragraphs.map((paragraph, i) => (
+              <p key={i} className="vta-intro">
+                {paragraph}
+              </p>
+            ))}
 
             <div className="vta-top-meta">
-              <div className="vta-strip" style={{ display: 'flex', gap: '5px', maxWidth: '210px' }}>
+              <div
+                className="vta-strip"
+                style={{ display: "flex", gap: "5px", maxWidth: "210px" }}
+              >
                 {ALERTS.map((_, i) => (
-                  <div key={i} style={{
-                    width: i === displayIdx ? '16px' : '5px',
-                    height: '5px', borderRadius: '999px', flexShrink: 0,
-                    background: i <= displayIdx ? BLUE : 'rgba(15,23,42,.14)',
-                    transition: `width .4s ${EASE}, background .4s ${EASE}`,
-                  }} />
+                  <div
+                    key={i}
+                    style={{
+                      width: i === displayIdx ? "16px" : "5px",
+                      height: "5px",
+                      borderRadius: "999px",
+                      flexShrink: 0,
+                      background: i <= displayIdx ? BLUE : "rgba(15,23,42,.14)",
+                      transition: `width .4s ${EASE}, background .4s ${EASE}`,
+                    }}
+                  />
                 ))}
               </div>
-              <div style={{ fontSize: 'var(--f-13)', fontWeight: 700, color: '#a1a1a6', letterSpacing: '.04em', fontVariantNumeric: 'tabular-nums' }}>
-                <span style={{ color: BLUE, fontSize: 'var(--f-15)' }}>{alert.num}</span>
-                <span style={{ margin: '0 4px' }}>/</span>
-                {String(N).padStart(2, '0')}
+              <div
+                style={{
+                  fontSize: "var(--f-13)",
+                  fontWeight: 700,
+                  color: "#a1a1a6",
+                  letterSpacing: ".04em",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                <span style={{ color: BLUE, fontSize: "var(--f-15)" }}>
+                  {alert.num}
+                </span>
+                <span style={{ margin: "0 4px" }}>/</span>
+                {String(N).padStart(2, "0")}
               </div>
             </div>
           </div>
 
           {/* Body */}
-          <div className="vta-main-body" style={{
-            flex: 1, minHeight: 0,
-            display: 'flex', alignItems: 'center',
-            padding: '0 clamp(24px,5vw,64px)',
-            gap: 'clamp(28px,5vw,80px)',
-          }}>
+          <div
+            className="vta-main-body"
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: "flex",
+              alignItems: "center",
+              padding: "0 clamp(24px,5vw,64px)",
+              gap: "clamp(28px,5vw,80px)",
+            }}
+          >
             {/* Left — text */}
-            <div className="vta-left-col" style={{ flex: '0 0 auto', width: 'min(50%, 540px)', position: 'relative' }}>
-              <div key={displayIdx} className="vta-stagger" style={{ position: 'relative', zIndex: 1 }}>
+            <div
+              className="vta-left-col"
+              style={{
+                flex: "0 0 auto",
+                width: "min(50%, 540px)",
+                position: "relative",
+              }}
+            >
+              <div
+                key={displayIdx}
+                className="vta-stagger"
+                style={{ position: "relative", zIndex: 1 }}
+              >
                 <div className="vta-eyebrow">
                   <span className="vta-eyebrow-dot" />
                   Detected behaviour
@@ -405,13 +431,20 @@ export default function VideoTelematicsAlertsScroll() {
                 {/* Outlined numeral sits alongside the name — the index becomes
                     part of the display type rather than a label above it. */}
                 <div className="vta-display">
-                  <span className="vta-big-num" aria-hidden="true">{alert.num}</span>
+                  <span className="vta-big-num" aria-hidden="true">
+                    {alert.num}
+                  </span>
                   <h3 className="vta-title">
-                    {alert.title.split('\n').map((line, i) => (
-                      <span key={i} style={{ display: 'block' }}>{line}</span>
+                    {alert.title.split("\n").map((line, i) => (
+                      <span key={i} style={{ display: "block" }}>
+                        {line}
+                      </span>
                     ))}
                   </h3>
                 </div>
+                {alert.description && (
+                  <p className="vta-description">{alert.description}</p>
+                )}
               </div>
 
               {/* Live index — every behaviour visible at once, active one lit.
@@ -426,43 +459,58 @@ export default function VideoTelematicsAlertsScroll() {
                     onClick={() => jumpTo(i)}
                   >
                     <span className="vta-rail-num">{a.num}</span>
-                    <span className="vta-rail-name">{a.title.replace('\n', ' ')}</span>
+                    <span className="vta-rail-name">
+                      {a.title.replace("\n", " ")}
+                    </span>
                   </button>
                 ))}
               </nav>
             </div>
 
             {/* Right — image */}
-            <div key={displayIdx} className="vta-viz-in vta-right-col" style={{ flex: 1, minWidth: 0 }}>
-              <div ref={vizPxRef} style={{ willChange: 'transform' }}>
-                <div style={{
-                  position: 'relative',
-                  borderRadius: '20px',
-                  overflow: 'hidden',
-                  boxShadow: '0 30px 70px -28px rgba(20,40,90,.24), 0 4px 14px rgba(20,40,90,.06)',
-                  background: '#eef3fb',
-                }}>
-                  {!loaded[alert.image] && <div className="vta-skeleton" aria-hidden="true" />}
+            <div
+              key={displayIdx}
+              className="vta-viz-in vta-right-col"
+              style={{ flex: 1, minWidth: 0 }}
+            >
+              <div ref={vizPxRef} style={{ willChange: "transform" }}>
+                <div
+                  style={{
+                    position: "relative",
+                    borderRadius: "20px",
+                    overflow: "hidden",
+                    boxShadow:
+                      "0 30px 70px -28px rgba(20,40,90,.24), 0 4px 14px rgba(20,40,90,.06)",
+                    background: "#eef3fb",
+                  }}
+                >
+                  {!loaded[alert.image] && (
+                    <div className="vta-skeleton" aria-hidden="true" />
+                  )}
 
                   {/* Live label only — the corner-bracket detection frame that
                       used to sit over the shot has been removed. */}
                   <div className="vta-hud" aria-hidden="true">
                     <span className="vta-hud-tag">
                       <span className="vta-hud-live" />
-                      AI Detection · {alert.title.replace('\n', ' ')}
+                      {content.detectionLabel || (
+                        <>AI Detection · {alert.title.replace("\n", " ")}</>
+                      )}
                     </span>
                   </div>
                   <Image
                     src={alert.image}
-                    alt={`${alert.title.replace('\n', ' ')} — AI dashcam driver monitoring`}
+                    alt={`${alert.title.replace("\n", " ")} — AI dashcam driver monitoring`}
                     width={alert.imageW}
                     height={alert.imageH}
                     sizes={IMG_SIZES}
                     onLoad={() => markLoaded(alert.image)}
                     style={{
-                      width: '100%', height: 'auto', display: 'block',
+                      width: "100%",
+                      height: "auto",
+                      display: "block",
                       opacity: loaded[alert.image] ? 1 : 0,
-                      transition: 'opacity .4s ' + EASE,
+                      transition: "opacity .4s " + EASE,
                     }}
                   />
                 </div>
@@ -471,22 +519,48 @@ export default function VideoTelematicsAlertsScroll() {
           </div>
 
           {/* Skip */}
-          <button className="vta-skip" onClick={handleSkip} aria-label={dirDown ? 'Skip to next section' : 'Skip to previous section'}>
+          <button
+            className="vta-skip"
+            onClick={handleSkip}
+            aria-label={
+              dirDown ? "Skip to next section" : "Skip to previous section"
+            }
+          >
             Skip section
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points={dirDown ? '6 9 12 15 18 9' : '6 15 12 9 18 15'} />
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polyline
+                points={dirDown ? "6 9 12 15 18 9" : "6 15 12 9 18 15"}
+              />
             </svg>
           </button>
 
           {/* Progress */}
-          <div style={{ height: '3px', flexShrink: 0, background: 'rgba(15,23,42,.06)' }}>
+          <div
+            style={{
+              height: "3px",
+              flexShrink: 0,
+              background: "rgba(15,23,42,.06)",
+            }}
+          >
             <div
               ref={fillRef}
               style={{
-                height: '100%', width: '100%',
-                background: BLUE, opacity: .5,
-                transformOrigin: 'left center',
-                transform: 'scaleX(0)',
+                height: "100%",
+                width: "100%",
+                background: BLUE,
+                opacity: 0.5,
+                transformOrigin: "left center",
+                transform: "scaleX(0)",
               }}
             />
           </div>
@@ -500,5 +574,5 @@ export default function VideoTelematicsAlertsScroll() {
         </div>
       </section>
     </>
-  )
+  );
 }

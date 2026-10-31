@@ -1,47 +1,16 @@
-import Image from 'next/image'
+import ContentIcon from "@/components/common/ContentIcon";
+import Image from "next/image";
 
-const FEATURES = [
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.5">
-        <rect x="2" y="5" width="15" height="14" rx="2" /><path d="M17 9l5-3v12l-5-3V9z" strokeLinejoin="round" />
-      </svg>
-    ),
-    title: 'Live HD Video',
-    desc: 'Stream real-time HD road and driver footage to improve driver behavior, retrieve video on-demand, and enforce safer driving across your fleet.',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.5">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinejoin="round" />
-        <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    title: 'Collision Prevention',
-    desc: 'Analyze incidents with video evidence and deploy AI audible alerts to warn drivers instantly, reducing future collision risks.',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.5">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" strokeLinecap="round" />
-      </svg>
-    ),
-    title: 'Operational Efficiency',
-    desc: 'AI driver monitoring detects drowsiness and distraction (yawning, eye closure, phone use, looking away), helping managers take proactive safety actions.',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.5">
-        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    title: 'Cost Savings',
-    desc: 'Cut costs from accidents, insurance claims, vehicle damage, and fraud disputes with undeniable recorded proof that protects your business.',
-  },
-]
+import { sharedVideoTelematics } from "@/content/pages/video-telematics/shared";
+import type { VideoTelematicsContent } from "@/content/pages/video-telematics/schema";
 
-export default function VideoTelematicsShowcase() {
+export default function VideoTelematicsShowcase({
+  content = sharedVideoTelematics.showcase,
+}: {
+  content?: VideoTelematicsContent["showcase"];
+}) {
+  const FEATURES = content.order.map((id) => ({ ...content.items[id], id }));
+
   return (
     <>
       <style>{`
@@ -85,38 +54,92 @@ export default function VideoTelematicsShowcase() {
       <section
         id="video-telematics"
         style={{
-          padding: 'clamp(56px,7vw,80px) 28px',
-          background: '#f5f7fa',
-          scrollMarginTop: 'calc(88px - clamp(56px,7vw,80px))',
+          padding: "clamp(56px,7vw,80px) 28px",
+          background: "#f5f7fa",
+          scrollMarginTop: "calc(88px - clamp(56px,7vw,80px))",
         }}
       >
-        <div className="vts-grid" style={{ maxWidth: 'var(--w-1180)', margin: '0 auto' }}>
-
+        <div
+          className="vts-grid"
+          style={{ maxWidth: "var(--w-1180)", margin: "0 auto" }}
+        >
           <div data-reveal="left">
-            <span style={{ fontSize: 'var(--f-13)', fontWeight: 700, color: '#1360ee', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '18px', display: 'block' }}>
-              Video Telematics
+            <span
+              style={{
+                fontSize: "var(--f-13)",
+                fontWeight: 700,
+                color: "#1360ee",
+                textTransform: "uppercase",
+                letterSpacing: ".05em",
+                marginBottom: "18px",
+                display: "block",
+              }}
+            >
+              {content.eyebrow}
             </span>
-            <h2 style={{ fontSize: 'max(clamp(24px,3vw,36px), min(2.500vw, 52.2px))', fontWeight: 800, lineHeight: 1.15, color: '#1d1d1f', margin: '0 0 16px' }}>
-              Enhance Fleet Visibility with Video Telematics
+            <h2
+              style={{
+                fontSize: "max(clamp(24px,3vw,36px), min(2.500vw, 52.2px))",
+                fontWeight: 800,
+                lineHeight: 1.15,
+                color: "#1d1d1f",
+                margin: "0 0 16px",
+              }}
+            >
+              {content.heading}
             </h2>
-            <p style={{ fontSize: 'max(clamp(13px,1.2vw,15px), min(1.042vw, 21.75px))', lineHeight: 1.65, color: '#6e6e73', margin: '0 0 28px', maxWidth: 440 }}>
-              Live HD video insights to monitor drivers, road conditions, and on-road operations with ease.
-            </p>
+            {content.paragraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                style={{
+                  fontSize:
+                    "max(clamp(13px,1.2vw,15px), min(1.042vw, 21.75px))",
+                  lineHeight: 1.65,
+                  color: "#6e6e73",
+                  margin: "0 0 28px",
+                  maxWidth: 440,
+                }}
+              >
+                {paragraph}
+              </p>
+            ))}
 
-            <h3 style={{ fontSize: 'max(clamp(15px,1.4vw,18px), min(1.250vw, 26.1px))', fontWeight: 700, color: '#1d1d1f', margin: '0 0 10px' }}>
-              AI-Powered Fleet Dash Cameras &amp; MDVR Safety
-            </h3>
-            <p style={{ fontSize: 'max(clamp(12px,1.1vw,14px), min(0.972vw, 20.3px))', lineHeight: 1.6, color: '#6e6e73', margin: '0 0 24px', maxWidth: 440 }}>
-              Real-time driver monitoring, cargo surveillance, and multi-camera recording for trucks, taxis, buses, and commercial fleets.
-            </p>
+            {content.subheading && (
+              <h3
+                style={{
+                  fontSize: "max(clamp(15px,1.4vw,18px), min(1.250vw, 26.1px))",
+                  fontWeight: 700,
+                  color: "#1d1d1f",
+                  margin: "0 0 10px",
+                }}
+              >
+                {content.subheading}
+              </h3>
+            )}
+            {content.secondaryParagraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                style={{
+                  fontSize: "max(clamp(12px,1.1vw,14px), min(0.972vw, 20.3px))",
+                  lineHeight: 1.6,
+                  color: "#6e6e73",
+                  margin: "0 0 24px",
+                  maxWidth: 440,
+                }}
+              >
+                {paragraph}
+              </p>
+            ))}
 
             <div className="vts-feature-grid">
-              {FEATURES.map(f => (
-                <div key={f.title} className="vts-fcard">
-                  <span className="vts-fcard-icon">{f.icon}</span>
+              {FEATURES.map((f) => (
+                <div key={f.id} className="vts-fcard">
+                  <span className="vts-fcard-icon">
+                    {<ContentIcon name={f.icon} />}
+                  </span>
                   <div className="vts-fcard-body">
                     <span className="vts-fcard-title">{f.title}</span>
-                    <p className="vts-fcard-desc">{f.desc}</p>
+                    <p className="vts-fcard-desc">{f.description}</p>
                   </div>
                 </div>
               ))}
@@ -126,23 +149,39 @@ export default function VideoTelematicsShowcase() {
           <div data-reveal="right">
             <div className="vts-browser">
               <div className="vts-browser-bar">
-                {['#ff5f57', '#febc2e', '#28c840'].map(c => (
-                  <span key={c} style={{ width: 9, height: 9, borderRadius: '50%', background: c, display: 'inline-block' }} />
+                {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
+                  <span
+                    key={c}
+                    style={{
+                      width: 9,
+                      height: 9,
+                      borderRadius: "50%",
+                      background: c,
+                      display: "inline-block",
+                    }}
+                  />
                 ))}
-                <span style={{ marginLeft: 8, fontSize: 'var(--f-11)', color: '#94a3b8' }}>mylocatorplus.com/video</span>
+                <span
+                  style={{
+                    marginLeft: 8,
+                    fontSize: "var(--f-11)",
+                    color: "#94a3b8",
+                  }}
+                >
+                  mylocatorplus.com/video
+                </span>
               </div>
               <Image
-                src="/showcase/video-telematics-dashboard.webp"
-                alt="Live multi-camera fleet dashcam feeds — road and cabin views"
+                src={content.image}
+                alt={content.imageAlt}
                 width={1598}
                 height={984}
-                style={{ width: '100%', height: 'auto', display: 'block' }}
+                style={{ width: "100%", height: "auto", display: "block" }}
               />
             </div>
           </div>
-
         </div>
       </section>
     </>
-  )
+  );
 }
