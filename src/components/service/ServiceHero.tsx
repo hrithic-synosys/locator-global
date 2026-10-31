@@ -1,4 +1,7 @@
 'use client'
+
+import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
+import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
@@ -224,7 +227,7 @@ function FleetDashCard() {
 
 // ── Main hero ────────────────────────────────────────────────────────────────
 
-export default function ServiceHero() {
+export default function ServiceHero({ content = sharedFleetTelematics.hero }: { content?: FleetContent['hero'] }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const l1Ref   = useRef<HTMLDivElement>(null)
   const l2Ref   = useRef<HTMLDivElement>(null)
@@ -393,19 +396,12 @@ export default function ServiceHero() {
 
           <div className="srv-hero-body">
             <div className="srv-copy">
-              <p style={{ display: 'block', fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', textTransform: 'uppercase', color: '#1360ee', marginBottom: 'clamp(6px,1vh,10px)' }}>
-                <span style={{ display: 'block', marginBottom: '6px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-                Fleet Telemteics
-              </p>
-              <h1 style={{ fontSize: 'max(clamp(21px,2.5vw,28px), min(1.944vw, 40.6px))', fontWeight: 800, lineHeight: 1.18, letterSpacing: '-.015em', color: '#1d1d1f', maxWidth: '30ch', margin: '0 auto' }}>
-                Improve Fleet Operations with GPS Tracking &amp; Telematics
-              </h1>
-              <p style={{ maxWidth: '560px', margin: 'clamp(6px,1vh,10px) auto 0', fontSize: 'max(clamp(13px,1.35vw,16px), min(1.111vw, 23.2px))', lineHeight: 1.5, color: '#3a3a3c' }}>
-                Real-time GPS tracking to manage drivers, routes, and road operations with ease.
-              </p>
+              <p style={{ display: 'block', fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', textTransform: 'uppercase', color: '#1360ee', marginBottom: 'clamp(6px,1vh,10px)' }}>{content.label}</p>
+              <h1 style={{ fontSize: 'max(clamp(21px,2.5vw,28px), min(1.944vw, 40.6px))', fontWeight: 800, lineHeight: 1.18, letterSpacing: '-.015em', color: '#1d1d1f', maxWidth: '30ch', margin: '0 auto' }}>{content.heading}</h1>
+              {content.paragraphs.map((text,i)=>(<p key={i} style={{ maxWidth: '560px', margin: 'clamp(6px,1vh,10px) auto 0', fontSize: 'max(clamp(13px,1.35vw,16px), min(1.111vw, 23.2px))', lineHeight: 1.5, color: '#3a3a3c' }}>{text}</p>))}
               <div className="srv-cta-row" style={{ marginTop: 'clamp(10px,1.6vh,18px)' }}>
-                <Link href="/get-a-quote" className="srv-btn srv-btn-primary">Get a quote</Link>
-                <button className="srv-btn srv-btn-outline">Explore solutions</button>
+                <Link href={content.primaryCta.href} className="srv-btn srv-btn-primary">{content.primaryCta.label}</Link>
+                {content.secondaryIsLink ? <Link href={content.secondaryCta.href} className="srv-btn srv-btn-outline">{content.secondaryCta.label}</Link> : <button className="srv-btn srv-btn-outline">{content.secondaryCta.label}</button>}
               </div>
             </div>
 

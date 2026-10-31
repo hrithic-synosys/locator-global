@@ -1,82 +1,21 @@
 'use client'
+
+import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
+import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
 import { useState, useMemo } from 'react'
 import Link from '@/components/country/CountryLink'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-const CATS = [
-  { id: 'all',          label: 'All questions' },
-  { id: 'installation', label: 'Installation' },
-  { id: 'platform',     label: 'Platform & App' },
-  { id: 'support',      label: 'Support & Plans' },
-  { id: 'coverage',     label: 'Coverage' },
-]
-
-const ALL_FAQS = [
-  {
-    cat: 'installation',
-    q: 'How long does GPS device installation take?',
-    a: 'A standard installation takes 30–60 minutes per vehicle. Our certified team can complete a fleet of 10 vehicles in a single working day, with minimal disruption to your operations.',
-  },
-  {
-    cat: 'installation',
-    q: 'What vehicles and assets can you install GPS on?',
-    a: 'We track any motorized vehicle or asset — cars, vans, trucks, buses, motorcycles, forklifts, generators, bulldozers, cranes, boats, yachts, and heavy machinery. If it moves or has an engine, we can track it.',
-  },
-  {
-    cat: 'installation',
-    q: 'Do I need to visit your office or do you come to us?',
-    a: 'We come to you. Our team visits your site, installs the devices on your fleet, and configures the platform on-location. There is no need to bring vehicles to us.',
-  },
-  {
-    cat: 'platform',
-    q: 'How quickly can I see my fleet live after installation?',
-    a: 'Your fleet goes live immediately after device installation and software setup. Most clients are tracking in real time within 48 hours of their first contact with us.',
-  },
-  {
-    cat: 'platform',
-    q: 'Does the platform have a mobile app for drivers?',
-    a: 'Yes. Field staff use the mobile app to receive tasks, update delivery status, upload expense receipts, complete vehicle inspections, and view their own route history in real time.',
-  },
-  {
-    cat: 'platform',
-    q: 'Can I configure my own alert zones and thresholds?',
-    a: 'Yes. You can draw custom geofence zones, set speed thresholds, define working hours for after-hours alerts, schedule service reminders, and adjust idle-time limits — all from the web dashboard.',
-  },
-  {
-    cat: 'support',
-    q: 'Is there a long-term contract?',
-    a: 'No long-term lock-in. We offer flexible monthly plans and annual subscriptions. You can scale up or down as your fleet grows, with no cancellation penalties.',
-  },
-  {
-    cat: 'support',
-    q: 'What ongoing support do you provide?',
-    a: 'We provide dedicated support via phone, email, and WhatsApp. Our UAE-based support team is available during business hours, with emergency coverage for critical alerts and device failures.',
-  },
-  {
-    cat: 'support',
-    q: 'Do you provide training after installation?',
-    a: 'Yes. We provide on-site training for admin users and drivers, covering the web platform, mobile app, alert configuration, and report generation. Refresher training is available at any time.',
-  },
-  {
-    cat: 'coverage',
-    q: 'Can you track vehicles across all UAE emirates?',
-    a: 'Yes. Our GPS network provides full coverage across all UAE emirates — Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain. Cross-border tracking is also available.',
-  },
-  {
-    cat: 'coverage',
-    q: 'What happens if a GPS device is damaged or tampered with?',
-    a: 'You receive an immediate offline alert on the dashboard. Our team dispatches a replacement device and reinstalls it, typically within 24 hours. All devices are tamper-resistant with built-in backup power.',
-  },
-]
-
-export default function ServiceFAQ() {
+export default function ServiceFAQ({ content = sharedFleetTelematics.faq }: { content?: FleetContent['faq'] }) {
+  const ALL_FAQS = useMemo(() => content.order.map(id => ({ ...content.items[id], id })), [content])
+  const CATS = content.categories
   const [activeCat, setActiveCat] = useState('all')
   const [openIdx,   setOpenIdx]   = useState<number>(0)
 
   const filtered = useMemo(
     () => (activeCat === 'all' ? ALL_FAQS : ALL_FAQS.filter(f => f.cat === activeCat)),
-    [activeCat],
+    [activeCat, ALL_FAQS],
   )
 
   const handleCat = (id: string) => { setActiveCat(id); setOpenIdx(0) }
@@ -193,16 +132,13 @@ export default function ServiceFAQ() {
               display: 'block', marginBottom: '16px',
             }}>
               <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-              FAQ
-            </span>
+              {content.eyebrow}</span>
             <h2 style={{
               margin: 0,
               fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))',
               fontWeight: 800, lineHeight: 1.06,
               letterSpacing: '-.015em', color: '#1d1d1f',
-            }}>
-              Frequently asked questions
-            </h2>
+            }}>{content.heading}</h2>
           </div>
 
           {/* Main grid */}
@@ -243,7 +179,7 @@ export default function ServiceFAQ() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 {filtered.map((item, i) => (
                   <div key={`${activeCat}-${i}`} className={`sfq-item${openIdx === i ? ' on' : ''}`}>
-                    <button className="sfq-trig" onClick={() => toggle(i)}>
+                    <button className="sfq-trig" aria-expanded={openIdx === i} onClick={() => toggle(i)}>
                       <span className="sfq-num">{String(i + 1).padStart(2, '0')}</span>
                       <span className="sfq-qtext">{item.q}</span>
                       <span className="sfq-icon" aria-hidden="true">

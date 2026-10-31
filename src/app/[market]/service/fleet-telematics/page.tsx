@@ -1,3 +1,5 @@
+import { Fragment } from 'react'
+import { getFleetTelematicsContent } from '@/content/pages/fleet-telematics/resolve'
 import { marketMetadata } from '@/lib/country/metadata';
 import type { CountryCode } from '@/config/countries';
 import type { Metadata } from 'next'
@@ -18,48 +20,27 @@ import Footer from '@/components/layouts/Footer'
 
 const ServiceFAQ = dynamic(() => import('@/components/service/ServiceFAQ'))
 
-// Numbers section — same animated globe used on the landing page.
-const SERVICE_STATS = [
-  { value: '15+',    label: 'Years of fleet expertise',  side: 'left',  row: 'top',    icon: 'award' },
-  { value: '60,000+', label: 'Vehicles tracked daily',    side: 'left',  row: 'bottom', icon: 'pin' },
-  { value: '6,000+',   label: 'UAE businesses served',     side: 'right', row: 'top',    icon: 'smile' },
-  { value: '99.9%',  label: 'Tracking network uptime',   side: 'right', row: 'bottom', icon: 'chart' },
-]
-
-const pageMetadata: Metadata = {
-  title: 'Fleet Telematics — Service',
-  description:
-    'Improve fleet operations with real-time GPS tracking and telematics. Manage drivers, routes, and road operations with ease across all UAE industries.',
-  alternates: { canonical: '/service/fleet-telematics' },
-  openGraph: {
-    title: 'Fleet Telematics | Locator',
-    description:
-      'Real-time GPS tracking and telematics for fleets across the UAE.',
-    url: '/service/fleet-telematics',
-    type: 'website',
-  },
-}
-
 export default async function FleetTelematicsPage({ params }: { params: Promise<{ market: CountryCode }> }) {
   const { market } = await params;
+  const content = getFleetTelematicsContent(market);
+  const sections = {
+    hero: <ServiceHero content={content.hero} />,
+    benefits: <BenefitsSection content={content.benefits} />,
+    showcase: <ServiceFleetShowcase content={content.showcase} />,
+    industries: <ServiceIndustries content={content.industries} />,
+    process: <ServiceProcess content={content.process} />,
+    statistics: <AnimatedGlobeHero stats={content.statistics.items} />,
+    videoPlayer: <ServiceVideo {...content.videoPlayer} />,
+    whyChoose: <ServiceWhyChoose content={content.whyChoose} />,
+    videoTelematics: <DashcamShowcase content={content.videoTelematics} />,
+    blogs: <SoftwareBlog market={market} tag={['Fleet Tracking', 'Fleet Management']} />,
+    faq: <ServiceFAQ content={content.faq} />,
+    finalCta: <SoftwareCTA content={content.finalCta} />,
+  };
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
-      <ServiceHero />
-      <BenefitsSection />
-      {/* Landing target for the Fleet Telematics feature cards on the home page —
-          they link to /service/fleet-telematics#fleet-telematics, where the same
-          six features are spelled out in full. */}
-      <ServiceFleetShowcase />
-      <ServiceIndustries />
-      <ServiceProcess />
-      <AnimatedGlobeHero stats={SERVICE_STATS} />
-      <ServiceVideo />
-      <ServiceWhyChoose />
-      <DashcamShowcase />
-      <SoftwareBlog market={market} tag={['Fleet Tracking', 'Fleet Management']} />
-      <ServiceFAQ />
-      <SoftwareCTA />
+      {content.sectionOrder.filter(id => content.enabled[id]).map(id => <Fragment key={id}>{sections[id]}</Fragment>)}
       <Footer />
     </main>
   )
@@ -67,5 +48,8 @@ export default async function FleetTelematicsPage({ params }: { params: Promise<
 
 export async function generateMetadata({ params }: { params: Promise<{ market: CountryCode }> }): Promise<Metadata> {
   const { market } = await params;
-  return marketMetadata(pageMetadata, market, "/service/fleet-telematics");
+  const { seo } = getFleetTelematicsContent(market);
+  return marketMetadata({ title: seo.title, description: seo.description,
+    openGraph: { title: seo.ogTitle, description: seo.ogDescription, type: 'website' },
+  }, market, "/service/fleet-telematics");
 }

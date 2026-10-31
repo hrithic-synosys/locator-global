@@ -1,21 +1,11 @@
 'use client'
+
+import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
+import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
-
-const ITEMS = [
-  { label: 'Live GPS Tracking',          short: 'Track vehicles live, monitor drivers, improve road team control.' },
-  { label: 'Dynamic Fleet Dashboard',    short: 'Central dashboard for trip insights, vehicle status, performance overview.' },
-  { label: 'Instant Idle Alerts',        short: 'Detect long idle vehicles, reduce fuel waste, improve productivity.' },
-  { label: 'After-Hours Vehicle Alerts', short: 'Get alerts for unauthorized movement, secure fleet beyond office hours.' },
-  { label: 'Daily Route History',        short: 'Track routes, trip logs, driver activity, and delivery proof.' },
-  { label: 'Fleet Service Reminders',    short: 'Automated maintenance alerts for oil, tires, and service schedules.' },
-  { label: 'Field Tasks Manager',        short: 'Assign tasks to drivers, track progress, and monitor completion live.' },
-  { label: 'Mobile Expense Manager',     short: 'Log road team expenses, validate costs, and track spending instantly.' },
-  { label: 'Geofence & POI Monitoring',  short: 'Set virtual zones, get entry/exit alerts for office and customer sites.' },
-  { label: 'AI Route Optimization',      short: 'Optimize fleet routes with AI, cut delays, save fuel, improve operations.' },
-]
 
 // index → screen recording. Two aspect ratios in the mix: the original three
 // captures are 1726x1512, the newer Task Manager / Expense Manager / AI Route
@@ -312,11 +302,13 @@ function MockupPrefetch() {
 
 // ── Main export ──────────────────────────────────────────────────────────────
 
-export default function BenefitsSection() {
+export default function BenefitsSection({ content = sharedFleetTelematics.benefits }: { content?: FleetContent['benefits'] }) {
+  const ITEMS = content.order.map(id => ({ ...content.items[id], id }))
   const [active, setActive] = useState(0)
-  const videoEntry = VIDEO_MAP[active] ?? null
+  const mediaIndex = ITEMS[active]?.assetIndex ?? 0
+  const videoEntry = VIDEO_MAP[mediaIndex] ?? null
   const videoSrc = videoEntry?.src ?? null
-  const imageEntry = IMAGE_MAP[active] ?? null
+  const imageEntry = IMAGE_MAP[mediaIndex] ?? null
   // Only real full-bleed captures drive the panel's shape. The three
   // customLayout tabs are composed UI (notification stack + phone mockup), not a
   // single screenshot — their PNG ratio says nothing about how tall the panel
@@ -363,7 +355,7 @@ export default function BenefitsSection() {
   // Derived, not stored: the open tab is always loading, so it needs no effect
   // to put it in a set — which also means clicking a tab starts its download in
   // the same render rather than one commit later.
-  const isLoading = (idx: number) => inView && (idx === active || prefetched.has(idx))
+  const isLoading = (idx: number) => inView && (idx === mediaIndex || prefetched.has(idx))
 
   // Sequential prefetch: only reach for the next capture once everything already
   // downloading has a frame, so a background fetch can never slow down the one
@@ -373,12 +365,12 @@ export default function BenefitsSection() {
     if (!inView || !allLoadedReady) return
     const next = VIDEO_LIST
       .map(v => v.idx)
-      .filter(idx => idx !== active && !prefetched.has(idx))
-      .sort((a, b) => Math.abs(a - active) - Math.abs(b - active))[0]
+      .filter(idx => idx !== mediaIndex && !prefetched.has(idx))
+      .sort((a, b) => Math.abs(a - mediaIndex) - Math.abs(b - mediaIndex))[0]
     if (next === undefined) return
     const t = setTimeout(() => setPrefetched(p => new Set(p).add(next)), 500)
     return () => clearTimeout(t)
-  }, [inView, allLoadedReady, prefetched, active])
+  }, [inView, allLoadedReady, prefetched, mediaIndex])
 
   // Only the active video plays; the others stay paused holding their frame,
   // so switching tabs reveals a frame instantly. Depends on `ready` as well as
@@ -388,10 +380,10 @@ export default function BenefitsSection() {
     VIDEO_LIST.forEach(({ idx }, i) => {
       const v = videoRefs.current[i]
       if (!v) return
-      if (idx === active) v.play().catch(() => {})
+      if (idx === mediaIndex) v.play().catch(() => {})
       else v.pause()
     })
-  }, [active, ready])
+  }, [mediaIndex, ready])
 
   const activeReady = videoSrc ? !!ready[videoSrc] : true
 
@@ -659,17 +651,14 @@ export default function BenefitsSection() {
               display: 'block', marginBottom: '16px',
             }}>
               <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-              Benefits
-            </span>
+              {content.eyebrow}</span>
             <h2 style={{
               margin: '0 auto',
               fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))',
               fontWeight: 800, lineHeight: 1.25,
               letterSpacing: '-.015em', color: '#1d1d1f',
               maxWidth: '600px',
-            }}>
-              AI-Driven GPS Tracking &amp; Fleet Telematics Benefits
-            </h2>
+            }}>{content.heading}</h2>
           </div>
 
           {/* ── Main card + arrows row ── */}
@@ -791,7 +780,7 @@ export default function BenefitsSection() {
                     visible once it actually has a decoded frame. */}
                 {VIDEO_LIST.map(({ idx, src }, i) => {
                   const load = isLoading(idx)
-                  const show = active === idx && !!ready[src]
+                  const show = mediaIndex === idx && !!ready[src]
                   return (
                     <video
                       key={src}
@@ -825,8 +814,8 @@ export default function BenefitsSection() {
                         objectPosition: 'center',
                         display: 'block',
                         opacity: show ? 1 : 0,
-                        zIndex: active === idx ? 2 : 1,
-                        pointerEvents: active === idx ? 'auto' : 'none',
+                        zIndex: mediaIndex === idx ? 2 : 1,
+                        pointerEvents: mediaIndex === idx ? 'auto' : 'none',
                         transition: 'opacity .4s ' + EASE,
                       }}
                     />
@@ -837,8 +826,8 @@ export default function BenefitsSection() {
                     All four render through one component, so the notification
                     stack and the mockup land on identical pixels in each. */}
                 {!videoSrc && imageEntry && (
-                  imageEntry.customLayout && NOTIF_MAP[active] ? (
-                    <ComposedPanel key={active} items={NOTIF_MAP[active]} image={imageEntry} />
+                  imageEntry.customLayout && NOTIF_MAP[mediaIndex] ? (
+                    <ComposedPanel key={mediaIndex} items={NOTIF_MAP[mediaIndex]} image={imageEntry} />
                   ) : (
                     <Image
                       key={imageEntry.src}

@@ -1,42 +1,28 @@
+import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
+import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
 import Image from 'next/image'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-const REASONS = [
-  {
-    title: 'Advanced Features',
-    desc: 'We have the best GPS tracker for vehicles — built on advanced, sophisticated features to ensure your cars stay 100% safe.',
-    accent: '#1360ee',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+const REASON_ICONS = [(
+      <svg key="0" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
         <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
       </svg>
     ),
-  },
-  {
-    title: 'Competitive Pricing',
-    desc: 'As part of our mission to see every vehicle tracked in the UAE, our GPS tracker pricing is kept highly competitive.',
-    accent: '#1360ee',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+(
+      <svg key="1" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="4" width="18" height="16" rx="2.5" /><path d="M8 11l2.5 2.5L16 8" />
       </svg>
     ),
-  },
-  {
-    title: 'Seamless Software Integration',
-    desc: 'LOCATOR integrates with any third-party software or application of your choice — no restrictions on how you use the platform.',
-    accent: '#1360ee',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+(
+      <svg key="2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M5 12.5a9 9 0 0 1 14 0" /><path d="M8 15.5a5 5 0 0 1 8 0" /><circle cx="12" cy="18.5" r="1" fill="currentColor" />
       </svg>
-    ),
-  },
-]
+    )]
 
-export default function ServiceWhyChoose() {
+export default function ServiceWhyChoose({ content = sharedFleetTelematics.whyChoose }: { content?: FleetContent['whyChoose'] }) {
+  const REASONS = content.order.map(id => ({ ...content.items[id], id, icon: REASON_ICONS[content.items[id].assetIndex] }))
   return (
     <>
       <style>{`
@@ -79,15 +65,12 @@ export default function ServiceWhyChoose() {
           <div data-reveal="left">
             <span style={{ fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', color: '#1360ee', textTransform: 'uppercase', display: 'block', marginBottom: '16px' }}>
               <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-              Why LOCATOR
-            </span>
-            <h2 style={{ margin: '0 0 clamp(28px,4vw,40px)', fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.015em', color: '#1d1d1f' }}>
-              Why businesses choose LOCATOR
-            </h2>
+              {content.eyebrow}</span>
+            <h2 style={{ margin: '0 0 clamp(28px,4vw,40px)', fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.015em', color: '#1d1d1f' }}>{content.heading}</h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(22px,3vw,30px)' }}>
               {REASONS.map(r => (
-                <div key={r.title} className="swc-row">
+                <div key={r.id} className="swc-row">
                   <span className="swc-ic" style={{ background: `${r.accent}14`, color: r.accent }}>{r.icon}</span>
                   <div>
                     <h3 style={{ margin: '0 0 7px', fontSize: 'max(clamp(16px,1.7vw,19px), min(1.319vw, 27.55px))', fontWeight: 800, letterSpacing: '-.018em', color: '#1d1d1f' }}>{r.title}</h3>

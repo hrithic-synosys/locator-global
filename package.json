@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test:page-content": "node --test scripts/video-telematics-content.test.cjs",
+    "test:page-content": "node --test scripts/video-telematics-content.test.cjs scripts/fleet-telematics-content.test.cjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -41,7 +41,7 @@ export default function ServiceVideo({
       <link rel="preconnect" href="https://f.vimeocdn.com" crossOrigin="anonymous" />
       <link rel="preconnect" href="https://i.vimeocdn.com" />
       <div style={{ maxWidth: 'var(--w-960)', margin: '0 auto' }}>
-        <div data-reveal style={{ textAlign: 'center', maxWidth: headingMaxWidth, margin: '0 auto clamp(32px,4vw,44px)' }}>
+        {(hasEyebrow || title || lead) && (<div data-reveal style={{ textAlign: 'center', maxWidth: headingMaxWidth, margin: '0 auto clamp(32px,4vw,44px)' }}>
           {hasEyebrow && (
             <span style={{ fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', color: '#1360ee', textTransform: 'uppercase', display: 'block', marginBottom: '16px' }}>
               <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
@@ -54,7 +54,7 @@ export default function ServiceVideo({
           <p style={{ margin: '16px auto 0', fontSize: 'max(clamp(14px,1.35vw,16px), min(1.111vw, 23.2px))', color: '#6e6e73', lineHeight: 1.6 }}>
             {lead}
           </p>
-        </div>
+        </div>)}
 
         <div data-reveal="zoom" style={{
           position: 'relative', borderRadius: '18px', overflow: 'hidden',

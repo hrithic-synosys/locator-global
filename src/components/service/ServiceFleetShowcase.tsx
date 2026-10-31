@@ -1,3 +1,5 @@
+import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
+import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
 import Image from 'next/image'
 
 // The six features are the same set the home page ScrollShowcase shows on its
@@ -6,20 +8,14 @@ import Image from 'next/image'
 // The icons are carried over verbatim — the two composed ones fill their badge
 // with #f1f5f9, which is this card's icon tile colour, so the badge still cuts
 // out of the shape behind it.
-const FEATURES = [
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+const FEATURE_ICONS = [(
+      <svg key="0" width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#374151" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
         <circle cx="12" cy="9" r="2.5" stroke="#374151" strokeWidth="1.5" />
       </svg>
     ),
-    title: 'Live GPS Tracking',
-    desc: 'Track every vehicle live on one map, monitor driver activity in real time, and keep your road teams moving to plan.',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+(
+      <svg key="1" width="20" height="20" viewBox="0 0 24 24" fill="none"
         stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="10" cy="9.7" r="6.9" />
         <path d="M10 5.9v4l2.7 1.7" />
@@ -29,24 +25,16 @@ const FEATURES = [
         </g>
       </svg>
     ),
-    title: 'Instant Idle Alerts',
-    desc: 'Detect vehicles left idling for too long, cut the fuel they burn standing still, and recover the hours lost to it.',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+(
+      <svg key="2" width="20" height="20" viewBox="0 0 24 24" fill="none">
         <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#374151" strokeWidth="1.5" />
         <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#374151" strokeWidth="1.5" />
         <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#374151" strokeWidth="1.5" />
         <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#374151" strokeWidth="1.5" />
       </svg>
     ),
-    title: 'Dynamic Fleet Dashboard',
-    desc: 'One central dashboard for trip insights, live vehicle status, and a performance overview of the whole fleet.',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+(
+      <svg key="3" width="20" height="20" viewBox="0 0 24 24" fill="none"
         stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <g transform="translate(-0.6 3.2) scale(0.76)">
           <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" strokeWidth="2" />
@@ -60,12 +48,8 @@ const FEATURES = [
         </g>
       </svg>
     ),
-    title: 'After-Hours Vehicle Alerts',
-    desc: 'Get notified the moment a vehicle moves outside working hours, so unauthorised trips are caught while they are happening.',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+(
+      <svg key="4" width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M5.9 20.5h4.6q3.4 0 3.4-3.4v-2.7q0-3.4 3.4-3.4h0.8"
           stroke="#374151" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         <path
@@ -82,21 +66,14 @@ const FEATURES = [
         />
       </svg>
     ),
-    title: 'Daily Route History',
-    desc: 'Review full trip logs, stop reports, and route timelines for every vehicle, every day.',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+(
+      <svg key="5" width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-    ),
-    title: 'Fleet Service Reminders',
-    desc: 'Automated maintenance alerts for oil changes, tyres, and service schedules, so nothing falls due unnoticed.',
-  },
-]
+    )]
 
-export default function ServiceFleetShowcase() {
+export default function ServiceFleetShowcase({ content = sharedFleetTelematics.showcase }: { content?: FleetContent['showcase'] }) {
+  const FEATURES = content.order.map(id => ({ ...content.items[id], id, icon: FEATURE_ICONS[content.items[id].assetIndex] }))
   return (
     <>
       <style>{`
@@ -149,25 +126,16 @@ export default function ServiceFleetShowcase() {
 
           <div data-reveal="left">
             <span style={{ fontSize: 'var(--f-13)', fontWeight: 700, color: '#1360ee', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '18px', display: 'block' }}>
-              Fleet Telematics
-            </span>
-            <h2 style={{ fontSize: 'max(clamp(24px,3vw,36px), min(2.500vw, 52.2px))', fontWeight: 800, lineHeight: 1.15, color: '#1d1d1f', margin: '0 0 16px' }}>
-              Improve Fleet Operations with GPS Tracking &amp; Telematics
-            </h2>
-            <p style={{ fontSize: 'max(clamp(13px,1.2vw,15px), min(1.042vw, 21.75px))', lineHeight: 1.65, color: '#6e6e73', margin: '0 0 28px', maxWidth: 440 }}>
-              Real-time GPS tracking to manage drivers, routes, and road operations with ease.
-            </p>
+              {content.eyebrow}</span>
+            <h2 style={{ fontSize: 'max(clamp(24px,3vw,36px), min(2.500vw, 52.2px))', fontWeight: 800, lineHeight: 1.15, color: '#1d1d1f', margin: '0 0 16px' }}>{content.heading}</h2>
+            {content.paragraphs.map((text,i)=>(<p key={i} style={{ fontSize: 'max(clamp(13px,1.2vw,15px), min(1.042vw, 21.75px))', lineHeight: 1.65, color: '#6e6e73', margin: '0 0 28px', maxWidth: 440 }}>{text}</p>))}
 
-            <h3 style={{ fontSize: 'max(clamp(15px,1.4vw,18px), min(1.250vw, 26.1px))', fontWeight: 700, color: '#1d1d1f', margin: '0 0 10px' }}>
-              Live Vehicle Visibility &amp; Fleet Intelligence
-            </h3>
-            <p style={{ fontSize: 'max(clamp(12px,1.1vw,14px), min(0.972vw, 20.3px))', lineHeight: 1.6, color: '#6e6e73', margin: '0 0 24px', maxWidth: 440 }}>
-              Live tracking, idle and after-hours alerts, trip history, and maintenance reminders for vans, trucks, buses, and every vehicle in your fleet.
-            </p>
+            {content.subheading && (<h3 style={{ fontSize: 'max(clamp(15px,1.4vw,18px), min(1.250vw, 26.1px))', fontWeight: 700, color: '#1d1d1f', margin: '0 0 10px' }}>{content.subheading}</h3>)}
+            {content.secondaryParagraphs.map((text,i)=>(<p key={i} style={{ fontSize: 'max(clamp(12px,1.1vw,14px), min(0.972vw, 20.3px))', lineHeight: 1.6, color: '#6e6e73', margin: '0 0 24px', maxWidth: 440 }}>{text}</p>))}
 
             <div className="fts-feature-grid">
               {FEATURES.map(f => (
-                <div key={f.title} className="fts-fcard">
+                <div key={f.id} className="fts-fcard">
                   <span className="fts-fcard-icon">{f.icon}</span>
                   <div className="fts-fcard-body">
                     <span className="fts-fcard-title">{f.title}</span>

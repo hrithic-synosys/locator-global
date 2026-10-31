@@ -1,62 +1,39 @@
+import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
+import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
 import Link from '@/components/country/CountryLink'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-const STEPS = [
-  {
-    num: '01',
-    title: 'Free Site Visit',
-    desc: 'Our team visits your site, assesses your fleet, and recommends the right GPS tracking solution. No commitment required.',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+const STEP_ICONS = [(
+      <svg key="0" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
         <rect x="4" y="4" width="20" height="20" rx="4" stroke="currentColor" strokeWidth="1.8" />
         <path d="M9 14h10M9 10h6M9 18h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     ),
-    accent: '#1360ee',
-  },
-  {
-    num: '02',
-    title: 'Professional Installation',
-    desc: 'Certified technicians install GPS tracking devices on all your vehicles, machines, and assets — typically 30–60 min per unit.',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+(
+      <svg key="1" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
         <circle cx="14" cy="14" r="9" stroke="currentColor" strokeWidth="1.8" />
         <path d="M14 10v4l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M7 7l2.5 2.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     ),
-    accent: '#1360ee',
-  },
-  {
-    num: '03',
-    title: 'Platform Configuration',
-    desc: 'We set up your dashboard, configure alerts, create driver profiles, and connect to your existing CRM or ERP system if needed.',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+(
+      <svg key="2" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
         <rect x="5" y="8" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.8" />
         <path d="M9 12h10M9 15h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
         <path d="M14 20v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
         <path d="M10 23h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     ),
-    accent: '#1360ee',
-  },
-  {
-    num: '04',
-    title: 'Training & Go Live',
-    desc: 'Your admin team and drivers are trained on the web platform and mobile app. You start tracking your fleet live within 48 hours.',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+(
+      <svg key="3" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
         <path d="M8 20l4-4 3 3 5-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         <circle cx="14" cy="10" r="4" stroke="currentColor" strokeWidth="1.8" />
       </svg>
-    ),
-    accent: '#1360ee',
-  },
-]
+    )]
 
-export default function ServiceProcess() {
+export default function ServiceProcess({ content = sharedFleetTelematics.process }: { content?: FleetContent['process'] }) {
+  const STEPS = content.order.map(id => ({ ...content.items[id], id, icon: STEP_ICONS[content.items[id].assetIndex] }))
   return (
     <>
       <style>{`
@@ -148,23 +125,18 @@ export default function ServiceProcess() {
               display: 'block', marginBottom: '16px',
             }}>
               <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-              How it works
-            </span>
+              {content.eyebrow}</span>
             <h2 style={{
               margin: '0 auto',
               fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))',
               fontWeight: 800, lineHeight: 1.08,
               letterSpacing: '-.015em', color: '#1d1d1f',
               maxWidth: '560px',
-            }}>
-              Up and Running in 4 Simple Steps
-            </h2>
-            <p style={{
+            }}>{content.heading}</h2>
+            {content.paragraphs.map((text,i)=>(<p key={i} style={{
               margin: '16px auto 0', maxWidth: '500px',
               fontSize: 'max(clamp(14px,1.35vw,16px), min(1.111vw, 23.2px))', color: '#6e6e73', lineHeight: 1.6,
-            }}>
-              From consultation to live fleet tracking — we handle everything so your team can focus on operations.
-            </p>
+            }}>{text}</p>))}
           </div>
 
           {/* Steps grid */}
@@ -179,7 +151,7 @@ export default function ServiceProcess() {
           >
             {STEPS.map((step, i) => (
               <div
-                key={i}
+                key={step.id}
                 className="proc-card"
                 style={{ '--proc-accent': step.accent } as React.CSSProperties}
                 data-reveal
@@ -216,9 +188,7 @@ export default function ServiceProcess() {
 
           {/* Bottom CTA row */}
           <div data-reveal style={{ textAlign: 'center', marginTop: '44px' }}>
-            <p style={{ fontSize: 'max(clamp(14px,1.35vw,16px), min(1.111vw, 23.2px))', color: '#6e6e73', margin: '0 0 20px' }}>
-              Ready to get started? Most fleets go live in under 48 hours.
-            </p>
+            {content.closingParagraphs.map((text,i)=>(<p key={i} style={{ fontSize: 'max(clamp(14px,1.35vw,16px), min(1.111vw, 23.2px))', color: '#6e6e73', margin: '0 0 20px' }}>{text}</p>))}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button style={{
                 fontFamily: 'inherit', fontSize: 'var(--f-14)', fontWeight: 700,
@@ -226,8 +196,8 @@ export default function ServiceProcess() {
                 background: '#1360ee', color: '#fff', cursor: 'pointer',
                 transition: '.18s cubic-bezier(.22,.61,.36,1)',
               }}>
-                <Link href="/get-a-quote">
-                  Book a free site visit
+                <Link href={content.cta.href}>
+                  {content.cta.label}
                 </Link>
               </button>
               {/* <button style={{

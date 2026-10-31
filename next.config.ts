@@ -4,6 +4,8 @@ import { countries, countryCodes } from './src/config/countries';
 import { legacyRegulatoryPaths, regulatoryPaths } from './src/config/regulatory';
 
 const nextConfig: NextConfig = {
+  // Isolate local production verification from a running development server.
+  distDir: process.env.LOCATOR_VERIFY_BUILD === 'true' ? '.next-verification' : '.next',
   reactStrictMode: true,
   async redirects() {
     return [

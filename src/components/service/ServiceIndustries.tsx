@@ -1,6 +1,10 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+
+import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
+import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
+import { useMemo, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import Link from '@/components/country/CountryLink'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
@@ -9,160 +13,10 @@ const BLUE = '#1360ee'
 
 // ── Industry data (all 12 from servicepage.md) ───────────────────────────────
 
-interface Industry {
-  id: string
-  num: string
-  title: string
-  desc: string
-  vehicles: string[]
-  count: number
-  image?: string   // real screenshot; falls back to the built-in map card
-  // When set, the photo is shown at its natural aspect ratio (no crop) using
-  // these intrinsic dimensions; otherwise it fills a fixed-height cover frame.
-  imageW?: number
-  imageH?: number
-}
-
-const INDUSTRIES: Industry[] = [
-  {
-    id: 'fmcg',
-    num: '01',
-    title: 'FMCG Fleet\nTelematics',
-    desc: 'GPS fleet telematics helps vans, pickups, mini-trucks, delivery bikes track distributors and supermarket deliveries live. It reduces fuel loss, improves route planning, automates maintenance, monitors drivers, and prevents delivery delays, giving FMCG companies in UAE full control over sales teams and daily stock movement.',
-    vehicles: ['Delivery vans', 'Pickups', 'Mini-trucks', 'Delivery bikes'],
-    count: 8,
-    image: '/services/fmcg-2.webp',
-    imageW: 1790,
-    imageH: 879,
-  },
-  {
-    id: 'transport',
-    num: '02',
-    title: 'Transport &\nLogistics Telematics',
-    desc: 'LOCATOR GPS fleet systems support cars, vans, trucks, buses, bikes, yachts used for cargo, courier, and staff transport. It enables live trip tracking, driver behavior alerts, geofencing, and route history, helping UAE logistics companies reduce accidents, optimize delivery schedules, improve dispatch, and resolve claims faster with data proof.',
-    vehicles: ['Cars', 'Vans', 'Trucks', 'Buses', 'Bikes', 'Yachts'],
-    count: 12,
-    image: '/services/transport-logistics-2.webp',
-    imageW: 1600,
-    imageH: 788,
-  },
-  {
-    id: 'construction',
-    num: '03',
-    title: 'Construction Site\nFleet Intelligence',
-    desc: 'Fleet telematics tracks site cars, pickups, trucks, generators, forklifts, bulldozers, boom loaders, JCBs and loaders. It improves machine utilization, validates site activity, prevents unauthorized use, sends service reminders, and optimizes routes, helping UAE construction firms reduce equipment damage, delays, and fuel waste.',
-    vehicles: ['Trucks', 'Generators', 'Forklifts', 'Bulldozers', 'Boom loaders', 'JCBs'],
-    count: 10,
-    image: '/services/construction-site-fleet.webp',
-    imageW: 1790,
-    imageH: 879,
-  },
-  {
-    id: 'facility',
-    num: '04',
-    title: 'Facility Management\nFleet Control',
-    desc: 'GPS telematics gives real-time oversight on service vans, cars, pickup trucks, forklifts, generators, boom loaders and field machines. It improves task dispatch, idle control, geofence alerts, expense logging, and maintenance planning, helping UAE facility companies solve road team chaos, reduce response time, and validate service completion instantly.',
-    vehicles: ['Service vans', 'Cars', 'Pickup trucks', 'Forklifts', 'Generators', 'Boom loaders'],
-    count: 9,
-    image: '/services/facility-management.webp',
-    imageW: 1758,
-    imageH: 895,
-  },
-  {
-    id: 'healthcare',
-    num: '05',
-    title: 'Healthcare Fleet\nMonitoring',
-    desc: 'For ambulances, cars, vans, pickup trucks, delivery bikes, and mobile medical units, GPS telematics ensures live tracking, driver safety alerts, geofence hospitals, and automate service schedules. It improves emergency dispatch, reduces fleet downtime, and provides accurate trip logs, helping UAE healthcare providers deliver faster and safer medical support.',
-    vehicles: ['Ambulances', 'Cars', 'Vans', 'Delivery bikes', 'Mobile medical units'],
-    count: 6,
-    image: '/services/healthcare-fleet-monitoring.webp',
-    imageW: 1790,
-    imageH: 879,
-  },
-  {
-    id: 'travel',
-    num: '06',
-    title: 'Travel & Tourism\nFleet Telematics',
-    desc: 'GPS fleet systems track tourist cars, vans, buses, bikes, yachts, and boats operating on UAE roads and waters. It improves guest transport scheduling, geofencing attractions, tracking trips, and monitoring drivers, helping tourism companies reduce delays, ensure safety, improve driver training, and provide better customer experience.',
-    vehicles: ['Tourist cars', 'Vans', 'Buses', 'Bikes', 'Yachts', 'Boats'],
-    count: 7,
-    image: '/services/travel.webp',
-    imageW: 1789,
-    imageH: 879,
-  },
-  {
-    id: 'rental',
-    num: '07',
-    title: 'Rental & Leasing\nFleet Management',
-    desc: 'Fleet telematics supports leased cars, vans, buses, bikes, trucks and boats. It tracks vehicle usage, monitors unauthorized trips, sends service alerts, and retrieves incident logs instantly. Rental companies in UAE benefit from reduced fraud, better asset utilization, improved maintenance scheduling, and faster claims resolution.',
-    vehicles: ['Cars', 'Vans', 'Buses', 'Bikes', 'Trucks', 'Boats'],
-    count: 15,
-    image: '/services/rental.webp',
-    imageW: 1789,
-    imageH: 879,
-  },
-  {
-    id: 'petroleum',
-    num: '08',
-    title: 'Petroleum & Energy\nFleet Intelligence',
-    desc: 'For tankers, trucks, pickups, cars, generator units, cranes, bulldozers, forklifts, boats and energy assets, GPS telematics tracks fuel transport, field teams, and machines live. It reduces fuel theft, monitors driver safety, geofences depots, and automates maintenance, helping UAE energy companies improve compliance and prevent asset misuse.',
-    vehicles: ['Tankers', 'Trucks', 'Cranes', 'Bulldozers', 'Forklifts', 'Boats'],
-    count: 11,
-    image: '/services/petroliume.webp',
-    imageW: 1837,
-    imageH: 856,
-  },
-  {
-    id: 'vet',
-    num: '09',
-    title: 'Veterinary & Pet Care\nFleet Monitoring',
-    desc: 'Fleet telematics tracks cars, service vans, bikes, pickup trucks, boats and mobile pet-care units used for rescue and home services. It improves dispatch, monitors drivers, geofences clinics, and retrieves trip logs, helping UAE pet-care providers reduce delays, improve training, validate service, and enhance customer trust.',
-    vehicles: ['Cars', 'Service vans', 'Bikes', 'Pickup trucks', 'Boats'],
-    count: 4,
-    image: '/services/veterinary-and-pet-care-fleet-monitoring.webp',
-    imageW: 1790,
-    imageH: 879,
-  },
-  {
-    id: 'government',
-    num: '10',
-    title: 'Public & Government\nFleet Telematics',
-    desc: 'For cars, pickup trucks, vans, buses, patrol boats, bikes, forklifts, loaders, generators and government machines, GPS telematics ensures live asset tracking, route audit, geofencing, and automated service reminders. It improves road-team coordination, enforces compliance, reduces downtime, and helps UAE public services operate faster and transparently.',
-    vehicles: ['Cars', 'Vans', 'Buses', 'Patrol boats', 'Forklifts', 'Generators'],
-    count: 14,
-    image: '/services/public-and-gov.webp',
-    imageW: 1789,
-    imageH: 879,
-  },
-  {
-    id: 'waste',
-    num: '11',
-    title: 'Waste Management\nFleet Visibility',
-    desc: 'GPS fleet systems track garbage trucks, pickup fleets, vans, forklifts, loaders, generators and depot machines. It monitors trips, idle time, driver behavior, and geofences yards, helping UAE waste companies improve driver training, resolve complaints faster, reduce vehicle damage, prevent fraud, and enhance daily collection operations.',
-    vehicles: ['Garbage trucks', 'Pickup fleets', 'Vans', 'Forklifts', 'Loaders', 'Generators'],
-    count: 8,
-    image: '/services/waste-management-fleet-visibility.webp',
-    imageW: 1790,
-    imageH: 879,
-  },
-  {
-    id: 'school',
-    num: '12',
-    title: 'School & Educational\nFleet Monitoring',
-    desc: 'Fleet telematics tracks school buses, vans, cars, bikes, boats and campus machines like generators and forklifts. It monitors student pickup trips, stop-arm violations, driver behavior, and geofence campuses, helping UAE schools improve safety, reduce road incidents, enforce compliance, and retrieve video or trip evidence quickly.',
-    vehicles: ['School buses', 'Vans', 'Cars', 'Bikes', 'Boats', 'Generators'],
-    count: 6,
-    image: '/services/school-and-educational-fleet-monitoring.webp',
-    imageW: 1790,
-    imageH: 879,
-  },
-]
-
-const N = INDUSTRIES.length
 // Every industry photo, so we can eagerly preload them all up front (below the
 // fold) — by the time the user scrolls here each one is cached and appears
 // instantly instead of loading in with a white box.
-const IMAGE_LIST = INDUSTRIES.map(i => i.image).filter((s): s is string => !!s)
+
 const IMG_SIZES = '(max-width: 800px) 0px, 46vw'
 
 // Each industry occupies one full viewport of scroll; a hidden snap anchor per
@@ -279,7 +133,10 @@ function FleetMapCard({ count }: { count: number }) {
 
 // ── Main scroll-driven component ──────────────────────────────────────────────
 
-export default function ServiceIndustries() {
+export default function ServiceIndustries({ content = sharedFleetTelematics.industries }: { content?: FleetContent['industries'] }) {
+  const INDUSTRIES = useMemo(() => content.order.map(id => ({ ...content.items[id], id })), [content])
+  const N = INDUSTRIES.length
+  const IMAGE_LIST = useMemo(() => INDUSTRIES.map(i => i.image).filter((s): s is string => !!s), [INDUSTRIES])
   const wrapRef  = useRef<HTMLDivElement>(null)
   const numRef   = useRef<HTMLDivElement>(null)   // bg number — continuous parallax
   const mapPxRef = useRef<HTMLDivElement>(null)   // map inner — continuous parallax
@@ -348,7 +205,7 @@ export default function ServiceIndustries() {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
-  }, [])
+  }, [N])
 
   const ind = INDUSTRIES[displayIdx]
 
@@ -462,7 +319,8 @@ export default function ServiceIndustries() {
       `}</style>
 
       {/* Section height comes from the snap anchors below (N × 100vh) */}
-      <section
+      {content.heading && <header style={{padding:'64px 28px 24px',textAlign:'center',maxWidth:960,margin:'0 auto'}}><h2 style={{fontSize:'clamp(24px,3vw,36px)',fontWeight:800,lineHeight:1.15}}>{content.heading}</h2>{content.paragraphs.map(text=><p key={text} style={{color:'#6e6e73',lineHeight:1.7,marginTop:16}}>{text}</p>)}</header>}
+<section
         ref={wrapRef}
         id="industries"
         aria-label="Industries we serve"
@@ -487,7 +345,6 @@ export default function ServiceIndustries() {
           isolation: 'isolate',
           zIndex: 1,
         }}>
-
 
           {/* Body */}
           <div
@@ -530,8 +387,7 @@ export default function ServiceIndustries() {
                   color: BLUE, textTransform: 'uppercase', marginBottom: '16px',
                 }}>
                   <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: BLUE, borderRadius: '2px' }} /></span>
-                  GPS Fleet Services
-                </div>
+                  {content.eyebrow}</div>
 
                 <h2 style={{
                   margin: '0 0 18px',
@@ -554,7 +410,7 @@ export default function ServiceIndustries() {
                   {ind.desc}
                 </p>
 
-                <div>
+                {content.showVehicleTypes && (<div>
                   <p style={{
                     margin: '0 0 10px',
                     fontSize: 'var(--f-10)', fontWeight: 700,
@@ -567,7 +423,7 @@ export default function ServiceIndustries() {
                       <span key={v} className="ind-vehicle-tag">{v}</span>
                     ))}
                   </div>
-                </div>
+                </div>)}
               </div>
             </div>
 
@@ -666,6 +522,7 @@ export default function ServiceIndustries() {
           ))}
         </div>
       </section>
+{content.cta && <div style={{textAlign:'center',padding:'24px 28px 64px'}}><Link href={content.cta.href} className="srv-btn srv-btn-primary">{content.cta.label}</Link></div>}
     </>
   )
 }

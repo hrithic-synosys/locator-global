@@ -1,45 +1,21 @@
 'use client'
 
+import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
+import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
+
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from '@/components/country/CountryLink'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
 // Same expanding-rail pattern as the Industries section on
 // /service/video-telematics — real AI-camera frames with their REC/HUD overlay
 // baked in, so images use object-fit: contain and never get cropped.
-const CARDS = [
-  {
-    title: 'LIVE HD Video',
-    desc: 'Stream real-time HD road and driver footage to improve driver behaviour, retrieve video on-demand, and enforce safer driving across your fleet.',
-    // A dark AI-camera frame like the other three — the light dashboard-UI
-    // screenshot that was here read as a bright slab against the panel.
-    image: '/services/industries-we-serve/transportation-and-logistics.webp',
-  },
-  {
-    title: 'Collision Prevention',
-    desc: 'Analyse incidents with video evidence and deploy AI audible alerts to warn drivers instantly, reducing future collision risks.',
-    image: '/services/industries-we-serve/field-services-and-recovery-vehicles.webp',
-  },
-  {
-    title: 'Driver Monitoring',
-    desc: 'AI driver monitoring detects drowsiness and distraction — yawning, eye closure, phone use, looking away — helping managers take proactive safety actions.',
-    image: '/services/industries-we-serve/school-districtse.webp',
-  },
-  {
-    title: 'Cargo & Cost Savings',
-    desc: 'Cut costs from accidents, insurance claims, vehicle damage, and fraud disputes with undeniable recorded proof that protects your business.',
-    image: '/services/industries-we-serve/warehouse.webp',
-  },
-]
 
-const STATS = [
-  { v: '4K', l: 'Camera resolution' },
-  { v: '24/7', l: 'Live monitoring' },
-  { v: 'AI', l: 'Driver detection' },
-]
-
-export default function DashcamShowcase() {
+export default function DashcamShowcase({ content = sharedFleetTelematics.videoTelematics }: { content?: FleetContent['videoTelematics'] }) {
+  const CARDS = content.order.map(id => ({ ...content.items[id], id }))
+  const STATS = content.stats
   const [active, setActive] = useState(0)
 
   return (
@@ -173,21 +149,15 @@ export default function DashcamShowcase() {
           <div data-reveal style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto clamp(36px,5vw,52px)' }}>
             <span style={{ fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', color: '#1360ee', textTransform: 'uppercase', display: 'block', marginBottom: '16px' }}>
               <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-              AI Video Telematics
-            </span>
-            <h2 style={{ margin: 0, fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.015em', color: '#1d1d1f' }}>
-              AI-Powered Dash Cameras &amp; MDVR
-            </h2>
-            <p style={{ margin: '16px 0 0', fontSize: 'max(clamp(14px,1.2vw,15.5px), min(1.076vw, 22.47px))', lineHeight: 1.7, color: '#6e6e73' }}>
-              Real-time driver monitoring, cargo surveillance, and multi-camera recording for trucks,
-              taxis, buses, delivery vehicles, and commercial fleets.
-            </p>
+              {content.eyebrow}</span>
+            <h2 style={{ margin: 0, fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.015em', color: '#1d1d1f' }}>{content.heading}</h2>
+            {content.paragraphs.map((text,i)=>(<p key={i} style={{ margin: '16px 0 0', fontSize: 'max(clamp(14px,1.2vw,15.5px), min(1.076vw, 22.47px))', lineHeight: 1.7, color: '#6e6e73' }}>{text}</p>))}
           </div>
 
           <div className="dc-rail" data-reveal>
             {CARDS.map((c, i) => (
               <button
-                key={c.title}
+                key={c.id}
                 className="dc-panel"
                 aria-expanded={i === active}
                 aria-label={c.title}
@@ -215,14 +185,15 @@ export default function DashcamShowcase() {
             ))}
           </div>
 
-          <div className="dc-stats" data-reveal>
+          {STATS.length > 0 && (<div className="dc-stats" data-reveal>
             {STATS.map(s => (
               <div className="dc-stat" key={s.l}>
                 <b>{s.v}</b>
                 <span>{s.l}</span>
               </div>
             ))}
-          </div>
+          </div>)}
+{content.cta && <div style={{textAlign:'center',marginTop:32}}><Link href={content.cta.href} className="srv-btn srv-btn-primary">{content.cta.label}</Link></div>}
         </div>
       </section>
     </>
