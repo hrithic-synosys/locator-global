@@ -31,3 +31,22 @@ export type CardSection = {
   order: string[];
   items: Record<string, ContentCard>;
 };
+
+// Shared service-section contracts, independent of any individual service page.
+export type ServiceWhyChooseContent = {
+  eyebrow: string;
+  heading: string;
+  paragraphs: string[];
+  order: string[];
+  items: Record<
+    string,
+    { title: string; desc: string; accent: string; assetIndex: number }
+  >;
+};
+export type ServiceFaqContent = {
+  eyebrow: string;
+  heading: string;
+  categories: Array<{ id: string; label: string }>;
+  order: string[];
+  items: Record<string, { cat: string; q: string; a: string }>;
+};

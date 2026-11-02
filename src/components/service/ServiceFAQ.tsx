@@ -1,13 +1,13 @@
 'use client'
 
 import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
-import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
+import type { ServiceFaqContent } from '@/content/page-schema'
 import { useState, useMemo } from 'react'
 import Link from '@/components/country/CountryLink'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function ServiceFAQ({ content = sharedFleetTelematics.faq }: { content?: FleetContent['faq'] }) {
+export default function ServiceFAQ({ content = sharedFleetTelematics.faq }: { content?: ServiceFaqContent }) {
   const ALL_FAQS = useMemo(() => content.order.map(id => ({ ...content.items[id], id })), [content])
   const CATS = content.categories
   const [activeCat, setActiveCat] = useState('all')

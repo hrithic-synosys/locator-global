@@ -1,10 +1,12 @@
 import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
+import { sharedTaskManager } from '@/content/pages/task-manager/shared'
+import type { TaskManagerContent } from '@/content/pages/task-manager/schema'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function TaskManagerHero() {
+export default function TaskManagerHero({ content = sharedTaskManager.hero }: { content?: TaskManagerContent['hero'] }) {
   return (
     <>
       <style>{`
@@ -70,6 +72,12 @@ export default function TaskManagerHero() {
           display: block; width: 34px; height: 3px;
           background: #1360ee; border-radius: 2px; margin-bottom: 12px;
         }
+        .tm-hero-compact .tm-eyebrow {
+          font-size: clamp(11px, 3vw, 14px);
+          font-weight: 700; line-height: 1.4; letter-spacing: .08em;
+          white-space: nowrap; margin-bottom: 14px;
+        }
+        .tm-hero-compact .tm-eyebrow-bar { display: none; }
 
         .tm-h1 {
           margin: 0;
@@ -143,11 +151,11 @@ export default function TaskManagerHero() {
         }
       `}</style>
 
-      <section className="tm-hero">
+      <section className={`tm-hero${content.eyebrowStyle === 'compact' ? ' tm-hero-compact' : ''}`}>
 
         <div className="tm-photo" aria-hidden="true">
           <Image
-            src="/services/task-manager-hero-banner.webp"
+            src={content.image}
             alt=""
             fill
             priority
@@ -173,26 +181,24 @@ export default function TaskManagerHero() {
 
               <span className="tm-eyebrow tm-anim" style={{ animationDelay: '.04s' }}>
                 <span className="tm-eyebrow-bar" />
-                Field Team &amp; Job Scheduling
+                {content.eyebrow}
               </span>
 
               <h1 className="tm-h1 tm-anim" style={{ animationDelay: '.1s' }}>
-                <em>Task</em> Manager
+                {content.accent ? <><em>{content.accent}</em>{content.heading.slice(content.accent.length)}</> : content.heading}
               </h1>
 
-              <p className="tm-lead tm-anim" style={{ animationDelay: '.18s' }}>
-                Assign tasks, track progress in real time, and manage field operations effortlessly. Collect data, monitor performance, and keep your team productive from one place.
-              </p>
+              {content.paragraphs.map(text => <p key={text} className="tm-lead tm-anim" style={{ animationDelay: '.18s' }}>{text}</p>)}
 
               <div className="tm-cta-row tm-anim" style={{ animationDelay: '.26s' }}>
-                <Link href="/get-a-quote" className="tm-btn tm-btn-primary">
-                  Get a Free Quote
+                <Link href={content.primaryCta.href} className="tm-btn tm-btn-primary">
+                  {content.primaryCta.label}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </Link>
-                <Link href="/get-a-free-demo" className="tm-btn tm-btn-ghost">
-                  Get a Free Demo
+                <Link href={content.secondaryCta.href} className="tm-btn tm-btn-ghost">
+                  {content.secondaryCta.label}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>

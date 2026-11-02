@@ -1,6 +1,6 @@
 # Editing content by page and market
 
-Video Telematics and Fleet Telematics now use typed page-and-market content. The route stays at `/service/video-telematics` for Global and `/qa/service/video-telematics`, `/sa/...`, `/kw/...`, `/om/...` for countries. The renderer, images, styles and animation components are shared. Approved copy is stored separately by market.
+Video Telematics, Fleet Telematics and Task Manager now use typed page-and-market content. The route stays at `/service/video-telematics` for Global and `/qa/service/video-telematics`, `/sa/...`, `/kw/...`, `/om/...` for countries. The renderer, images, styles and animation components are shared. Approved copy is stored separately by market.
 
 ## Files to edit
 
@@ -127,3 +127,22 @@ Reusable agent prompt: [PROMPT_UPDATE_PAGE_CONTENT.md](PROMPT_UPDATE_PAGE_CONTEN
 For isolated production verification in PowerShell, set `$env:LOCATOR_VERIFY_BUILD='true'` before `npm run build` and before starting the synthetic fixture with `node scripts/helpers/home-performance-server.cjs`. Both then use `.next-verification`, leaving a running dev server's `.next` intact. Clear that environment variable for normal builds. The Fleet browser script is `scripts/fleet-telematics-browser.cjs`; set `FLEET_TEST_ORIGIN` to the fixture's printed local origin plus `PLAYWRIGHT_MODULE` and `CHROME_PATH`. It blocks external services and uses no real CMS data.
 
 Fleet validation: production build and TypeScript passed; focused ESLint has no errors and retains the pre-existing native video-poster img warning. Combined content, market, CMS/cache and Turnstile suites passed 50 tests with one optional live-CMS test skipped. All 118 approved Global text fields matched the PDF after whitespace normalization. Browser content/interaction checks covered 1440px and 390px with normal/reduced motion, all benefits, twelve industry panels, four video panels, six FAQ expansions/filtering, CTA links, metadata and all four country routes. Feature recordings were stubbed to avoid unnecessary large downloads; asset paths were checked on disk. Native lazy-photo decode timing on mobile was inconclusive in automated Chrome and is not claimed as verified; the existing production image behavior was preserved. Verification uses synthetic CMS data and does not exercise real enquiries or analytics.
+
+
+## Task Manager — Global content and shared UI
+
+Edit `src/content/pages/task-manager/global.ts` for Global's `/service/task-manager`. The same folder contains `schema.ts`, preserved `shared.ts`, `resolve.ts`, and empty country overrides. Countries retain their original hero, introduction/demo and module navigation.
+
+**Reuse existing section components before creating new layouts.** Task Manager uses `ServiceWhyChoose` and `ServiceFAQ`, with the same UI patterns as other service pages. Their reusable content contracts are `ServiceWhyChooseContent` and `ServiceFaqContent` in `src/content/page-schema.ts`. The superseded Task Manager reasons/FAQ renderers have been removed. Keep this reuse-first rule for future content updates.
+
+Supported sections: hero, introduction, benefits, tools, industries, whyChoose, faq, modules, finalCta. Use `sectionOrder`, `enabled` and stable `order`/`items` records. Benefit icons and Why Choose icons are bound to item IDs/content fields, not positions. Why Choose items use `title`, `desc`, `accent` and `assetIndex` (0–2). FAQ items use `q`, `a`, and `cat`; categories are editable in `faq.categories` and must include `all`. Current groups are Tasks, Field Operations, Integration and Coverage. The existing ServiceFAQ accordion, category badges and keyboard-operable buttons are reused.
+
+Global sets `hero.eyebrowStyle: 'compact'` for a small, single-line blue label; countries keep `'large'`. The main heading remains separate. `hero.accent`, if set, must match the start of the headline. Global introduction items use the `bullets` content mode, rendered as aligned blue checkmark rows that work with the site's CSS reset. Countries retain their original chips.
+
+The Global SEO title is absolute to avoid a duplicate brand suffix. Section-specific CTA labels follow the PDF body: hero “Get a Quote” / “Book a Demo”; final CTA “Get a Quote” / “Book a Live Demo”. Internal links stay unprefixed for CountryLink. `tools.cta` points to `#task-manager`, the original interactive Web Dashboard/Mobile App demo. All eight FAQ answers retain their availability and compatibility qualifications.
+
+Existing images are reused: the task-management hero, the tools dashboard at `/software/modules/task-manager/task-manager.webp`, and the technician photo at `/industries/field-services/block-1.webp`. The shared Why Choose component retains its existing illustration. No image generation is needed. Image fields and alt text for the Task-specific sections are in content.
+
+Run `npm run test:page-content`. The Task Manager browser script is `scripts/task-manager-browser.cjs`; use the isolated production fixture with `LOCATOR_VERIFY_BUILD=true`, then set `TASK_TEST_ORIGIN` to its printed origin plus `PLAYWRIGHT_MODULE` and `CHROME_PATH`. Checks cover the compact eyebrow, six checkmark rows, shared Why Choose UI, eight shared FAQ accordion questions and category filtering, demo tabs, SEO, links and unchanged country content. External services are blocked; real forms and CMS data are not modified.
+
+Task Manager UI revision validation: production build, TypeScript, focused lint and all 11 page-content tests passed. Desktop/mobile browser checks passed at 1440px and 390px with normal/reduced motion, including the one-line compact hero eyebrow, six checkmark rows, five ServiceWhyChoose rows, eight ServiceFAQ questions, category filtering, demo tabs, metadata and all four unchanged country pages. Screenshots were inspected. No push or deployment was performed.

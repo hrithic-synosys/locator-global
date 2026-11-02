@@ -1,5 +1,5 @@
 import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
-import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
+import type { ServiceWhyChooseContent } from '@/content/page-schema'
 import Image from 'next/image'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
@@ -21,7 +21,7 @@ const REASON_ICONS = [(
       </svg>
     )]
 
-export default function ServiceWhyChoose({ content = sharedFleetTelematics.whyChoose }: { content?: FleetContent['whyChoose'] }) {
+export default function ServiceWhyChoose({ content = sharedFleetTelematics.whyChoose }: { content?: ServiceWhyChooseContent }) {
   const REASONS = content.order.map(id => ({ ...content.items[id], id, icon: REASON_ICONS[content.items[id].assetIndex] }))
   return (
     <>
