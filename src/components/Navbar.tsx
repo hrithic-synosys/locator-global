@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
+import GlobalMarketIcon from '@/components/country/GlobalMarketIcon'
 import { usePathname } from 'next/navigation'
 import { useCountry, useCountryRouter } from '@/components/country/CountryProvider'
 import { stripCountry } from '@/lib/country/paths'
@@ -166,6 +167,10 @@ export default function Navbar() {
                       border-color .24s cubic-bezier(.4,0,.2,1);
         }
         .hn-flag { transition: border-color .24s cubic-bezier(.4,0,.2,1); }
+        .hn-global-icon {
+          color: var(--global-icon-color, #ffffff);
+          transition: color .24s cubic-bezier(.4,0,.2,1);
+        }
 
         /* ── Mobile drawer sizing ─────────────────────────────────────────────
            100vh on mobile is the viewport WITH the URL bar retracted, so on first
@@ -443,14 +448,18 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center gap-3 shrink-0" onMouseEnter={() => setActiveMenu(null)}>
-            <Image
+            {country.code === 'global' ? (
+              <span className="hn-global-icon hidden sm:block" style={{ '--global-icon-color': navTextColor } as React.CSSProperties}>
+                <GlobalMarketIcon size={28} />
+              </span>
+            ) : <Image
               src={country.flag}
               alt={country.label}
               width={32}
               height={32}
               className="hn-flag rounded-full hidden sm:block"
               style={{ border: isPanelOpen ? '2px solid #e2e7f0' : '2px solid rgba(255,255,255,0.3)' }}
-            />
+            />}
 
             {/* Direct call — sits between the flag and the CTA. Colour follows the
                 same isPanelOpen flip as the nav links, on the same 240ms curve. */}
@@ -764,13 +773,15 @@ export default function Navbar() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <Image
+              {country.code === 'global' ? (
+                <span className="hn-global-icon"><GlobalMarketIcon /></span>
+              ) : <Image
                 src={country.flag}
                 alt={country.label}
                 width={28}
                 height={28}
                 className="rounded-full border-2 border-white/30"
-              />
+              />}
               <div style={{ display: 'flex',flexDirection: 'column', alignItems: 'left'}}>
                 <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', fontWeight: 500 }}>
                   United Arab Emirates

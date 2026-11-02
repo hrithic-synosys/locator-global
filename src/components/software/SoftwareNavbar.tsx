@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
+import GlobalMarketIcon from '@/components/country/GlobalMarketIcon'
 import { usePathname } from 'next/navigation'
 import { useCountry, useCountryRouter } from '@/components/country/CountryProvider'
 import { stripCountry } from '@/lib/country/paths'
@@ -232,6 +233,8 @@ export default function SoftwareNavbar() {
           transition: transform .25s cubic-bezier(.22,.61,.36,1), box-shadow .25s ease; cursor: pointer;
         }
         .swn-flag:hover { transform: scale(1.12) rotate(4deg); box-shadow: 0 3px 10px rgba(15,23,42,0.2); }
+        .swn-global-icon { color: #1d1d1f; transition: color .2s ease; }
+        .swn-global-icon:hover { color: #1360ee; }
 
         .swn-cta {
           position: relative; overflow: hidden; isolation: isolate;
@@ -320,7 +323,9 @@ export default function SoftwareNavbar() {
 
             {/* Right: flag + CTA + hamburger */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }} onMouseEnter={() => setActiveMenu(null)}>
-              <Image src={country.flag} alt={country.label} width={28} height={28} className="swn-flag" style={{ borderRadius: '50%', display: 'block' }} />
+              {country.code === 'global' ? (
+                <span className="swn-global-icon"><GlobalMarketIcon /></span>
+              ) : <Image src={country.flag} alt={country.label} width={28} height={28} className="swn-flag" style={{ borderRadius: '50%', display: 'block' }} />}
               <button className="swn-cta" onClick={() => router.push('/get-a-quote')}>Get a quote</button>
 
               <button
