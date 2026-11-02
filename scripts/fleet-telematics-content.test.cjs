@@ -35,7 +35,25 @@ test("Global Fleet implements approved sections without unverified statistics", 
   assert.deepEqual(c.statistics.items, []);
   assert.deepEqual(c.videoTelematics.stats, []);
   assert.deepEqual(c.process.closingParagraphs, []);
-  assert.equal(c.industries.showVehicleTypes, false);
+  assert.equal(c.industries.showVehicleTypes, true);
+  assert.equal(c.industries.heading, "");
+  assert.deepEqual(c.industries.paragraphs, []);
+  assert.equal(c.industries.eyebrow, "GPS Fleet Services");
+  const legacy = require("./fixtures/fleet-telematics-legacy.json");
+  for (const id of c.industries.order) {
+    assert.deepEqual(
+      JSON.parse(JSON.stringify(c.industries.items[id].vehicles)),
+      legacy.industries.items[id].vehicles
+    );
+    assert.ok(
+      c.industries.items[id].desc.endsWith("UAE and GCC markets.") ||
+        id === "fmcg"
+    );
+  }
+  assert.match(
+    c.industries.items.fmcg.desc,
+    /UAE, Saudi Arabia, Oman, Kuwait and Qatar/
+  );
   assert.match(c.faq.items.coverage.a, /Contact the team to confirm/);
   assert.ok(
     c.sectionOrder.indexOf("videoTelematics") <

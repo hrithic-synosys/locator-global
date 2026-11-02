@@ -1,7 +1,7 @@
 import type { FleetOverride } from "./schema";
 
-// Fleet Telematics Locator service page (2).pdf; editorial keywords are stored, not displayed.
-// Statistics remain disabled until company figures and units are verified.
+// Approved Global copy; industry descriptions revised from the supplied November content.
+// Industries inherit the empty overview and original tracked-asset lists from shared.ts.
 export const globalFleetTelematics = {
   sectionOrder: [
     "hero",
@@ -24,7 +24,7 @@ export const globalFleetTelematics = {
     label: "Fleet Telematics",
     heading: "Improve Fleet Operations with GPS Tracking & Telematics",
     paragraphs: [
-      "Keep track of your vehicles, monitor daily trips and manage your fleet from one platform. LOCATOR helps businesses stay informed about vehicle activity and coordinate their drivers more easily.",
+      "Keep track of your vehicles, monitor daily trips and manage your fleet from one platform.",
     ],
     primaryCta: {
       label: "Get a Quote",
@@ -126,11 +126,7 @@ export const globalFleetTelematics = {
     },
   },
   industries: {
-    heading: "Fleet Tracking Solutions for Different Industries",
-    paragraphs: [
-      "Every industry manages vehicles differently. LOCATOR's GPS tracking and fleet management solutions help businesses monitor connected vehicles, review trips and coordinate daily operations. Explore the solutions relevant to your industry.",
-    ],
-    showVehicleTypes: false,
+    showVehicleTypes: true,
     cta: {
       label: "Explore Industry Solutions",
       href: "/industries",
@@ -138,17 +134,17 @@ export const globalFleetTelematics = {
     items: {
       fmcg: {
         title: "FMCG & Distribution",
-        desc: "Monitor delivery vans, pickups and distribution vehicles moving between warehouses, shops and customer locations. Review routes and vehicle activity to help coordinate daily deliveries.",
+        desc: "GPS fleet telematics helps vans, pickups, mini-trucks and delivery bikes track distributors and supermarket deliveries in real time. It reduces fuel loss, improves route planning, supports vehicle maintenance, monitors drivers and helps prevent delivery delays, giving FMCG companies across the UAE, Saudi Arabia, Oman, Kuwait and Qatar better control over sales teams and daily stock movement.",
         keywords: ["FMCG fleet tracking", "distribution fleet management"],
       },
       transport: {
         title: "Transportation & Logistics",
-        desc: "Track trucks and commercial vehicles travelling between depots, warehouses and delivery destinations. Use trip history and vehicle alerts to maintain visibility across transport operations.",
+        desc: "Monitor trucks, trailers and delivery vans in real time with GPS fleet tracking. Review routes, track driver activity and identify delivery delays. Improve vehicle utilisation, coordinate transport operations and gain better fleet visibility for logistics businesses operating across the UAE and GCC markets.",
         keywords: ["Logistics fleet tracking", "GPS tracking for trucks"],
       },
       construction: {
         title: "Construction & Heavy Equipment",
-        desc: "Monitor compatible construction vehicles and machinery across different project sites. Check equipment locations and available usage information to help manage assets and plan operations.",
+        desc: "Track construction vehicles and heavy equipment across multiple project sites. Monitor asset locations, review vehicle movements and understand equipment usage. Improve coordination between site teams, reduce unnecessary vehicle downtime and maintain better operational visibility for construction businesses across the UAE and GCC markets.",
         keywords: [
           "Construction equipment tracking",
           "heavy machinery GPS tracking",
@@ -156,7 +152,7 @@ export const globalFleetTelematics = {
       },
       facility: {
         title: "Facility Management",
-        desc: "Coordinate service vehicles and mobile maintenance teams working across multiple properties. Review vehicle movements and trip records to help organise daily service visits.",
+        desc: "Manage facility maintenance vehicles and field service teams through real-time GPS tracking. Monitor technician movements, review service routes and improve daily coordination. Gain better visibility into vehicle activity and support efficient facility management operations across the UAE and GCC markets.",
         keywords: [
           "Facility management fleet tracking",
           "service vehicle tracking",
@@ -164,27 +160,27 @@ export const globalFleetTelematics = {
       },
       healthcare: {
         title: "Healthcare Transport",
-        desc: "Maintain visibility into connected healthcare transport and service vehicles. Review reported locations and journey information to help coordinate daily transport activities.",
+        desc: "Monitor ambulances, patient transport vehicles and healthcare service fleets with GPS tracking. View vehicle locations, review routes and improve dispatch visibility. Support better transportation coordination and maintain operational control for healthcare organisations across the UAE and GCC markets.",
         keywords: ["Healthcare fleet tracking", "medical transport tracking"],
       },
       travel: {
         title: "Travel & Tourism",
-        desc: "Monitor compatible tour vehicles, coaches and passenger transport fleets. Check vehicle locations and recorded journeys to help coordinate schedules and daily transport operations.",
+        desc: "Manage tourist buses, hotel transfers and passenger transport vehicles with real-time GPS tracking. Monitor vehicle movements, review trip history and coordinate transportation schedules. Improve fleet visibility and support reliable travel operations for tourism businesses across the UAE and GCC markets.",
         keywords: ["Tourism fleet management", "bus GPS tracking"],
       },
       rental: {
         title: "Rental & Leasing",
-        desc: "Track rental cars, leased vehicles and compatible equipment across branches and customer locations. Review trip history and use supported movement alerts to monitor fleet activity.",
+        desc: "Track rental and leasing vehicles with real-time GPS monitoring. Review trip history, monitor vehicle movements and understand fleet utilisation. Improve vehicle visibility, support daily rental operations and maintain better control over your rental fleet across the UAE and GCC markets.",
         keywords: ["Rental fleet GPS tracking", "car rental tracking system"],
       },
       petroleum: {
         title: "Petroleum & Fuel Transport",
-        desc: "Monitor compatible fuel transport vehicles and review recorded journeys. GPS tracking helps your team maintain visibility as vehicles travel between depots and delivery locations.",
+        desc: "Monitor fuel tankers, oilfield service vehicles and industrial fleets with GPS tracking. Review vehicle routes, track movements and improve operational visibility. Support fleet coordination and maintain better control over transportation activities for petroleum and energy businesses across the UAE and GCC markets.",
         keywords: ["Fuel transport tracking", "petroleum fleet management"],
       },
       vet: {
         title: "Veterinary & Pet Care",
-        desc: "Keep track of mobile veterinary service vehicles and pet transport fleets. Use vehicle location and trip information to help coordinate appointments and travel between customer locations.",
+        desc: "Track mobile veterinary clinics, pet transport vans and animal care service vehicles with GPS monitoring. Review routes, monitor team movements and coordinate appointments. Improve service visibility and manage mobile veterinary operations more efficiently across the UAE and GCC markets.",
         keywords: [
           "Veterinary fleet tracking",
           "pet transport vehicle tracking",
@@ -192,7 +188,7 @@ export const globalFleetTelematics = {
       },
       government: {
         title: "Public & Government Services",
-        desc: "Maintain visibility into connected municipal and public-service vehicles. Review fleet activity and available trip records to help coordinate vehicles operating across different locations.",
+        desc: "Monitor municipal vehicles, government cars and public service fleets with real-time GPS tracking. Review routes, track vehicle movements and improve team coordination. Gain better operational visibility and support efficient public service transportation across the UAE and GCC markets.",
         keywords: [
           "Government fleet tracking",
           "public service vehicle monitoring",
@@ -200,7 +196,7 @@ export const globalFleetTelematics = {
       },
       waste: {
         title: "Waste Management",
-        desc: "Monitor waste collection vehicles and review recorded routes and stops. Use tracking information to help coordinate collection activities and identify routes that may need attention.",
+        desc: "Track waste collection trucks, recycling vehicles and disposal fleets with GPS monitoring. Review collection routes, monitor vehicle movements and improve service coordination. Gain better visibility into daily operations and support efficient waste management services across the UAE and GCC markets.",
         keywords: [
           "Waste management fleet tracking",
           "waste collection vehicle tracking",
@@ -208,13 +204,14 @@ export const globalFleetTelematics = {
       },
       school: {
         title: "School & Educational Transport",
-        desc: "Monitor connected school buses and educational transport vehicles. Review vehicle locations and trip history to help transport teams coordinate routes and daily operations.",
+        desc: "Monitor school buses, minibuses and student transport vehicles with GPS tracking. View vehicle locations, review trip history and improve transport coordination. Give school administrators better fleet visibility and support organised student transportation operations across the UAE and GCC markets.",
         keywords: [
           "School bus GPS tracking",
           "school transport fleet management",
         ],
       },
     },
+    eyebrow: "GPS Fleet Services",
   },
   process: {
     heading: "Up and Running in 4 Simple Steps",

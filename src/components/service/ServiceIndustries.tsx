@@ -2,6 +2,7 @@
 
 import { sharedFleetTelematics } from '@/content/pages/fleet-telematics/shared'
 import type { FleetContent } from '@/content/pages/fleet-telematics/schema'
+import type { CountryCode } from '@/config/countries'
 import { useMemo, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
@@ -133,7 +134,7 @@ function FleetMapCard({ count }: { count: number }) {
 
 // ── Main scroll-driven component ──────────────────────────────────────────────
 
-export default function ServiceIndustries({ content = sharedFleetTelematics.industries }: { content?: FleetContent['industries'] }) {
+export default function ServiceIndustries({ content = sharedFleetTelematics.industries, market }: { content?: FleetContent['industries']; market?: CountryCode }) {
   const INDUSTRIES = useMemo(() => content.order.map(id => ({ ...content.items[id], id })), [content])
   const N = INDUSTRIES.length
   const IMAGE_LIST = useMemo(() => INDUSTRIES.map(i => i.image).filter((s): s is string => !!s), [INDUSTRIES])
@@ -208,6 +209,7 @@ export default function ServiceIndustries({ content = sharedFleetTelematics.indu
   }, [N])
 
   const ind = INDUSTRIES[displayIdx]
+  const IndustryHeading = content.heading ? 'h3' : 'h2'
 
   // Skip past the whole section in the direction the user is travelling.
   const handleSkip = () => {
@@ -228,6 +230,44 @@ export default function ServiceIndustries({ content = sharedFleetTelematics.indu
            scroll-snap-stop: always forces the browser to halt on every one. */
         .ind-anchors { position: relative; z-index: 0; margin-top: -100vh; }
         .ind-anchor  { height: 100vh; scroll-snap-align: start; scroll-snap-stop: always; }
+
+        /* The overview belongs to the pinned panel, not a separate full-height
+           scene before it. It stays visible while only the industry changes. */
+        .ind-overview { flex-shrink: 0; width: 100%; max-width: 1040px; margin: 0 auto; padding: 80px 28px 16px; text-align: center; }
+        .ind-overview h2 { margin: 0; font-size: clamp(22px,2.4vw,32px); font-weight: 800; line-height: 1.2; color: #1d1d1f; }
+        .ind-overview p { margin: 12px 0 0; color: #6e6e73; font-size: clamp(13px,1.1vw,15px); line-height: 1.6; }
+        .ind-has-intro .ind-main-body { align-items: flex-start !important; padding-top: 24px !important; padding-bottom: 64px !important; }
+        .ind-has-intro .ind-industry-eyebrow { display: none !important; }
+        @media (max-width: 520px) {
+          .ind-overview { padding-left: 22px; padding-right: 22px; }
+          /* Reserve only the top-right text area occupied by the floating
+             contact buttons; the paragraph returns to full width below them. */
+          .ind-overview::before { content: ''; float: right; width: 60px; height: 116px; }
+          .ind-global:not(.ind-has-intro) .ind-stagger::before { content: ''; float: right; width: 60px; height: 116px; }
+        }
+        @media (max-height: 650px) {
+          .ind-has-intro .ind-overview { padding-top: 76px; padding-bottom: 10px; }
+          .ind-has-intro .ind-overview h2 { font-size: 20px; }
+          .ind-has-intro .ind-overview p { font-size: 12px; line-height: 1.5; margin-top: 8px; }
+          .ind-has-intro .ind-right-col { display: none !important; }
+          .ind-has-intro .ind-left-col { width: 100% !important; max-width: 960px !important; }
+          .ind-has-intro .ind-industry-title { font-size: 20px !important; margin-bottom: 10px !important; }
+          .ind-has-intro .ind-stagger > p { font-size: 13px !important; line-height: 1.5 !important; margin-bottom: 0 !important; }
+          .ind-has-intro .ind-main-body { padding-top: 12px !important; padding-bottom: 56px !important; }
+        }
+        /* Keep the expanded Global descriptions and restored asset tags readable
+           on short screens. The existing country presentation is untouched. */
+        @media (max-height: 700px) {
+          .ind-global:not(.ind-has-intro) .ind-main-body { align-items: flex-start !important; padding-top: 76px !important; padding-bottom: 64px !important; }
+          .ind-global:not(.ind-has-intro) .ind-right-col { display: none !important; }
+          .ind-global:not(.ind-has-intro) .ind-left-col { width: 100% !important; max-width: 960px !important; }
+          .ind-global:not(.ind-has-intro) .ind-industry-eyebrow { font-size: 18px !important; line-height: 1.25; margin-bottom: 10px !important; }
+          .ind-global:not(.ind-has-intro) .ind-industry-eyebrow > span { display: none !important; }
+          .ind-global:not(.ind-has-intro) .ind-industry-title { font-size: 22px !important; line-height: 1.15 !important; margin-bottom: 12px !important; }
+          .ind-global:not(.ind-has-intro) .ind-stagger > div:nth-child(3) { margin-bottom: 12px !important; }
+          .ind-global:not(.ind-has-intro) .ind-stagger > p { font-size: 12px !important; line-height: 1.5 !important; margin-bottom: 14px !important; }
+          .ind-global:not(.ind-has-intro) .ind-vehicle-tag { font-size: 10.5px; line-height: 1.4; padding: 4px 9px; }
+        }
 
         /* Light shimmer placeholder for photos (never a blank white box) */
         @keyframes indShimmer { 0% { background-position: -160% 0; } 100% { background-position: 160% 0; } }
@@ -319,7 +359,6 @@ export default function ServiceIndustries({ content = sharedFleetTelematics.indu
       `}</style>
 
       {/* Section height comes from the snap anchors below (N × 100vh) */}
-      {content.heading && <header style={{padding:'64px 28px 24px',textAlign:'center',maxWidth:960,margin:'0 auto'}}><h2 style={{fontSize:'clamp(24px,3vw,36px)',fontWeight:800,lineHeight:1.15}}>{content.heading}</h2>{content.paragraphs.map(text=><p key={text} style={{color:'#6e6e73',lineHeight:1.7,marginTop:16}}>{text}</p>)}</header>}
 <section
         ref={wrapRef}
         id="industries"
@@ -335,7 +374,7 @@ export default function ServiceIndustries({ content = sharedFleetTelematics.indu
         </div>
 
         {/* Sticky panel fills the viewport while the anchors scroll past */}
-        <div style={{
+        <div className={`ind-panel${content.heading ? ' ind-has-intro' : ''}${market === 'global' ? ' ind-global' : ''}`} style={{
           position: 'sticky', top: 0,
           height: '100vh',
           overflow: 'hidden',
@@ -345,6 +384,13 @@ export default function ServiceIndustries({ content = sharedFleetTelematics.indu
           isolation: 'isolate',
           zIndex: 1,
         }}>
+
+          {content.heading && (
+            <header className="ind-overview">
+              <h2>{content.heading}</h2>
+              {content.paragraphs.map(text => <p key={text}>{text}</p>)}
+            </header>
+          )}
 
           {/* Body */}
           <div
@@ -381,7 +427,7 @@ export default function ServiceIndustries({ content = sharedFleetTelematics.indu
                 className="ind-stagger"
                 style={{ position: 'relative', zIndex: 1 }}
               >
-                <div style={{
+                <div className="ind-industry-eyebrow" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '10px',
                   fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em',
                   color: BLUE, textTransform: 'uppercase', marginBottom: '16px',
@@ -389,7 +435,7 @@ export default function ServiceIndustries({ content = sharedFleetTelematics.indu
                   <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: BLUE, borderRadius: '2px' }} /></span>
                   {content.eyebrow}</div>
 
-                <h2 style={{
+                <IndustryHeading className="ind-industry-title" style={{
                   margin: '0 0 18px',
                   fontSize: 'max(clamp(21px,2.5vw,28px), min(1.944vw, 40.6px))',
                   fontWeight: 800, lineHeight: 1.18,
@@ -398,7 +444,7 @@ export default function ServiceIndustries({ content = sharedFleetTelematics.indu
                   {ind.title.split('\n').map((line, i) => (
                     <span key={i} style={{ display: 'block' }}>{line}</span>
                   ))}
-                </h2>
+                </IndustryHeading>
 
                 <div style={{ width: '44px', height: '3px', borderRadius: '2px', background: BLUE, marginBottom: '20px' }} />
 

@@ -27,7 +27,7 @@ export default async function FleetTelematicsPage({ params }: { params: Promise<
     hero: <ServiceHero content={content.hero} />,
     benefits: <BenefitsSection content={content.benefits} />,
     showcase: <ServiceFleetShowcase content={content.showcase} />,
-    industries: <ServiceIndustries content={content.industries} />,
+    industries: <ServiceIndustries content={content.industries} market={market} />,
     process: <ServiceProcess content={content.process} />,
     statistics: <AnimatedGlobeHero stats={content.statistics.items} />,
     videoPlayer: <ServiceVideo {...content.videoPlayer} />,

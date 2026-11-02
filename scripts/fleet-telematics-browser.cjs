@@ -105,7 +105,7 @@ const normal = (s) => s.replace(/\s+/g, " ").trim();
           );
           await page.waitForFunction(
             (t) =>
-              document.querySelector("#industries h2")?.textContent.trim() ===
+              document.querySelector("#industries .ind-industry-title")?.textContent.trim() ===
               t,
             c.industries.items[c.industries.order[i]].title
           );
@@ -118,7 +118,7 @@ const normal = (s) => s.replace(/\s+/g, " ").trim();
         }
         assert.equal(
           await page.locator("#industries .ind-vehicle-tag").count(),
-          0
+          c.industries.items.school.vehicles.length
         );
         await page
           .locator("#industries")
