@@ -1,10 +1,15 @@
 import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
+import { Fragment } from 'react'
+import { sharedTrackingDevices } from '@/content/pages/tracking-devices/shared'
+import type { TrackingDevicesContent } from '@/content/pages/tracking-devices/schema'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function TrackingDevicesHero() {
+export default function TrackingDevicesHero({ content = sharedTrackingDevices.hero }: { content?: TrackingDevicesContent['hero'] }) {
+  const lines = (text: string) => text.split('\n').map((line,i) => <Fragment key={i}>{i > 0 && <br />}{line}</Fragment>)
+  const accentAt = content.accent ? content.heading.indexOf(content.accent) : -1
   return (
     <>
       <style>{`
@@ -86,6 +91,8 @@ export default function TrackingDevicesHero() {
           display: block; width: 34px; height: 3px;
           background: #1360ee; border-radius: 2px; margin-bottom: 12px;
         }
+        .td-hero-compact .td-eyebrow { font-size: clamp(10px,2.7vw,13px); font-weight: 700; line-height: 1.5; letter-spacing: .03em; white-space: nowrap; }
+        .td-hero-compact .td-eyebrow-bar { display: none; }
 
         .td-h1 {
           margin: 0;
@@ -156,11 +163,11 @@ export default function TrackingDevicesHero() {
         }
       `}</style>
 
-      <section className="td-hero">
+      <section className={`td-hero${content.eyebrowStyle === 'compact' ? ' td-hero-compact' : ''}`}>
 
         <div className="td-photo" aria-hidden="true">
           <Image
-            src="/services/tracking-devices-hero-banner.webp"
+            src={content.image}
             alt=""
             fill
             priority
@@ -186,27 +193,24 @@ export default function TrackingDevicesHero() {
 
               <span className="td-eyebrow td-anim" style={{ animationDelay: '.04s' }}>
                 <span className="td-eyebrow-bar" />
-                GPS Tracking Devices
+                {content.eyebrow}
               </span>
 
               <h1 className="td-h1 td-anim" style={{ animationDelay: '.1s' }}>
-                The hardware behind<br />
-                every <em>Locator</em> install.
+                {accentAt >= 0 ? <>{lines(content.heading.slice(0,accentAt))}<em>{content.accent}</em>{lines(content.heading.slice(accentAt+content.accent.length))}</> : lines(content.heading)}
               </h1>
 
-              <p className="td-lead td-anim" style={{ animationDelay: '.18s' }}>
-                A great platform always needs great hardware. Certified GPS terminals, driver-ID readers, and sensors — supplied, installed, and configured by our own engineers.
-              </p>
+              {content.paragraphs.map(text => <p key={text} className="td-lead td-anim" style={{ animationDelay: '.18s' }}>{text}</p>)}
 
               <div className="td-cta-row td-anim" style={{ animationDelay: '.26s' }}>
-                <Link href="/contact" className="td-btn td-btn-primary">
-                  Request device pricing
+                <Link href={content.primaryCta.href} className="td-btn td-btn-primary">
+                  {content.primaryCta.label}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </Link>
-                <Link href="/contact" className="td-btn td-btn-ghost">
-                  Talk to an engineer
+                <Link href={content.secondaryCta.href} className="td-btn td-btn-ghost">
+                  {content.secondaryCta.label}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>

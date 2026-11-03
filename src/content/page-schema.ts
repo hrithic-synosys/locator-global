@@ -50,3 +50,4 @@ export type ServiceFaqContent = {
   order: string[];
   items: Record<string, { cat: string; q: string; a: string }>;
 };
+export type ServiceJourneyContent = CardSection & { cta: CtaLink };

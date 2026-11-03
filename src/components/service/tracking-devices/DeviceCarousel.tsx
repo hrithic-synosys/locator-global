@@ -1,17 +1,19 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
 import gsap from 'gsap'
-import { DEVICES } from './devices-data'
+import { sharedTrackingDevices } from '@/content/pages/tracking-devices/shared'
+import type { TrackingDevicesContent } from '@/content/pages/tracking-devices/schema'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 const DRAG_THRESHOLD = 60
 
 const AUTOPLAY_MS = 4200
 
-export default function DeviceCarousel() {
+export default function DeviceCarousel({ content = sharedTrackingDevices.catalog }: { content?: TrackingDevicesContent['catalog'] }) {
+  const DEVICES = useMemo(() => content.order.map(id => content.items[id]), [content])
   const [active, setActive] = useState(0)
   const [lightbox, setLightbox] = useState(false)
   const [paused, setPaused] = useState(false)
@@ -257,6 +259,20 @@ export default function DeviceCarousel() {
         .dv-cta svg { transition: transform .2s ${EASE}; }
         .dv-cta:hover svg { transform: translateX(3px); }
         .dv-soon { flex-shrink: 0; font-size: var(--f-13-5); font-weight: 700; color: #9aa2b1; white-space: nowrap; padding: 14px 0; }
+        /* Global's approved descriptions must remain complete, not two-line
+           excerpts. Keep the same carousel mechanics with room for the copy. */
+        .dv-expanded .dv-stage { height: clamp(620px,60vw,760px); }
+        .dv-expanded .dv-item { width: clamp(280px,34vw,480px); height: clamp(580px,54vw,700px); }
+        .dv-expanded .dv-shot { min-height: 160px; }
+        .dv-expanded .dv-tag, .dv-expanded .dv-name { display: block; -webkit-line-clamp: unset; overflow: visible; }
+        .dv-expanded .dv-panel-b { flex-wrap: wrap; align-items: flex-start; }
+        .dv-expanded .dv-cta { white-space: normal; }
+        @media (max-width: 560px) {
+          .dv-expanded .dv-item { width: min(82vw,480px); }
+          .dv-expanded .dv-specs { display: flex; }
+          .dv-expanded .dv-spec { white-space: normal; }
+          .dv-expanded .dv-panel-b { flex-direction: column; gap: 12px; }
+        }
 
         /* Side cards show the product only — no competing text. */
         .dv-item:not([data-pos="0"]) .dv-panel,
@@ -334,14 +350,11 @@ export default function DeviceCarousel() {
         }
       `}</style>
 
-      <section className="dv-wrap">
+      <section className={`dv-wrap${content.fullDescriptions ? ' dv-expanded' : ''}`}>
         <div className="dv-head" data-reveal>
-          <span className="dv-eyebrow">Tracking Devices &amp; Accessories</span>
-          <h2 className="dv-h2">A great platform needs great hardware.</h2>
-          <p className="dv-sub">
-            Certified GPS terminals, driver-ID readers, and sensors — supplied, installed, and
-            configured by our own engineers.
-          </p>
+          {content.eyebrow && <span className="dv-eyebrow">{content.eyebrow}</span>}
+          {content.heading && <h2 className="dv-h2">{content.heading}</h2>}
+          {content.paragraphs.map(text => <p key={text} className="dv-sub">{text}</p>)}
         </div>
 
         <div
@@ -450,7 +463,7 @@ export default function DeviceCarousel() {
                         <span className="dv-soon">Coming shortly</span>
                       ) : (
                         <Link href={`/service/tracking-devices/${d.slug}`} className="dv-cta">
-                          View details
+                          {d.linkLabel || 'View details'}
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M5 12h14M13 6l6 6-6 6" />
                           </svg>

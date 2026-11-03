@@ -17,12 +17,12 @@ function formatValue(n: number, target: number) {
   return String(Math.round(n))
 }
 
-function StatCard({ stat, start, index }: { stat: typeof STATS[number]; start: boolean; index: number }) {
+function StatCard({ stat, start, index, immediate = false }: { stat: typeof STATS[number]; start: boolean; index: number; immediate?: boolean }) {
   const [val, setVal] = useState(0)
   const Icon = stat.icon
 
   useEffect(() => {
-    if (!start) return
+    if (!start || immediate) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setVal(stat.target); return }
     let raf = 0
     const dur = 1600
@@ -35,13 +35,13 @@ function StatCard({ stat, start, index }: { stat: typeof STATS[number]; start: b
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [start, stat.target])
+  }, [start, stat.target, immediate])
 
   return (
     <div className="wwn-card" style={{ transitionDelay: `${index * 90}ms` }}>
       <div className="wwn-icon" aria-hidden="true"><Icon size={20} strokeWidth={2} /></div>
       <div className="wwn-value">
-        {formatValue(val, stat.target)}{stat.suffix}
+        {formatValue(immediate ? stat.target : val, stat.target)}{stat.suffix}
       </div>
       <div className="wwn-label">{stat.label}</div>
       <p className="wwn-desc">{stat.desc}</p>
@@ -49,7 +49,7 @@ function StatCard({ stat, start, index }: { stat: typeof STATS[number]; start: b
   )
 }
 
-export default function WhoWeAreNumbers() {
+export default function WhoWeAreNumbers({ content }: { content?: { heading: string; description: string; showStats: boolean } }) {
   const ref = useRef<HTMLDivElement>(null)
   const [start, setStart] = useState(false)
 
@@ -136,12 +136,13 @@ export default function WhoWeAreNumbers() {
             <span className="wwn-eyebrow-rule"><span /></span>
             LOCATOR in Numbers
           </span>
-          <h2 className="wwn-h2">Trusted at scale across <em>the UAE.</em></h2>
+          <h2 className="wwn-h2">{content ? content.heading : <>Trusted at scale across <em>the UAE.</em></>}</h2>
+          {content && <p style={{ margin: '18px 0 0', color: '#6b7280', lineHeight: 1.7 }}>{content.description}</p>}
         </div>
 
-        <div className="wwn-grid" ref={ref} data-in={start}>
-          {STATS.map((s, i) => <StatCard key={s.label} stat={s} start={start} index={i} />)}
-        </div>
+        {(!content || content.showStats) && <div className="wwn-grid" ref={ref} data-in={content ? true : start}>
+          {STATS.map((s, i) => <StatCard key={s.label} stat={s} start={start} index={i} immediate={!!content} />)}
+        </div>}
       </section>
     </>
   )

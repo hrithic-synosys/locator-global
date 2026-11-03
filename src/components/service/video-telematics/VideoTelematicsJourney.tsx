@@ -2,12 +2,16 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "@/components/country/CountryLink";
-import type { VideoTelematicsContent } from "@/content/pages/video-telematics/schema";
+import type { ServiceJourneyContent } from "@/content/page-schema";
 
 export default function VideoTelematicsJourney({
   content,
+  id = 'video-in-action',
+  navigationLabel = 'Video telematics journey',
 }: {
-  content: VideoTelematicsContent["journeySteps"];
+  content: ServiceJourneyContent;
+  id?: string;
+  navigationLabel?: string;
 }) {
   const root = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState(content.order[0]);
@@ -48,13 +52,14 @@ export default function VideoTelematicsJourney({
     <section
       ref={root}
       className="vt-journey"
-      id="video-in-action"
+      id={id}
       data-page-section="journeySteps"
     >
       <style href="vt-journey" precedence="medium">{`
       .vt-journey { padding:clamp(48px,6vw,88px) 28px; background:#f5f8fd; }
       .vt-journey-inner { max-width:var(--w-1180); margin:auto; }
       .vt-journey h2 { font-size:clamp(26px,3vw,38px); line-height:1.2; color:#1d1d1f; margin:0 0 32px; }
+      .vt-journey-intro { max-width:72ch; margin:0 0 32px; font-size:16px; line-height:1.75; color:#64748b; }
       .vt-journey-layout { display:grid; grid-template-columns:1.15fr 1fr; gap:clamp(28px,5vw,70px); align-items:start; }
       .vt-journey-preview { position:sticky; top:100px; padding:22px; border:1px solid #dce5f3; background:white; border-radius:20px; }
       .vt-journey-preview img { width:100%; height:auto; aspect-ratio:16/10; object-fit:contain; display:block; }
@@ -76,7 +81,7 @@ export default function VideoTelematicsJourney({
       <div className="vt-journey-inner">
         <h2>{content.heading}</h2>
         {content.paragraphs.map((p, i) => (
-          <p key={i}>{p}</p>
+          <p key={i} className="vt-journey-intro">{p}</p>
         ))}
         <div className="vt-journey-layout">
           <div className="vt-journey-preview">
@@ -92,7 +97,7 @@ export default function VideoTelematicsJourney({
               )}
               <h3 aria-live="polite">{active.title}</h3>
             </div>
-            <nav aria-label="Video telematics journey">
+            <nav aria-label={navigationLabel}>
               {content.order.map((id, i) => (
                 <button
                   key={id}

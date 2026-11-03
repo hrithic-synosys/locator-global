@@ -10,6 +10,7 @@ import WhoWeAreNumbers from '@/components/about/who-we-are/WhoWeAreNumbers'
 import SoftwareBlog from '@/components/software/SoftwareBlog'
 import SoftwareCTA from '@/components/software/SoftwareCTA'
 import Footer from '@/components/layouts/Footer'
+import { globalIndustries } from '@/content/pages/industries/global'
 
 // Same trailing sections the industry detail pages already use (Why Locator,
 // Numbers, Blog, FAQ, CTA) — reused here rather than duplicated, so the
@@ -31,16 +32,17 @@ const pageMetadata: Metadata = {
 
 export default async function IndustriesPage({ params }: { params: Promise<{ market: CountryCode }> }) {
   const { market } = await params;
+  const content = market === 'global' ? globalIndustries : undefined;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
-      <IndustriesHero />
-      <IndustriesGrid />
+      <IndustriesHero content={content?.hero} />
+      <IndustriesGrid content={content?.grid} />
       <ServiceWhyChoose />
-      <WhoWeAreNumbers />
+      <WhoWeAreNumbers content={content?.numbers} />
       <SoftwareBlog market={market} tag={['Fleet Management', 'Fleet Tracking', 'GPS Tracking']} />
-      <ServiceFAQ />
-      <SoftwareCTA />
+      <ServiceFAQ content={content?.faq} />
+      <SoftwareCTA content={content?.finalCta} />
       <Footer />
     </main>
   )
@@ -48,5 +50,11 @@ export default async function IndustriesPage({ params }: { params: Promise<{ mar
 
 export async function generateMetadata({ params }: { params: Promise<{ market: CountryCode }> }): Promise<Metadata> {
   const { market } = await params;
-  return marketMetadata(pageMetadata, market, "/industries");
+  const metadata: Metadata = market === 'global' ? {
+    ...pageMetadata,
+    title: globalIndustries.hero.heading,
+    description: globalIndustries.hero.description,
+    openGraph: { ...pageMetadata.openGraph, title: `${globalIndustries.hero.heading} | Locator`, description: globalIndustries.hero.description },
+  } : pageMetadata;
+  return marketMetadata(metadata, market, "/industries");
 }

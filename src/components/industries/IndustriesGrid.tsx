@@ -1,12 +1,13 @@
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import { INDUSTRIES } from './industries-data'
+import type { IndustriesGridContent } from '@/content/pages/industries/global'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function IndustriesGrid() {
+export default function IndustriesGrid({ content }: { content?: IndustriesGridContent }) {
   return (
-    <section className="ig-sec">
+    <section id="industry-solutions" className="ig-sec" style={{ scrollMarginTop: 80 }}>
       <style>{`
         .ig-sec { padding: clamp(48px,6vw,80px) 28px; background: #fff; }
         .ig-inner { max-width: var(--w-1280); margin: 0 auto; }
@@ -41,6 +42,7 @@ export default function IndustriesGrid() {
           margin: 0 0 14px; font-size: max(clamp(17px,1.9vw,21px), min(1.458vw, 30.45px)); font-weight: 800;
           text-transform: uppercase; line-height: 1.22; letter-spacing: -.01em; color: #1d1d1f;
         }
+        .ig-card-description { margin: 0 0 22px; color: #6e6e73; font-size: 15px; line-height: 1.7; }
         .ig-card-tag {
           margin-top: auto; align-self: flex-start;
           font-size: var(--f-12-5); font-weight: 600; color: #3a3a3c;
@@ -53,10 +55,12 @@ export default function IndustriesGrid() {
       <div className="ig-inner">
         <div className="ig-head" data-reveal>
           <span className="ig-eyebrow"><span />Industries</span>
-          <h2 className="ig-h2">Built for every fleet, in every industry</h2>
+          <h2 className="ig-h2">{content?.heading ?? 'Built for every fleet, in every industry'}</h2>
           <p className="ig-lead">
+            {content ? content.description : <>
             Explore how Locator’s GPS tracking, video telematics, and IoT platform are put to work across
             the sectors we serve every day.
+            </>}
           </p>
         </div>
 
@@ -66,13 +70,14 @@ export default function IndustriesGrid() {
               <div className="ig-card-media">
                 <Image
                   src={ind.image}
-                  alt={ind.name}
+                  alt={content?.items[ind.slug]?.name ?? ind.name}
                   fill
                   sizes="(max-width: 620px) 100vw, (max-width: 980px) 50vw, 33vw"
                 />
               </div>
               <div className="ig-card-body">
-                <h3 className="ig-card-title">{ind.name}</h3>
+                <h3 className="ig-card-title">{content?.items[ind.slug]?.name ?? ind.name}</h3>
+                {content?.items[ind.slug] && <p className="ig-card-description">{content.items[ind.slug].description}</p>}
                 <span className="ig-card-tag">{ind.cardTag}</span>
               </div>
             </Link>

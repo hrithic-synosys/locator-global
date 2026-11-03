@@ -1,8 +1,9 @@
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
+import type { IndustriesHeroContent } from '@/content/pages/industries/global'
 
-export default function IndustriesHero() {
+export default function IndustriesHero({ content }: { content?: IndustriesHeroContent }) {
   return (
     <>
       <style>{`
@@ -46,6 +47,22 @@ export default function IndustriesHero() {
         }
 
         .ih-lead { margin: 18px 0 0; max-width: 62ch; font-size: max(clamp(14.5px,1.3vw,17px), min(1.181vw, 24.65px)); line-height: 1.72; color: rgba(255,255,255,.86); }
+        .ih-photo.ih-global { height: auto; }
+        .ih-global .ih-photo-body { padding: clamp(32px,4vw,48px) 28px; }
+        .ih-global .ih-content { max-width: 900px; }
+        .ih-global .ih-title { text-transform: none; font-size: clamp(32px,4.5vw,60px); line-height: 1.1; }
+        .ih-eyebrow {
+          display: inline-flex; align-items: center; gap: 12px;
+          font-size: max(clamp(13px,1.15vw,15px), min(1.042vw, 21.75px)); font-weight: 800;
+          letter-spacing: .14em; text-transform: uppercase; color: #9ec2ff; margin-bottom: 16px;
+          text-shadow: 0 2px 12px rgba(0,0,0,.35);
+        }
+        .ih-eyebrow i { display: block; flex-shrink: 0; width: 34px; height: 3px; background: #9ec2ff; border-radius: 2px; }
+        .ih-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+        .ih-action { display: inline-flex; justify-content: center; padding: 13px 20px; border-radius: 10px; background: #1360ee; color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; }
+        .ih-action:hover { background: #0d4fd4; }
+        .ih-action-secondary { background: #fff; color: #1360ee; }
+        .ih-action-secondary:hover { background: #eef3ff; }
       `}</style>
 
       <section className="ih-hero">
@@ -61,10 +78,10 @@ export default function IndustriesHero() {
           </nav>
         </div>
 
-        <div className="ih-photo" data-reveal>
+        <div className={`ih-photo${content ? ' ih-global' : ''}`} data-reveal>
           <Image
             src="/industries/cover.webp"
-            alt="Connected fleets across UAE industries"
+            alt={content?.imageAlt ?? 'Connected fleets across UAE industries'}
             fill
             priority
             sizes="100vw"
@@ -72,12 +89,19 @@ export default function IndustriesHero() {
           <div className="ih-scrim" />
           <div className="ih-photo-body">
             <div className="ih-content">
-              <h1 className="ih-title">Industries</h1>
+              {content && <span className="ih-eyebrow">{content.eyebrow}</span>}
+              <h1 className="ih-title">{content?.heading ?? 'Industries'}</h1>
               <p className="ih-lead">
+                {content ? content.description : <>
                 The world we live in today is connected. Inspired by the businesses we work with every day,
                 we share how Locator&rsquo;s GPS tracking, video telematics, and IoT platform support fleets
                 across every sector in the UAE.
+                </>}
               </p>
+              {content && <div className="ih-actions">
+                <Link className="ih-action" href={content.primaryCta.href}>{content.primaryCta.label}</Link>
+                <Link className="ih-action ih-action-secondary" href={content.secondaryCta.href}>{content.secondaryCta.label}</Link>
+              </div>}
             </div>
           </div>
         </div>
