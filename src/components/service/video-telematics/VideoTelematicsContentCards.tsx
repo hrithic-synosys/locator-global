@@ -18,7 +18,7 @@ export default function VideoTelematicsContentCards({
       .vt-content-cards { padding:clamp(48px,6vw,88px) 28px; background:#fff; }
       .vt-content-cards-inner { max-width:var(--w-1180); margin:auto; }
       .vt-content-cards header { max-width:820px; margin:0 auto 36px; text-align:center; }
-      .vt-content-cards header>span { color:#1360ee; font-size:14px; font-weight:750; display:block; margin-bottom:14px; }
+      .vt-content-cards header>span { color:#1360ee; font-size:clamp(18px,1.6vw,22px); font-weight:800; line-height:1.4; display:block; margin-bottom:16px; }
       .vt-content-cards h2 { color:#1d1d1f; font-size:clamp(24px,3vw,36px); line-height:1.25; margin:0; }
       .vt-content-cards p { color:#64748b; line-height:1.75; margin:14px 0 0; }
       .vt-content-card-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }

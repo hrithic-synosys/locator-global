@@ -67,6 +67,7 @@ export default function ServiceWhyChoose({ content = sharedFleetTelematics.whyCh
               <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
               {content.eyebrow}</span>
             <h2 style={{ margin: '0 0 clamp(28px,4vw,40px)', fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.015em', color: '#1d1d1f' }}>{content.heading}</h2>
+            {content.paragraphs.map((paragraph, index) => <p key={index} style={{ margin: '0 0 28px', fontSize: 'var(--f-15)', lineHeight: 1.7, color: '#6e6e73' }}>{paragraph}</p>)}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(22px,3vw,30px)' }}>
               {REASONS.map(r => (
