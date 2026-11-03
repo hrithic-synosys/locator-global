@@ -1,10 +1,11 @@
 import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
+import type { SmartIotHeroContent } from '@/content/pages/smart-iot/schema'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function SmartIotHero() {
+export default function SmartIotHero({ content }: { content?: SmartIotHeroContent }) {
   return (
     <>
       <style>{`
@@ -181,28 +182,28 @@ export default function SmartIotHero() {
 
               <span className="si-eyebrow si-anim" style={{ animationDelay: '.04s' }}>
                 <span className="si-eyebrow-bar" />
-                Smart IoT &amp; Asset Intelligence
+                {content?.eyebrow ?? 'Smart IoT & Asset Intelligence'}
               </span>
 
               <h1 className="si-title si-anim" style={{ animationDelay: '.1s' }}>
-                <span style={{ color: '#ffffff' }}>Smart</span>{' '}
+                {content ? content.heading : <><span style={{ color: '#ffffff' }}>Smart</span>{' '}
                 <em>IoT &amp; GPS</em>
-                <br />Asset Tracking
+                <br />Asset Tracking</>}
               </h1>
 
               <p className="si-lead si-anim" style={{ animationDelay: '.18s' }}>
-                Real-time visibility for road teams, machines, and business assets — GPS asset tracking, industrial telematics, and custom IoT sensor projects unified in one connected dashboard.
+                {content?.description ?? 'Real-time visibility for road teams, machines, and business assets — GPS asset tracking, industrial telematics, and custom IoT sensor projects unified in one connected dashboard.'}
               </p>
 
               <div className="si-cta-row si-anim" style={{ animationDelay: '.26s' }}>
-                <Link href="/get-a-quote" className="si-btn si-btn-primary">
-                  Get a Free Quote
+                <Link href={content?.primaryCta.href ?? '/get-a-quote'} className="si-btn si-btn-primary">
+                  {content?.primaryCta.label ?? 'Get a Free Quote'}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </Link>
-                <Link href="/get-a-free-demo" className="si-btn si-btn-ghost">
-                  Request a Demo
+                <Link href={content?.secondaryCta.href ?? '/get-a-free-demo'} className="si-btn si-btn-ghost">
+                  {content?.secondaryCta.label ?? 'Request a Demo'}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>

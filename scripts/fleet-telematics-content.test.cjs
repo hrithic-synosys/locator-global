@@ -62,7 +62,8 @@ test("Global Fleet implements approved sections without unverified statistics", 
   assert.equal(c.finalCta.paragraphs.length, 2);
   assert.deepEqual(c.finalCta.trustItems, []);
   assert.ok(c.industries.items.school.keywords.length > 0);
-  assert.equal(c.seo.title, get("qa").seo.title);
+  assert.equal(c.seo.title, "Fleet Telematics & GPS Tracking Solutions | LocatorGlobal");
+  assert.equal(c.seo.absoluteTitle, true);
   for (const section of ["industries", "videoTelematics"]) {
     for (const id of c[section].order) {
       const image = c[section].items[id].image;

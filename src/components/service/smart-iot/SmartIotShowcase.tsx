@@ -1,8 +1,9 @@
 import Image from 'next/image'
+import type { SmartIotBlock } from '@/content/pages/smart-iot/schema'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-const BLOCKS = [
+const DEFAULT_BLOCKS = [
   {
     // Anchor targets for the home-page IoT cards.
     id: 'gps-asset-tracking',
@@ -33,7 +34,7 @@ const BLOCKS = [
   },
 ]
 
-export default function SmartIotShowcase() {
+export default function SmartIotShowcase({ blocks: BLOCKS = DEFAULT_BLOCKS }: { blocks?: SmartIotBlock[] }) {
   return (
     <>
       <style>{`

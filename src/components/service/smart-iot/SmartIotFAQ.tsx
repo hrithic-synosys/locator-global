@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import Link from '@/components/country/CountryLink'
+import type { SmartIotFaq } from '@/content/pages/smart-iot/schema'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-const FAQS = [
+const DEFAULT_FAQS = [
   { q: 'What is GPS Asset Tracking in IoT?', a: 'GPS asset tracking uses IoT devices to track location, movement, and status of machines, containers, tanks, boats, and equipment.' },
   { q: 'Can GPS trackers monitor fixed assets like tanks or containers?', a: 'Yes. LOCATOR tracks fixed assets like fuel or water tanks, shipping containers, and cold-storage units using GPS and IoT sensors.' },
   { q: 'What heavy equipment can be tracked using telematics?', a: 'Assets like forklifts, generators, cranes, JCBs, boom loaders, bulldozers, and excavators can be monitored via industrial IoT telematics.' },
@@ -18,7 +19,7 @@ const FAQS = [
   { q: 'How does LOCATOR unify fleet and IoT asset monitoring?', a: 'Through a central dashboard that tracks vehicles and equipment with GPS, geofencing, sensor alerts, and telemetry insights in one window.' },
 ]
 
-export default function SmartIotFAQ() {
+export default function SmartIotFAQ({ items: FAQS = DEFAULT_FAQS }: { items?: SmartIotFaq[] }) {
   const [openIdx, setOpenIdx] = useState<number>(0)
   const toggle = (i: number) => setOpenIdx(p => (p === i ? -1 : i))
 
@@ -60,7 +61,7 @@ export default function SmartIotFAQ() {
           <div data-reveal data-reveal-delay="80" style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
             {FAQS.map((item, i) => (
               <div key={item.q} className={`sifq-item${openIdx === i ? ' on' : ''}`}>
-                <button className="sifq-trig" onClick={() => toggle(i)}>
+                <button className="sifq-trig" aria-expanded={openIdx === i} onClick={() => toggle(i)}>
                   <span className="sifq-num">{String(i + 1).padStart(2, '0')}</span>
                   <span className="sifq-qtext">{item.q}</span>
                   <span className="sifq-icon" aria-hidden="true">

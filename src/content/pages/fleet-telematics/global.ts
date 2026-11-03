@@ -3,6 +3,16 @@ import type { FleetOverride } from "./schema";
 // Approved Global copy; industry descriptions revised from the supplied November content.
 // Industries inherit the empty overview and original tracked-asset lists from shared.ts.
 export const globalFleetTelematics = {
+  // Commercial intent: fleet managers, logistics companies, transport businesses
+  // and commercial vehicle operators. This is editorial guidance, not page copy.
+  seo: {
+    title: "Fleet Telematics & GPS Tracking Solutions | LocatorGlobal",
+    absoluteTitle: true,
+    description: "Improve fleet operations with GPS tracking, live vehicle monitoring, route history and fleet alerts. Explore smart fleet telematics across the UAE and GCC.",
+    ogTitle: "Fleet Telematics & GPS Tracking Solutions | LocatorGlobal",
+    ogDescription: "Improve fleet operations with GPS tracking, live vehicle monitoring, route history and fleet alerts. Explore smart fleet telematics across the UAE and GCC.",
+    keywords: ["Fleet Telematics", "GPS Fleet Tracking", "Fleet Management Solutions", "Vehicle Tracking System", "Fleet Tracking Software", "GPS Tracking UAE", "Fleet Telematics GCC"],
+  },
   sectionOrder: [
     "hero",
     "benefits",

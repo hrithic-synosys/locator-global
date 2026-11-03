@@ -49,7 +49,8 @@ export default async function FleetTelematicsPage({ params }: { params: Promise<
 export async function generateMetadata({ params }: { params: Promise<{ market: CountryCode }> }): Promise<Metadata> {
   const { market } = await params;
   const { seo } = getFleetTelematicsContent(market);
-  return marketMetadata({ title: seo.title, description: seo.description,
+  return marketMetadata({ title: seo.absoluteTitle ? { absolute: seo.title } : seo.title, description: seo.description,
+    ...(seo.keywords ? { keywords: seo.keywords } : {}),
     openGraph: { title: seo.ogTitle, description: seo.ogDescription, type: 'website' },
   }, market, "/service/fleet-telematics");
 }

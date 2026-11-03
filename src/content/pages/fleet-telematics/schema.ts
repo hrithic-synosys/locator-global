@@ -19,7 +19,9 @@ type Copy = { eyebrow: string; heading: string; paragraphs: string[] };
 export type FleetContent = {
   seo: {
     title: string;
+    absoluteTitle?: boolean;
     description: string;
+    keywords?: string[];
     ogTitle: string;
     ogDescription: string;
   };
