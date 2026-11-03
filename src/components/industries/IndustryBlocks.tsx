@@ -11,7 +11,7 @@ function Block({ block, image, imagePosition, flip, shaded }: { block: IndustryB
           {block.desc.map((p, i) => (
             <p key={i} className="ixb-desc">{p}</p>
           ))}
-          <p className="ixb-features-label">{block.featuresLabel}</p>
+          {block.featuresLabel && <p className="ixb-features-label">{block.featuresLabel}</p>}
           <ul className="ixb-features">
             {block.features.map((f) => (
               <li key={f}>
@@ -33,7 +33,7 @@ function Block({ block, image, imagePosition, flip, shaded }: { block: IndustryB
   )
 }
 
-export default function IndustryBlocks({ industry }: { industry: Industry }) {
+export default function IndustryBlocks({ industry, blocks }: { industry: Industry; blocks?: Array<IndustryBlock & { image?: string; imagePosition?: string }> }) {
   return (
     <>
       <style>{`
@@ -86,8 +86,7 @@ export default function IndustryBlocks({ industry }: { industry: Industry }) {
         }
       `}</style>
 
-      <Block block={industry.block1} image={industry.block1.image || industry.image} imagePosition={industry.block1.imagePosition} flip={false} shaded={false} />
-      <Block block={industry.block2} image={industry.block2.image || industry.image} imagePosition={industry.block2.imagePosition} flip={true} shaded={true} />
+      {(blocks ?? [industry.block1, industry.block2]).map((block, index) => <Block key={index} block={block} image={block.image || industry.image} imagePosition={block.imagePosition} flip={index % 2 === 1} shaded={index % 2 === 1} />)}
     </>
   )
 }

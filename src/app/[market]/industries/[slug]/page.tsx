@@ -5,7 +5,10 @@ import dynamic from 'next/dynamic'
 import { notFound } from 'next/navigation'
 import ScrollReveal from '@/components/software/ScrollReveal'
 import IndustryHero from '@/components/industries/IndustryHero'
+import IndustriesHero from '@/components/industries/IndustriesHero'
 import IndustryBlocks from '@/components/industries/IndustryBlocks'
+import IndustryShowcase from '@/components/industries/IndustryShowcase'
+import ContentCards from '@/components/service/video-telematics/VideoTelematicsContentCards'
 import ServiceWhyChoose from '@/components/service/ServiceWhyChoose'
 import WhoWeAreNumbers from '@/components/about/who-we-are/WhoWeAreNumbers'
 import ServiceVideo from '@/components/service/ServiceVideo'
@@ -13,6 +16,7 @@ import SoftwareBlog from '@/components/software/SoftwareBlog'
 import SoftwareCTA from '@/components/software/SoftwareCTA'
 import Footer from '@/components/layouts/Footer'
 import { INDUSTRIES, getIndustry } from '@/components/industries/industries-data'
+import { getIndustryDetailContent } from '@/content/pages/industries/resolve-detail'
 
 // Same trailing sections as the rest of the site (Why Locator, Videos, Blogs,
 // FAQ, Footer) — generic and shared, not duplicated per industry.
@@ -25,19 +29,21 @@ export function generateStaticParams() {
 async function getPageMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; market: CountryCode }>
 }): Promise<Metadata> {
-  const { slug } = await params
+  const { slug, market } = await params
   const industry = getIndustry(slug)
   if (!industry) return {}
+  const content = getIndustryDetailContent(market, slug)
 
   return {
-    title: `${industry.name} — Industries`,
-    description: industry.lead,
+    title: content ? { absolute: content.seo.title } : `${industry.name} — Industries`,
+    description: content?.seo.description ?? industry.lead,
+    ...(content ? { keywords: content.seo.keywords } : {}),
     alternates: { canonical: `/industries/${industry.slug}` },
     openGraph: {
-      title: `${industry.name} | Locator`,
-      description: industry.lead,
+      title: content?.seo.title ?? `${industry.name} | Locator`,
+      description: content?.seo.description ?? industry.lead,
       url: `/industries/${industry.slug}`,
       type: 'website',
     },
@@ -52,13 +58,19 @@ export default async function IndustryDetailPage({
   const { slug, market } = await params
   const industry = getIndustry(slug)
   if (!industry) notFound()
+  const content = getIndustryDetailContent(market, slug)
 
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
-      <IndustryHero industry={industry} />
-      <IndustryBlocks industry={industry} />
-      <ServiceWhyChoose />
+      {content ? <IndustriesHero content={content.hero} image={content.hero.image} breadcrumbLabel={industry.name} /> : <IndustryHero industry={industry} />}
+      <IndustryBlocks industry={industry} blocks={content?.blocks} />
+      {content?.utilisation && <IndustryShowcase content={content.utilisation} id="rental-utilisation" />}
+      {content?.applications && <IndustryShowcase content={content.applications} id="rental-applications" reverse />}
+      {content?.sections?.map(section => section.kind === 'showcase'
+        ? <IndustryShowcase key={section.id} id={section.id} content={section.content} reverse={section.reverse} />
+        : <ContentCards key={section.id} id={section.id} content={section.content} eyebrow={section.content.eyebrow} />)}
+      <ServiceWhyChoose content={content?.whyChoose} />
       <WhoWeAreNumbers />
       <ServiceVideo
         eyebrow=""
@@ -68,8 +80,8 @@ export default async function IndustryDetailPage({
         lead="Take control of your whole operation with LOCATOR GPS Tracking"
       />
       <SoftwareBlog market={market} tag={['Fleet Management', 'Fleet Tracking', 'GPS Tracking']} />
-      <ServiceFAQ />
-      <SoftwareCTA />
+      <ServiceFAQ content={content?.faq} />
+      <SoftwareCTA content={content?.finalCta} />
       <Footer />
     </main>
   )

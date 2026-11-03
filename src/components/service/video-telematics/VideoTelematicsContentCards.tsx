@@ -5,10 +5,12 @@ export default function VideoTelematicsContentCards({
   content,
   id,
   eyebrow,
+  columns,
 }: {
   content: CardSection;
   id: string;
   eyebrow?: string;
+  columns?: 2 | 3;
 }) {
   return (
     <section id={id} className="vt-content-cards" data-page-section={id}>
@@ -20,12 +22,13 @@ export default function VideoTelematicsContentCards({
       .vt-content-cards h2 { color:#1d1d1f; font-size:clamp(24px,3vw,36px); line-height:1.25; margin:0; }
       .vt-content-cards p { color:#64748b; line-height:1.75; margin:14px 0 0; }
       .vt-content-card-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+      .vt-content-card-grid.vt-content-card-grid-two { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .vt-content-card { min-width:0; padding:26px; border:1px solid #e4eaf5; border-radius:18px; background:linear-gradient(135deg,#f7faff,#fff); }
       .vt-content-card>span { display:grid; place-items:center; width:40px; height:40px; background:#eaf2ff; border-radius:12px; margin-bottom:18px; }
       .vt-content-card h3 { color:#1d1d1f; font-size:19px; line-height:1.4; margin:0; }
       #why-choose-video .vt-content-card-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       @media(max-width:900px) { .vt-content-card-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-      @media(max-width:600px) { .vt-content-card-grid,#why-choose-video .vt-content-card-grid { grid-template-columns:1fr; } }
+      @media(max-width:600px) { .vt-content-card-grid,.vt-content-card-grid.vt-content-card-grid-two,#why-choose-video .vt-content-card-grid { grid-template-columns:1fr; } }
     `}</style>
       <div className="vt-content-cards-inner">
         <header data-reveal>
@@ -35,7 +38,7 @@ export default function VideoTelematicsContentCards({
             <p key={i}>{paragraph}</p>
           ))}
         </header>
-        <div className="vt-content-card-grid">
+        <div className={`vt-content-card-grid${columns === 2 ? ' vt-content-card-grid-two' : ''}`}>
           {content.order.map((id) => {
             const item = content.items[id];
             return (

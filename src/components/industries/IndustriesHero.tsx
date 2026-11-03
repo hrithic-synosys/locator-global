@@ -3,7 +3,9 @@ import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 import type { IndustriesHeroContent } from '@/content/pages/industries/global'
 
-export default function IndustriesHero({ content }: { content?: IndustriesHeroContent }) {
+// Shared by the Global listing and updated industry detail pages, so their
+// typography, spacing and button styles stay identical.
+export default function IndustriesHero({ content, image = '/industries/cover.webp', breadcrumbLabel }: { content?: IndustriesHeroContent; image?: string; breadcrumbLabel?: string }) {
   return (
     <>
       <style>{`
@@ -12,7 +14,7 @@ export default function IndustriesHero({ content }: { content?: IndustriesHeroCo
         /* ── Breadcrumb strip — plain white bar above the photo ── */
         .ih-crumbs-bar { border-bottom: 1px solid #eef1f7; }
         .ih-crumbs {
-          display: flex; align-items: center; gap: 8px;
+          display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
           max-width: var(--w-1280); margin: 0 auto; padding: 16px 28px;
           font-size: var(--f-14); color: #6e6e73;
         }
@@ -48,6 +50,7 @@ export default function IndustriesHero({ content }: { content?: IndustriesHeroCo
 
         .ih-lead { margin: 18px 0 0; max-width: 62ch; font-size: max(clamp(14.5px,1.3vw,17px), min(1.181vw, 24.65px)); line-height: 1.72; color: rgba(255,255,255,.86); }
         .ih-photo.ih-global { height: auto; }
+        .ih-detail .ih-scrim { background: linear-gradient(0deg, rgba(4,8,18,.9), rgba(4,8,18,.55)), linear-gradient(90deg, rgba(4,8,18,.35), transparent 80%); }
         .ih-global .ih-photo-body { padding: clamp(32px,4vw,48px) 28px; }
         .ih-global .ih-content { max-width: 900px; }
         .ih-global .ih-title { text-transform: none; font-size: clamp(32px,4.5vw,60px); line-height: 1.1; }
@@ -74,13 +77,17 @@ export default function IndustriesHero({ content }: { content?: IndustriesHeroCo
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="m9 6 6 6-6 6" />
             </svg>
-            <span>Industries</span>
+            {breadcrumbLabel ? <>
+              <Link href="/industries">Industries</Link>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m9 6 6 6-6 6" /></svg>
+              <span>{breadcrumbLabel}</span>
+            </> : <span>Industries</span>}
           </nav>
         </div>
 
-        <div className={`ih-photo${content ? ' ih-global' : ''}`} data-reveal>
+        <div className={`ih-photo${content ? ' ih-global' : ''}${breadcrumbLabel ? ' ih-detail' : ''}`} data-reveal>
           <Image
-            src="/industries/cover.webp"
+            src={image}
             alt={content?.imageAlt ?? 'Connected fleets across UAE industries'}
             fill
             priority

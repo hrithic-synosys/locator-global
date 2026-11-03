@@ -72,14 +72,30 @@ const FEATURE_ICONS = [(
       </svg>
     )]
 
-export default function ServiceFleetShowcase({ content = sharedFleetTelematics.showcase }: { content?: FleetContent['showcase'] }) {
+export type ShowcaseImage = { src: string; alt: string; width: number; height: number };
+
+export default function ServiceFleetShowcase({ content = sharedFleetTelematics.showcase, id = 'fleet-telematics', image, reverse = false }: { content?: FleetContent['showcase']; id?: string; image?: ShowcaseImage; reverse?: boolean }) {
   const FEATURES = content.order.map(id => ({ ...content.items[id], id, icon: FEATURE_ICONS[content.items[id].assetIndex] }))
   return (
     <>
       <style>{`
         .fts-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(32px,5vw,64px); align-items: center; }
+        .fts-grid.fts-reverse { grid-template-columns: 1.1fr 1fr; }
+        .fts-reverse > div:first-child { order: 2; }
+        .fts-reverse > div:last-child { order: 1; }
+        .fts-image { overflow: hidden; border-radius: 18px; border: 1px solid #e2e8f0; background: #eef3fb; }
+        .fts-image img { display: block; width: 100%; height: auto; }
+        .fts-illustrated .fts-fcard-title { font-size: 16px; }
+        .fts-illustrated .fts-fcard-desc { font-size: 14px; line-height: 1.65; }
+        .fts-illustrated .fts-feature-grid { gap: 14px; }
+        .fts-illustrated .fts-grid > div { min-width: 0; }
         @media (max-width: 900px) { .fts-grid { grid-template-columns: 1fr; } }
         @media (max-width: 900px) { .fts-grid > div:last-child { order: -1; } }
+        @media (max-width: 900px) {
+          .fts-grid.fts-reverse { grid-template-columns: 1fr; }
+          .fts-illustrated .fts-grid > div:first-child { order: 0; }
+          .fts-illustrated .fts-grid > div:last-child { order: 1; }
+        }
         /* One card per line, at every width — same reasoning as the Video
            Telematics showcase: two columns squeeze the body copy into a ~200px
            measure that breaks short sentences over five or six lines. */
@@ -115,14 +131,15 @@ export default function ServiceFleetShowcase({ content = sharedFleetTelematics.s
           a fixed 24px under the navbar at every width, whatever the clamp
           resolves to, and the section's normal in-flow spacing is untouched. */}
       <section
-        id="fleet-telematics"
+        id={id}
+        className={image ? 'fts-illustrated' : undefined}
         style={{
           padding: 'clamp(56px,7vw,80px) 28px',
-          background: '#f5f7fa',
+          background: reverse ? '#fff' : '#f5f7fa',
           scrollMarginTop: 'calc(88px - clamp(56px,7vw,80px))',
         }}
       >
-        <div className="fts-grid" style={{ maxWidth: 'var(--w-1180)', margin: '0 auto' }}>
+        <div className={`fts-grid${reverse ? ' fts-reverse' : ''}`} style={{ maxWidth: 'var(--w-1180)', margin: '0 auto' }}>
 
           <div data-reveal="left">
             <span style={{ fontSize: 'var(--f-13)', fontWeight: 700, color: '#1360ee', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '18px', display: 'block' }}>
@@ -147,6 +164,9 @@ export default function ServiceFleetShowcase({ content = sharedFleetTelematics.s
           </div>
 
           <div data-reveal="right">
+            {image ? <div className="fts-image">
+              <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes="(max-width: 900px) 100vw, 50vw" />
+            </div> : <>
             <div className="fts-browser">
               <div className="fts-browser-bar">
                 {['#ff5f57', '#febc2e', '#28c840'].map(c => (
@@ -162,6 +182,7 @@ export default function ServiceFleetShowcase({ content = sharedFleetTelematics.s
                 style={{ width: '100%', height: 'auto', display: 'block' }}
               />
             </div>
+            </>}
           </div>
 
         </div>
