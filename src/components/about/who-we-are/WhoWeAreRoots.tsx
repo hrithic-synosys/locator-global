@@ -1,3 +1,4 @@
+import type { globalWhoWeAre } from '@/content/pages/who-we-are/global'
 const paragraphs = [
   "LOCATOR is a GPS tracking and fleet management technology company established in 2009 and a subsidiary of Synosys. With a longstanding presence in the Middle East, LOCATOR has developed its expertise in GPS vehicle tracking, asset tracking and fleet management, serving businesses across the UAE through its operations in Dubai and Abu Dhabi.",
   "Over the years, LOCATOR has continuously evolved its platform to meet changing business needs. From launching its first software version in 2009 and mobile applications for iOS and Android in 2010 to introducing one minute reporting in 2011 and a complete Fleet Manager module in 2012, each milestone has contributed to the platform's development. By 2014, LOCATOR had integrated more than 500 types of GPS devices into its software. The journey continued with smartphone based people tracking and student tracking in 2015, asset tracking in 2018, and driver task management in 2019.",
@@ -5,7 +6,7 @@ const paragraphs = [
   "With a focus on reliable technology and practical business needs, LOCATOR continues to build on its established foundation, providing fleet tracking and management solutions designed to make business operations more visible, manageable and efficient.",
 ]
 
-export default function WhoWeAreRoots() {
+export default function WhoWeAreRoots({ content }: { content?: typeof globalWhoWeAre['story'] } = {}) {
   return (
     <section className="wwroots" aria-labelledby="wwroots-title">
       <style href="wwroots-section" precedence="medium">{`
@@ -30,19 +31,19 @@ export default function WhoWeAreRoots() {
       `}</style>
       <div className="wwroots-inner">
         <header data-reveal>
-          <span className="wwroots-eyebrow">Our story</span>
-          <h2 id="wwroots-title" className="wwroots-title">Our Roots in Fleet Technology</h2>
+          <span className="wwroots-eyebrow">{content?.eyebrow ?? 'Our story'}</span>
+          <h2 id="wwroots-title" className="wwroots-title">{content?.heading ?? 'Our Roots in Fleet Technology'}</h2>
         </header>
         <div className="wwroots-grid">
           <div className="wwroots-copy" data-reveal>
-            {paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
+            {(content?.paragraphs ?? paragraphs).map(paragraph => <p key={paragraph}>{paragraph}</p>)}
           </div>
           <blockquote className="wwroots-quote" data-reveal data-reveal-delay="100">
             <svg className="wwroots-quote-mark" viewBox="0 0 40 32" fill="currentColor" aria-hidden="true">
               <path d="M0 17C0 7 6 1 16 0v6C10 7 7 10 7 15h9v17H0V17Zm24 0C24 7 30 1 40 0v6c-6 1-9 4-9 9h9v17H24V17Z" />
             </svg>
             <p>
-              &ldquo;Most companies struggle to effectively utilize their vehicles and field staff. LOCATOR helps them manage operations better, reduce fuel costs and inefficiencies, improve business performance, and drive sustainable growth and revenue.&rdquo;
+              &ldquo;{content?.quote ?? 'Most companies struggle to effectively utilize their vehicles and field staff. LOCATOR helps them manage operations better, reduce fuel costs and inefficiencies, improve business performance, and drive sustainable growth and revenue.'}&rdquo;
             </p>
           </blockquote>
         </div>

@@ -3,8 +3,11 @@ import { ABOUT_PAGES } from '@/components/about/data'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function AboutPillarNav({ current }: { current: string }) {
-  const others = ABOUT_PAGES.filter(p => p.slug !== current)
+export default function AboutPillarNav({ current, content }: { current: string; content?: { heading: string; items: Record<string, { name: string; tagline: string }> } }) {
+  const others = ABOUT_PAGES.filter(p => p.slug !== current).map(page => ({
+    ...page,
+    ...content?.items[page.slug],
+  }))
 
   return (
     <>
@@ -28,7 +31,7 @@ export default function AboutPillarNav({ current }: { current: string }) {
       <section style={{ padding: '0 28px clamp(56px,7vw,88px)', background: '#f7f9fc' }}>
         <div style={{ maxWidth: 'var(--w-1120)', margin: '0 auto' }}>
           <p data-reveal style={{ margin: '0 0 20px', fontSize: 'var(--f-12)', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9a9aa2' }}>
-            Explore more about Locator
+            {content?.heading ?? 'Explore more about Locator'}
           </p>
           <div className="apn-grid">
             {others.map((p, i) => (

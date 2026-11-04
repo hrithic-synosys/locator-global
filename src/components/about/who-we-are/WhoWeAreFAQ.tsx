@@ -1,5 +1,6 @@
 'use client'
 
+import type { globalWhoWeAre } from '@/content/pages/who-we-are/global'
 import { useState } from 'react'
 import Link from '@/components/country/CountryLink'
 
@@ -36,7 +37,7 @@ const FAQS = [
   },
 ]
 
-export default function WhoWeAreFAQ() {
+export default function WhoWeAreFAQ({ content }: { content?: typeof globalWhoWeAre['faq'] } = {}) {
   const [openIdx, setOpenIdx] = useState<number>(0)
   const toggle = (i: number) => setOpenIdx(p => (p === i ? -1 : i))
 
@@ -70,7 +71,7 @@ export default function WhoWeAreFAQ() {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'FAQPage',
-              mainEntity: FAQS.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+              mainEntity: (content ?? FAQS).map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
             }),
           }}
         />
@@ -86,7 +87,7 @@ export default function WhoWeAreFAQ() {
           </div>
 
           <div data-reveal data-reveal-delay="80" style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
-            {FAQS.map((item, i) => (
+            {(content ?? FAQS).map((item, i) => (
               <div key={item.q} className={`wwf-item${openIdx === i ? ' on' : ''}`}>
                 <button className="wwf-trig" onClick={() => toggle(i)}>
                   <span className="wwf-num">{String(i + 1).padStart(2, '0')}</span>

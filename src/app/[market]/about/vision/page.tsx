@@ -7,6 +7,7 @@ import VisionRoadmap from '@/components/about/VisionRoadmap'
 import AboutPillarNav from '@/components/about/AboutPillarNav'
 // import SoftwareCTA from '@/components/software/SoftwareCTA' // Get Started Today — disabled
 import Footer from '@/components/layouts/Footer'
+import { globalVision } from '@/content/pages/vision/global'
 
 const pageMetadata: Metadata = {
   title: 'Our Vision — About Locator',
@@ -22,11 +23,13 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function AboutVisionPage() {
+export default async function AboutVisionPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
+  const content = market === 'global' ? globalVision : undefined;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
-      <VisionHero />
+      <VisionHero content={content?.hero} />
 
       {/* Vision intro — matches WhoWeArePurpose design */}
       <section style={{ position: 'relative', overflow: 'hidden', paddingTop: 0, paddingBottom: 'clamp(56px,7vw,92px)', paddingLeft: 28, paddingRight: 28, background: '#f7f9fc' }}>
@@ -37,18 +40,17 @@ export default function AboutVisionPage() {
             <span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} />
           </span>
           <h2 style={{ margin: 0, fontSize: 'max(clamp(26px,3.2vw,38px), min(2.5vw, 52px))', fontWeight: 800, lineHeight: 1.18, letterSpacing: '-.02em', color: '#1d1d1f' }}>
-            One million IoT devices.{' '}
-            <span style={{ color: '#1360ee' }}>One connected world.</span>
+            {content?.statement.heading ?? <>One million IoT devices.{' '}<span style={{ color: '#1360ee' }}>One connected world.</span></>}
           </h2>
           <div style={{ margin: '24px auto', height: '4px', width: '80px', borderRadius: '999px', background: 'linear-gradient(90deg,#1360ee,#0d4fd4)' }} />
           <p style={{ margin: 0, fontSize: 'max(clamp(15px,1.5vw,17px), min(1.181vw, 24.65px))', lineHeight: 1.8, color: '#52525e' }}>
-            By 2035, we envision a globally connected world where one million IoT devices enable smarter mobility, safer assets, and more intelligent operations — positioning us as a trusted global leader in AI-powered IoT innovation.
+            {content?.statement.description ?? 'By 2035, we envision a globally connected world where one million IoT devices enable smarter mobility, safer assets, and more intelligent operations — positioning us as a trusted global leader in AI-powered IoT innovation.'}
           </p>
         </div>
       </section>
 
-      <VisionRoadmap />
-      <AboutPillarNav current="vision" />
+      <VisionRoadmap content={content?.timeline} />
+      <AboutPillarNav current="vision" content={content?.explore} />
       {/* <SoftwareCTA /> */}
       <Footer />
     </main>

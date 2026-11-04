@@ -1,9 +1,10 @@
+import type { globalVision } from '@/content/pages/vision/global'
 import Image from 'next/image'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function VisionHero() {
+export default function VisionHero({ content }: { content?: typeof globalVision.hero }) {
   return (
     <>
       <style>{`
@@ -60,6 +61,7 @@ export default function VisionHero() {
         @media (prefers-reduced-motion: no-preference) { .vsh-anim { opacity: 0; animation: vshRise .8s ${EASE} forwards; } }
 
         .vsh-kicker { display: block; margin-bottom: 18px; }
+        .vsh-kicker-label { color: #1360ee; font-weight: 800; margin-left: 10px; }
         .vsh-kicker span { display: inline-block; width: 38px; height: 3px; border-radius: 2px; background: linear-gradient(90deg,#1360ee,#06a4e2); }
 
         .vsh-title {
@@ -154,19 +156,19 @@ export default function VisionHero() {
           <div className="vsh-inner">
             <div className="vsh-content">
 
-              <span className="vsh-kicker vsh-anim" style={{ animationDelay: '0s' }} aria-hidden="true">
-                <span />
+              <span className="vsh-kicker vsh-anim" style={{ animationDelay: '0s' }}>
+                <span aria-hidden="true" />
+                {content && <strong className="vsh-kicker-label">{content.label}</strong>}
               </span>
 
               <h1 className="vsh-title vsh-anim" style={{ animationDelay: '.06s' }}>
-                <span style={{ WebkitTextFillColor: '#0b1220', color: '#0b1220' }}>Our</span>{' '}
-                Vision
+                {content?.heading ?? <><span style={{ WebkitTextFillColor: '#0b1220', color: '#0b1220' }}>Our</span>{' '}Vision</>}
               </h1>
 
               <div className="vsh-divider vsh-anim" style={{ animationDelay: '.14s' }} />
 
               <p className="vsh-tagline vsh-anim" style={{ animationDelay: '.2s' }}>
-                LOCATOR envisions a <em>smarter, more connected future</em> where intelligent IoT technology brings vehicles, assets, and operations together, transforming real-time data into meaningful insights, safer mobility, and more efficient businesses.
+                {content?.description ?? <>LOCATOR envisions a <em>smarter, more connected future</em> where intelligent IoT technology brings vehicles, assets, and operations together, transforming real-time data into meaningful insights, safer mobility, and more efficient businesses.</>}
               </p>
 
             </div>

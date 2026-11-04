@@ -1,5 +1,6 @@
 'use client'
 
+import type { globalWhoWeAre } from '@/content/pages/who-we-are/global'
 import { useEffect, useRef } from 'react'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
@@ -80,7 +81,7 @@ const SERVICES = [
   },
 ]
 
-export default function WhoWeAreServices() {
+export default function WhoWeAreServices({ content }: { content?: typeof globalWhoWeAre['services'] } = {}) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const fillRef = useRef<HTMLDivElement>(null)
 
@@ -162,13 +163,13 @@ export default function WhoWeAreServices() {
         <div className="wws-head" data-reveal>
           <span style={{ display: 'block', fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', color: '#1360ee', textTransform: 'uppercase', marginBottom: '16px' }}>
             <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-            What We Do
+            {content?.eyebrow ?? 'What We Do'}
           </span>
           <h2 style={{ margin: 0, fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.015em', color: '#1d1d1f' }}>
-            One connected platform for every part of your fleet
+            {content?.heading ?? 'One connected platform for every part of your fleet'}
           </h2>
           <p style={{ margin: '16px auto 0', fontSize: 'max(clamp(14px,1.35vw,16px), min(1.111vw, 23.2px))', color: '#6e6e73', lineHeight: 1.6 }}>
-            Intelligent technologies to monitor, manage, and optimize every aspect of your operations.
+            {content?.description ?? 'Intelligent technologies to monitor, manage, and optimize every aspect of your operations.'}
           </p>
         </div>
 
@@ -178,6 +179,7 @@ export default function WhoWeAreServices() {
           </div>
 
           {SERVICES.map((s, i) => {
+            const copy = content?.items[s.num as keyof typeof globalWhoWeAre.services.items] ?? s
             const side = i % 2 === 0 ? 'left' : 'right'
             const card = (
               <div className="wws-card-cell">
@@ -186,8 +188,8 @@ export default function WhoWeAreServices() {
                     <span className="wws-kicker-line" style={{ background: s.accent }} />
                     {s.label}
                   </span>
-                  <h3 style={{ margin: '0 0 10px', fontSize: 'max(clamp(18px,2vw,24px), min(1.667vw, 34.8px))', fontWeight: 800, letterSpacing: '-.02em', color: '#1d1d1f' }}>{s.title}</h3>
-                  <p style={{ margin: 0, fontSize: 'max(clamp(14px,1.25vw,15.5px), min(1.076vw, 22.47px))', lineHeight: 1.75, color: '#52525e' }}>{s.body}</p>
+                  <h3 style={{ margin: '0 0 10px', fontSize: 'max(clamp(18px,2vw,24px), min(1.667vw, 34.8px))', fontWeight: 800, letterSpacing: '-.02em', color: '#1d1d1f' }}>{copy.title}</h3>
+                  <p style={{ margin: 0, fontSize: 'max(clamp(14px,1.25vw,15.5px), min(1.076vw, 22.47px))', lineHeight: 1.75, color: '#52525e' }}>{copy.body}</p>
                 </div>
               </div>
             )

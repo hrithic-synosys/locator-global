@@ -1,3 +1,4 @@
+import type { globalWhoWeAre } from '@/content/pages/who-we-are/global'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
@@ -22,7 +23,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * the copy column is allowed to get — so text and photo stay balanced
  * instead of the photo just getting squeezed.
  */
-export default function WhoWeAreHero() {
+export default function WhoWeAreHero({ content }: { content?: typeof globalWhoWeAre['hero'] } = {}) {
   return (
     <>
       <style>{`
@@ -213,13 +214,12 @@ export default function WhoWeAreHero() {
           <div className="wwa-inner">
             <div className="wwa-content">
               <h1 className="wwa-title wwa-anim" style={{ animationDelay: '.05s' }}>
-                <span style={{ color: '#0b1220' }}>Who</span>{' '}
-                <span style={{ color: '#1360ee' }}>We Are</span>
+                {content?.heading ?? <><span style={{ color: '#0b1220' }}>Who</span>{' '}<span style={{ color: '#1360ee' }}>We Are</span></>}
               </h1>
 
 
               <p className="wwa-lead wwa-anim" style={{ animationDelay: '.14s' }}>
-                LOCATOR is more than a GPS tracking provider — we're a technology company building intelligent fleet telematics and IoT solutions that connect vehicles and assets, and turn real-time data into actionable business intelligence.
+                {content?.description ?? "LOCATOR is more than a GPS tracking provider — we're a technology company building intelligent fleet telematics and IoT solutions that connect vehicles and assets, and turn real-time data into actionable business intelligence."}
               </p>
 
 
@@ -237,13 +237,13 @@ export default function WhoWeAreHero() {
 
               <div className="wwa-cta-row wwa-anim" style={{ animationDelay: '.3s' }}>
                 <Link href="/contact" className="wwa-btn wwa-btn-primary">
-                  Talk to our team
+                  {content?.primaryLabel ?? 'Talk to our team'}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </Link>
                 <Link href="/software" className="wwa-btn wwa-btn-ghost">
-                  Explore the platform
+                  {content?.secondaryLabel ?? 'Explore the platform'}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>

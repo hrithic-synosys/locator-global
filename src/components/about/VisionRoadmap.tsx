@@ -1,5 +1,7 @@
 'use client'
 
+import type { globalVision } from '@/content/pages/vision/global'
+
 import { useEffect, useRef, useState } from 'react'
 
 /** The figure the headline settles on. Rendered with thousands separators. */
@@ -104,7 +106,7 @@ const MILESTONES = [
   { year: '2035', title: 'A global leader', desc: 'One million IoT devices enabling smarter mobility, safer assets, and more intelligent operations worldwide.' },
 ]
 
-export default function VisionRoadmap() {
+export default function VisionRoadmap({ content }: { content?: typeof globalVision.timeline }) {
   const { ref: numRef, value } = useCountUp(TARGET, COUNT_MS)
 
   return (
@@ -185,7 +187,7 @@ export default function VisionRoadmap() {
           <div className="vr-timeline" data-reveal>
             <div className="vr-line" aria-hidden="true" />
             <div className="vr-track">
-              {MILESTONES.map((m, i) => (
+              {(content ?? MILESTONES).map((m, i) => (
                 <div className="vr-milestone" key={m.year} data-reveal data-reveal-delay={String(i * 90)} style={{ textAlign: 'center' }}>
                   <div className="vr-dot" />
                   <span style={{ display: 'block', fontSize: 'var(--f-12)', fontWeight: 800, letterSpacing: '.06em', color: '#1360ee', textTransform: 'uppercase', marginBottom: '8px' }}>{m.year}</span>

@@ -7,6 +7,7 @@ import MissionPillars from '@/components/about/MissionPillars'
 import MissionCTA from '@/components/about/MissionCTA'
 import AboutPillarNav from '@/components/about/AboutPillarNav'
 import Footer from '@/components/layouts/Footer'
+import { globalMission } from '@/content/pages/mission/global'
 
 const pageMetadata: Metadata = {
   title: 'Our Mission — About Locator',
@@ -22,14 +23,16 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function AboutMissionPage() {
+export default async function AboutMissionPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params;
+  const content = market === 'global' ? globalMission : undefined;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
-      <MissionHero />
-      <MissionPillars />
-      <AboutPillarNav current="mission" />
-      <MissionCTA />
+      <MissionHero content={content?.hero} />
+      <MissionPillars content={content?.statement} />
+      <AboutPillarNav current="mission" content={content?.explore} />
+      <MissionCTA content={content?.cta} />
       <Footer />
     </main>
   )

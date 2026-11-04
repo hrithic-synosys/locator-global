@@ -16,6 +16,7 @@ import WhoWeAreFAQ from '@/components/about/who-we-are/WhoWeAreFAQ'
 import AboutPillarNav from '@/components/about/AboutPillarNav'
 import SoftwareBlog from '@/components/software/SoftwareBlog'
 import Footer from '@/components/layouts/Footer'
+import { globalWhoWeAre } from '@/content/pages/who-we-are/global'
 
 const pageMetadata: Metadata = {
   title: 'Who We Are — About Locator',
@@ -33,21 +34,22 @@ const pageMetadata: Metadata = {
 
 export default async function WhoWeArePage({ params }: { params: Promise<{ market: CountryCode }> }) {
   const { market } = await params;
+  const content = market === 'global' ? globalWhoWeAre : undefined;
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
-      <WhoWeAreHero />
-      <WhoWeAreRoots />
-      <WhoWeArePurpose />
+      <WhoWeAreHero content={content?.hero} />
+      <WhoWeAreRoots content={content?.story} />
+      <WhoWeArePurpose content={content?.purpose} />
       <WhoWeAreNumbers />
-      <WhoWeAreJourney />
-      <WhoWeAreServices />
+      <WhoWeAreJourney content={content?.journey} />
+      <WhoWeAreServices content={content?.services} />
       {/* <ServiceIndustries /> */}
       {/* <WhoWeAreTechnology /> */}
       {/* <WhoWeAreWhyChoose /> */}
       {/* <WhoWeAreVideo /> */}
-      <WhoWeAreFAQ />
-      <AboutPillarNav current="who-we-are" />
+      <WhoWeAreFAQ content={content?.faq} />
+      <AboutPillarNav current="who-we-are" content={content?.explore} />
       <SoftwareBlog market={market} /> {/* No single topic — About page shows the most recent posts overall */}
       <Footer />
     </main>

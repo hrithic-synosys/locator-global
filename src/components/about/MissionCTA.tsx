@@ -1,8 +1,9 @@
+import type { globalMission } from '@/content/pages/mission/global'
 import Link from '@/components/country/CountryLink'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function MissionCTA() {
+export default function MissionCTA({ content }: { content?: typeof globalMission.cta }) {
   return (
     <>
       <style>{`
@@ -86,32 +87,32 @@ export default function MissionCTA() {
 
             <span className="mc-tag">
               <span className="mc-tag-bar" />
-              Get Started Today
+              {content?.label ?? 'Get Started Today'}
             </span>
 
             <h2 className="mc-h2">
-              Put your whole fleet on <em>one platform.</em>
+              {content?.heading ?? <>Put your whole fleet on <em>one platform.</em></>}
             </h2>
 
             <p className="mc-lead">
-              Get a quote, book a live demo, and see Locator running on your own vehicles within days.
+              {content?.description ?? 'Get a quote, book a live demo, and see Locator running on your own vehicles within days.'}
             </p>
 
             <div className="mc-btn-row">
               <Link href="/get-a-quote" className="mc-btn mc-btn-primary">
-                Get a quote
+                {content?.buttons[0] ?? 'Get a quote'}
               </Link>
               <Link href="/get-a-free-demo" className="mc-btn mc-btn-ghost">
-                Book a live demo →
+                {content?.buttons[1] ?? 'Book a live demo →'}
               </Link>
             </div>
 
             <div className="mc-trust">
-              {[
+              {(content?.trust ?? [
                 'No long-term contract',
                 'Setup within 48 hours',
                 'Dedicated support team',
-              ].map((t) => (
+              ]).map((t) => (
                 <div key={t} className="mc-trust-item">
                   <span className="mc-trust-icon">✓</span>
                   {t}

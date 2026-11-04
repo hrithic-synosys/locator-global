@@ -1,3 +1,4 @@
+import type { globalWhoWeAre } from '@/content/pages/who-we-are/global'
 import Image from 'next/image'
 
 /**
@@ -8,7 +9,7 @@ import Image from 'next/image'
  * sits in the same centered, padded content column the rest of the page
  * uses, so only the photo/background actually spans edge to edge.
  */
-export default function WhoWeAreJourney() {
+export default function WhoWeAreJourney({ content }: { content?: typeof globalWhoWeAre['journey'] } = {}) {
   return (
     <>
       <style>{`
@@ -55,21 +56,18 @@ export default function WhoWeAreJourney() {
           <div className="wwj-text">
             <span style={{ display: 'block', fontSize: 'max(clamp(20px,2.4vw,28px), min(1.944vw, 40.6px))', fontWeight: 800, letterSpacing: '.04em', color: '#1360ee', textTransform: 'uppercase', marginBottom: '10px' }}>
               <span style={{ display: 'block', marginBottom: '8px' }}><span style={{ display: 'inline-block', width: '30px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-              Our Journey
+              {content?.eyebrow ?? 'Our Journey'}
             </span>
             <h2 style={{ margin: 0, fontSize: 'max(clamp(17px,1.9vw,23px), min(1.597vw, 33.36px))', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-.015em', color: '#1d1d1f' }}>
-              From GPS tracking to a<br />
-              <span style={{ color: '#1360ee' }}>connected mobility ecosystem</span>
+              {content?.heading ?? <>From GPS tracking to a<br />
+              <span style={{ color: '#1360ee' }}>connected mobility ecosystem</span></>}
             </h2>
             <div style={{ margin: '14px 0 16px', height: '4px', width: '64px', borderRadius: '999px', background: 'linear-gradient(90deg,#1360ee,#0d4fd4)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <p style={{ margin: 0, fontSize: 'max(clamp(13px,1.1vw,14.5px), min(1.007vw, 21.02px))', lineHeight: 1.55, color: '#52525e' }}>
-                Since our inception, LOCATOR has remained committed to redefining fleet management through innovation and technology. What began as a provider of GPS vehicle tracking solutions has evolved into a comprehensive fleet telematics and IoT platform trusted by businesses across the United Arab Emirates.
-              </p>
-              <p style={{ margin: 0, fontSize: 'max(clamp(13px,1.1vw,14.5px), min(1.007vw, 21.02px))', lineHeight: 1.55, color: '#52525e' }}>
-                As industries continue to embrace digital transformation, LOCATOR has expanded its capabilities beyond traditional vehicle tracking by integrating Artificial Intelligence, cloud technologies, IoT connectivity, and intelligent analytics into one unified ecosystem. Today, we continue to innovate — helping organizations improve operational efficiency, strengthen safety, reduce costs, and prepare for the future of connected mobility.
-              </p>
+              {(content?.paragraphs ?? ["Since our inception, LOCATOR has remained committed to redefining fleet management through innovation and technology. What began as a provider of GPS vehicle tracking solutions has evolved into a comprehensive fleet telematics and IoT platform trusted by businesses across the United Arab Emirates.", "As industries continue to embrace digital transformation, LOCATOR has expanded its capabilities beyond traditional vehicle tracking by integrating Artificial Intelligence, cloud technologies, IoT connectivity, and intelligent analytics into one unified ecosystem. Today, we continue to innovate — helping organizations improve operational efficiency, strengthen safety, reduce costs, and prepare for the future of connected mobility."]).map(paragraph => (
+                <p key={paragraph} style={{ margin: 0, fontSize: 'max(clamp(13px,1.1vw,14.5px), min(1.007vw, 21.02px))', lineHeight: 1.55, color: '#52525e' }}>{paragraph}</p>
+              ))}
             </div>
           </div>
         </div>

@@ -1,9 +1,10 @@
+import type { globalMission } from '@/content/pages/mission/global'
 import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function MissionHero() {
+export default function MissionHero({ content }: { content?: typeof globalMission.hero }) {
   return (
     <>
       <style>{`
@@ -215,23 +216,22 @@ export default function MissionHero() {
             <div className="msh-content">
 
               <h1 className="msh-h1 msh-anim" style={{ animationDelay: '.04s' }}>
-                <span style={{ color: '#0b1220' }}>Our</span>{' '}
-                <em>Mission</em>
+                {content?.heading ?? <><span style={{ color: '#0b1220' }}>Our</span>{' '}<em>Mission</em></>}
               </h1>
 
               <p className="msh-lead msh-anim" style={{ animationDelay: '.14s' }}>
-                Creating technology that helps businesses operate with greater clarity, intelligence, and confidence. Built for Smarter Operations.
+                {content?.description ?? 'Creating technology that helps businesses operate with greater clarity, intelligence, and confidence. Built for Smarter Operations.'}
               </p>
 
               <div className="msh-cta-row msh-anim" style={{ animationDelay: '.3s' }}>
                 <Link href="/contact" className="msh-btn msh-btn-primary">
-                  Talk to our team
+                  {content?.buttons[0] ?? 'Talk to our team'}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </Link>
                 <Link href="/software" className="msh-btn msh-btn-ghost">
-                  Explore the platform
+                  {content?.buttons[1] ?? 'Explore the platform'}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
