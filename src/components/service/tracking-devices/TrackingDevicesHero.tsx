@@ -1,6 +1,7 @@
 import Link from '@/components/country/CountryLink'
 import Image from 'next/image'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
+import SmartIotHero from '@/components/service/smart-iot/SmartIotHero'
 import { Fragment } from 'react'
 import { sharedTrackingDevices } from '@/content/pages/tracking-devices/shared'
 import type { TrackingDevicesContent } from '@/content/pages/tracking-devices/schema'
@@ -8,6 +9,19 @@ import type { TrackingDevicesContent } from '@/content/pages/tracking-devices/sc
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
 export default function TrackingDevicesHero({ content = sharedTrackingDevices.hero }: { content?: TrackingDevicesContent['hero'] }) {
+  if (content.eyebrowStyle === 'compact') {
+    return <SmartIotHero
+      bannerImage={content.image}
+      content={{
+        eyebrow: content.eyebrow,
+        heading: content.heading,
+        description: content.paragraphs.join(' '),
+        primaryCta: content.primaryCta,
+        secondaryCta: content.secondaryCta,
+      }}
+    />
+  }
+
   const lines = (text: string) => text.split('\n').map((line,i) => <Fragment key={i}>{i > 0 && <br />}{line}</Fragment>)
   const accentAt = content.accent ? content.heading.indexOf(content.accent) : -1
   return (
@@ -91,8 +105,6 @@ export default function TrackingDevicesHero({ content = sharedTrackingDevices.he
           display: block; width: 34px; height: 3px;
           background: #1360ee; border-radius: 2px; margin-bottom: 12px;
         }
-        .td-hero-compact .td-eyebrow { font-size: clamp(10px,2.7vw,13px); font-weight: 700; line-height: 1.5; letter-spacing: .03em; white-space: nowrap; }
-        .td-hero-compact .td-eyebrow-bar { display: none; }
 
         .td-h1 {
           margin: 0;
@@ -163,7 +175,7 @@ export default function TrackingDevicesHero({ content = sharedTrackingDevices.he
         }
       `}</style>
 
-      <section className={`td-hero${content.eyebrowStyle === 'compact' ? ' td-hero-compact' : ''}`}>
+      <section className="td-hero">
 
         <div className="td-photo" aria-hidden="true">
           <Image

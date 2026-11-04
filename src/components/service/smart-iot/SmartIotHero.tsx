@@ -5,7 +5,7 @@ import type { SmartIotHeroContent } from '@/content/pages/smart-iot/schema'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function SmartIotHero({ content }: { content?: SmartIotHeroContent }) {
+export default function SmartIotHero({ content, bannerImage }: { content?: SmartIotHeroContent; bannerImage?: string }) {
   return (
     <>
       <style>{`
@@ -119,6 +119,13 @@ export default function SmartIotHero({ content }: { content?: SmartIotHeroConten
             margin-left: calc(50% - 50vw);
           }
           .si-photo { display: none; }
+          .si-hero-custom-banner { background-image: none; }
+          .si-hero-custom-banner .si-photo {
+            display: block;
+            inset: 64px 0 auto;
+            height: clamp(190px, 48vw, 260px);
+            mask-image: linear-gradient(#000 58%, transparent);
+          }
           /* Dark gradient for smart-iot to maintain text contrast */
           .si-scrim {
             display: block;
@@ -149,12 +156,12 @@ export default function SmartIotHero({ content }: { content?: SmartIotHeroConten
         }
       `}</style>
 
-      <section className="si-hero">
+      <section className={bannerImage ? 'si-hero si-hero-custom-banner' : 'si-hero'}>
 
         {/* Background image — spans full section height behind navbar + body */}
         <div className="si-photo" aria-hidden="true">
           <Image
-            src="/services/smart-iot/hero.webp"
+            src={bannerImage ?? '/services/smart-iot/hero.webp'}
             alt=""
             fill
             priority

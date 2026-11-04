@@ -68,10 +68,8 @@ const normal = (t) => t.replace(/\s+/g, " ").trim();
         c.seo.title
       );
       assert.equal(
-        await page
-          .locator(".td-eyebrow")
-          .evaluate((e) => getComputedStyle(e).whiteSpace),
-        "nowrap"
+        normal(await page.locator(".si-hero .si-eyebrow").textContent()),
+        c.hero.eyebrow
       );
       await page.screenshot({ path: out + `/hero-${width}-${motion}.png` });
       assert.equal(await page.locator(".dv-item").count(), 9);
