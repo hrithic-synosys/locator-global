@@ -6,7 +6,7 @@ import type { ShowcaseImage } from '@/components/service/ServiceFleetShowcase';
 export type IndustryShowcaseContent = CardSection & { eyebrow: string; image: ShowcaseImage };
 export type IndustryDetailSection =
   | { kind: 'showcase'; id: string; content: IndustryShowcaseContent; reverse?: boolean }
-  | { kind: 'cards'; id: string; content: CardSection & { eyebrow: string } };
+  | { kind: 'cards' | 'solutions' | 'directory'; id: string; content: CardSection & { eyebrow: string } };
 
 export type IndustryDetailContent = {
   seo: { title: string; description: string; keywords: string[] };

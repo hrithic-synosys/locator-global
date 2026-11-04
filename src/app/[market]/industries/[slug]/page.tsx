@@ -8,6 +8,7 @@ import IndustryHero from '@/components/industries/IndustryHero'
 import IndustriesHero from '@/components/industries/IndustriesHero'
 import IndustryBlocks from '@/components/industries/IndustryBlocks'
 import IndustryShowcase from '@/components/industries/IndustryShowcase'
+import IndustryEditorialSection from '@/components/industries/IndustryEditorialSection'
 import ContentCards from '@/components/service/video-telematics/VideoTelematicsContentCards'
 import ServiceWhyChoose from '@/components/service/ServiceWhyChoose'
 import WhoWeAreNumbers from '@/components/about/who-we-are/WhoWeAreNumbers'
@@ -67,9 +68,15 @@ export default async function IndustryDetailPage({
       <IndustryBlocks industry={industry} blocks={content?.blocks} />
       {content?.utilisation && <IndustryShowcase content={content.utilisation} id="rental-utilisation" />}
       {content?.applications && <IndustryShowcase content={content.applications} id="rental-applications" reverse />}
-      {content?.sections?.map(section => section.kind === 'showcase'
-        ? <IndustryShowcase key={section.id} id={section.id} content={section.content} reverse={section.reverse} />
-        : <ContentCards key={section.id} id={section.id} content={section.content} eyebrow={section.content.eyebrow} />)}
+      {content?.sections?.map(section => {
+        if (section.kind === 'showcase') {
+          return <IndustryShowcase key={section.id} id={section.id} content={section.content} reverse={section.reverse} />
+        }
+        if (section.kind === 'cards') {
+          return <ContentCards key={section.id} id={section.id} content={section.content} eyebrow={section.content.eyebrow} />
+        }
+        return <IndustryEditorialSection key={section.id} id={section.id} content={section.content} variant={section.kind} />
+      })}
       <ServiceWhyChoose content={content?.whyChoose} />
       <WhoWeAreNumbers />
       <ServiceVideo
