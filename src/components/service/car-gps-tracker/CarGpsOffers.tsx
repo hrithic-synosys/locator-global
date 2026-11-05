@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/car-gps-tracker/global'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 
@@ -27,7 +28,7 @@ const OFFERS = [
   },
 ]
 
-export default function CarGpsOffers() {
+export default function CarGpsOffers({ content }: { content?: typeof globalCopy.features } = {}) {
   return (
     <>
       <style>{`
@@ -54,28 +55,29 @@ export default function CarGpsOffers() {
             What This App Offers
           </span>
           <h2 style={{ margin: '0 0 16px', fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.25, letterSpacing: '-.015em', color: '#1d1d1f' }}>
-            What our Car Tracker app offers
+            {content?.heading ?? 'What our Car Tracker app offers'}
           </h2>
           <p style={{ margin: 0, fontSize: 'max(clamp(13.5px,1.25vw,15px), min(1.042vw, 21.75px))', lineHeight: 1.8, color: '#6e6e73' }}>
-            LOCATOR is an app that has been developed with one goal in mind — to give you greater control over
-            your vehicles and team than ever before. You won&apos;t have to worry about the location of your fleet
-            or what your team is being used for, because our Car Tracker app takes care of that.
+            {content?.description ?? 'LOCATOR is an app that has been developed with one goal in mind — to give you greater control over your vehicles and team than ever before. You won&apos;t have to worry about the location of your fleet or what your team is being used for, because our Car Tracker app takes care of that.'}
           </p>
         </div>
 
         <div className="cgo-cards">
-          {OFFERS.map(o => (
-            <div key={o.title} className="cgo-card" data-reveal>
-              <div className="cgo-media" style={{ background: `radial-gradient(circle at 50% 62%, ${o.tint}, #ffffff 74%)` }}>
-                <Image src={o.img} alt={o.alt} width={1143} height={863} sizes="(max-width: 820px) 88vw, 320px" unoptimized />
+          {OFFERS.map((item, i) => {
+            const o = { ...item, ...content?.items[i] }
+            return (
+              <div key={o.title} className="cgo-card" data-reveal>
+                <div className="cgo-media" style={{ background: `radial-gradient(circle at 50% 62%, ${o.tint}, #ffffff 74%)` }}>
+                  <Image src={o.img} alt={o.alt} width={1143} height={863} sizes="(max-width: 820px) 88vw, 320px" unoptimized />
+                </div>
+                <div className="cgo-body">
+                  <h3 style={{ margin: '0 0 8px', fontSize: 'var(--f-16)', fontWeight: 800, color: '#1d1d1f', letterSpacing: '-.01em' }}>{o.title}</h3>
+                  <p style={{ margin: 0, fontSize: 'var(--f-13-5)', lineHeight: 1.65, color: '#6e6e73' }}>{o.desc}</p>
+                  <Link href="/contact" className="cgo-link">Read details →</Link>
+                </div>
               </div>
-              <div className="cgo-body">
-                <h3 style={{ margin: '0 0 8px', fontSize: 'var(--f-16)', fontWeight: 800, color: '#1d1d1f', letterSpacing: '-.01em' }}>{o.title}</h3>
-                <p style={{ margin: 0, fontSize: 'var(--f-13-5)', lineHeight: 1.65, color: '#6e6e73' }}>{o.desc}</p>
-                <Link href="/contact" className="cgo-link">Read details →</Link>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
     </>

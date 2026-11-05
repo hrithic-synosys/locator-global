@@ -1,11 +1,13 @@
 'use client'
+
+import type { globalCopy } from '@/content/pages/car-gps-tracker/global'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function CarGpsHero() {
+export default function CarGpsHero({ content }: { content?: typeof globalCopy.hero } = {}) {
   return (
     <>
       <style>{`
@@ -45,20 +47,20 @@ export default function CarGpsHero() {
           {/* Copy */}
           <div className="cgh-copy cgh-copy-align" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', paddingTop: 'clamp(20px,3vw,40px)' }}>
             <h1 style={{ margin: 0, fontSize: 'max(clamp(24px, calc(1.5vw + 15px), 34px), min(2.361vw, 49.3px))', fontWeight: 800, lineHeight: 1.22, letterSpacing: '-.02em', color: '#1d1d1f', maxWidth: '480px' }}>
-              The best <span style={{ color: '#1360ee' }}>Car GPS Tracker</span> for maximum visibility
+              {content?.heading ?? <>The best <span style={{ color: '#1360ee' }}>Car GPS Tracker</span> for maximum visibility</>}
             </h1>
             <p style={{ margin: '14px 0 0', fontSize: 'max(clamp(14px,1.35vw,16.5px), min(1.146vw, 23.93px))', color: '#8a93a2', fontWeight: 600 }}>
-              A perfect solution to monitor your vehicles
+              {content?.description ?? 'A perfect solution to monitor your vehicles'}
             </p>
 
             <div className="cgh-btns" style={{ display: 'flex', gap: '14px', marginTop: '22px', flexWrap: 'wrap' }}>
               <Link href="/get-a-quote" className="cgh-btn cgh-btn-primary">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5" /><path d="M8 11l2.5 2.5L16 8" /></svg>
-                Get a free quote
+                {content ? 'Get a Free Quote' : 'Get a free quote'}
               </Link>
               <Link href="/get-a-free-demo" className="cgh-btn cgh-btn-ghost">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21" /></svg>
-                Get a free demo
+                {content ? 'Get a Free Demo' : 'Get a free demo'}
               </Link>
             </div>
           </div>

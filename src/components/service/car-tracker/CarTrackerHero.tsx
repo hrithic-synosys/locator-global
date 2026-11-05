@@ -1,14 +1,18 @@
 'use client'
+
+import type { globalCopy } from '@/content/pages/car-tracker/global'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
 
-export default function CarTrackerHero() {
+export default function CarTrackerHero({ content }: { content?: typeof globalCopy.hero } = {}) {
   return (
     <>
       <style>{`
+        .ct-hero-eyebrow { margin-bottom: 12px; color: #fff; font-size: var(--f-14-5); font-weight: 700; }
+        .ct-hero-trust { margin: 22px 0 0; padding: 0 0 0 18px; color: #fff; font-size: var(--f-14-5); line-height: 1.7; text-align: left; }
         @keyframes ctHeroRise {
           from { opacity: 0; transform: translateY(30px); }
           to   { opacity: 1; transform: none; }
@@ -61,13 +65,13 @@ export default function CarTrackerHero() {
         <div className="ct-hero-grid">
           {/* Copy */}
           <div className="ct-hero-copy ct-hero-copy-align" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            {content && <span className="ct-hero-eyebrow">{content.eyebrow}</span>}
             <h1 style={{ margin: 0, fontSize: 'max(clamp(28px,4vw,46px), min(3.194vw, 66.7px))', fontWeight: 400, lineHeight: 1.22, letterSpacing: '-.015em', color: 'rgba(255,255,255,.92)', maxWidth: '15ch' }}>
-              Try out our revolutionary <strong style={{ fontWeight: 800, color: '#fff' }}>Car Tracker App</strong> today
+              {content?.heading ?? <>Try out our revolutionary <strong style={{ fontWeight: 800, color: '#fff' }}>Car Tracker App</strong> today</>}
             </h1>
 
             <p style={{ margin: '18px 0 0', fontSize: 'max(clamp(14px,1.35vw,16.5px), min(1.146vw, 23.93px))', lineHeight: 1.65, color: 'rgba(255,255,255,.78)', maxWidth: '42ch' }}>
-              You are guaranteed optimum performance from your vehicles with our car tracker — live location,
-              driver behaviour, and fleet health, all in one app.
+              {content?.description ?? 'You are guaranteed optimum performance from your vehicles with our car tracker — live location, driver behaviour, and fleet health, all in one app.'}
             </p>
 
             <div className="ct-hero-btns" style={{ display: 'flex', gap: '14px', marginTop: '30px', flexWrap: 'wrap' }}>
@@ -75,13 +79,18 @@ export default function CarTrackerHero() {
                 <span className="ct-icon-chip">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0d4fd4" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5" /><path d="M8 11l2.5 2.5L16 8" /></svg>
                 </span>
-                Get a free quote
+                {content ? 'Get a Free Quote' : 'Get a free quote'}
               </Link>
               <Link href="/get-a-free-demo" className="ct-btn ct-btn-ghost">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21" /></svg>
-                Get a free demo
+                {content ? 'Get a Free Demo' : 'Get a free demo'}
               </Link>
             </div>
+            {content && (
+              <ul className="ct-hero-trust">
+                {content.trust.map(item => <li key={item}>{item}</li>)}
+              </ul>
+            )}
           </div>
 
           {/* Visual — real app screens on an amber ambient glow */}

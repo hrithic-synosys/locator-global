@@ -1,3 +1,4 @@
+import { globalCopy } from '@/content/pages/vehicle-tracking-system/global'
 import { marketMetadata } from '@/lib/country/metadata';
 import type { CountryCode } from '@/config/countries';
 import type { Metadata } from 'next'
@@ -35,28 +36,39 @@ const pageMetadata: Metadata = {
   },
 }
 
+const globalTitle = 'Vehicle Tracking System | LocatorGlobal'
+const globalDescription = globalCopy.hero.description
+const globalMetadata: Metadata = {
+  ...pageMetadata,
+  title: { absolute: globalTitle },
+  description: globalDescription,
+  keywords: globalCopy.seo.keywords,
+  openGraph: { ...pageMetadata.openGraph, title: globalTitle, description: globalDescription },
+}
+
 export default async function VehicleTrackingSystemPage({ params }: { params: Promise<{ market: CountryCode }> }) {
   const { market } = await params;
+  const content = market === 'global' ? globalCopy : undefined
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
-      <VehicleTrackingHero />
-      <VehicleTrackingFeatures />
-      <WhoWeAreNumbers />
-      <VehicleTrackingWhy />
+      <VehicleTrackingHero content={content?.hero} />
+      <VehicleTrackingFeatures content={content?.features} />
+      <WhoWeAreNumbers content={content && { ...content.numbers, showStats: true }} />
+      <VehicleTrackingWhy content={content?.why} />
       {market !== 'global' && <TrackingVoices />}
-      <VehicleTrackingBenefits />
+      <VehicleTrackingBenefits content={content?.payoff} />
       <ServiceVideo
-        eyebrow=""
-        title="All your Vehicles, Assets & Staffs on One Software"
+        eyebrow={content?.platform.eyebrow ?? ''}
+        title={content?.platform.heading ?? 'All your Vehicles, Assets & Staffs on One Software'}
         titleColor="#1360ee"
-        lead="Take control of your whole operation with LOCATOR GPS Tracking"
+        lead={content?.platform.description ?? 'Take control of your whole operation with LOCATOR GPS Tracking'}
         headingMaxWidth="760px"
       />
-      <TrackingUseCases />
+      <TrackingUseCases content={content?.platform} />
       <SoftwareBlog market={market} tag={['GPS Tracking', 'Vehicle Maintenance']} />
-      <ServiceFAQ />
-      <SoftwareCTA />
+      <ServiceFAQ content={content?.faq} />
+      <SoftwareCTA content={content?.cta} />
       <Footer />
 
       {/* Product + reviews structured data, generated from the same arrays the
@@ -94,5 +106,5 @@ export default async function VehicleTrackingSystemPage({ params }: { params: Pr
 
 export async function generateMetadata({ params }: { params: Promise<{ market: CountryCode }> }): Promise<Metadata> {
   const { market } = await params;
-  return marketMetadata(pageMetadata, market, "/service/vehicle-tracking-system");
+  return marketMetadata(market === 'global' ? globalMetadata : pageMetadata, market, "/service/vehicle-tracking-system");
 }

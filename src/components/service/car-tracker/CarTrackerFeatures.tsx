@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/car-tracker/global'
 import Image from 'next/image'
 
 const EASE = 'cubic-bezier(.22,.61,.36,1)'
@@ -53,7 +54,7 @@ const FEATURES = [
   },
 ]
 
-export default function CarTrackerFeatures() {
+export default function CarTrackerFeatures({ content }: { content?: typeof globalCopy.features } = {}) {
   return (
     <>
       <style>{`
@@ -72,22 +73,25 @@ export default function CarTrackerFeatures() {
           <div data-reveal="left">
             <span style={{ fontSize: 'max(clamp(22px,2.8vw,32px), min(2.222vw, 46.4px))', fontWeight: 800, letterSpacing: '.04em', color: '#1360ee', textTransform: 'uppercase', display: 'block', marginBottom: '16px' }}>
               <span style={{ display: 'block', marginBottom: '12px' }}><span style={{ display: 'inline-block', width: '34px', height: '3px', background: '#1360ee', borderRadius: '2px' }} /></span>
-              Everything You Need
+              {content?.eyebrow ?? 'Everything You Need'}
             </span>
             <h2 style={{ margin: 0, fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.25, letterSpacing: '-.015em', color: '#1d1d1f' }}>
-              The best GPS tracker for your vehicles
+              {content?.heading ?? 'The best GPS tracker for your vehicles'}
             </h2>
 
             <div className="ctf-items">
-              {FEATURES.map(f => (
-                <div key={f.title} className="ctf-item">
-                  <span className="ctf-ic" style={{ background: f.bg, color: f.color }}>{f.icon}</span>
-                  <div>
-                    <h3 style={{ margin: '0 0 4px', fontSize: 'var(--f-14-5)', fontWeight: 800, color: '#1d1d1f', letterSpacing: '-.01em' }}>{f.title}</h3>
-                    <p style={{ margin: 0, fontSize: 'var(--f-12-5)', lineHeight: 1.6, color: '#6e6e73' }}>{f.desc}</p>
+              {FEATURES.map((item, i) => {
+                const f = { ...item, ...content?.items[i] }
+                return (
+                  <div key={f.title} className="ctf-item">
+                    <span className="ctf-ic" style={{ background: f.bg, color: f.color }}>{f.icon}</span>
+                    <div>
+                      <h3 style={{ margin: '0 0 4px', fontSize: 'var(--f-14-5)', fontWeight: 800, color: '#1d1d1f', letterSpacing: '-.01em' }}>{f.title}</h3>
+                      <p style={{ margin: 0, fontSize: 'var(--f-12-5)', lineHeight: 1.6, color: '#6e6e73' }}>{f.desc}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 

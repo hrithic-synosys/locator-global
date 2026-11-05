@@ -1,3 +1,5 @@
+import { globalCopy } from '@/content/pages/car-gps-tracker/global'
+import { sharedTrackingDevices } from '@/content/pages/tracking-devices/shared'
 import { marketMetadata } from '@/lib/country/metadata';
 import type { CountryCode } from '@/config/countries';
 import type { Metadata } from 'next'
@@ -29,31 +31,47 @@ const pageMetadata: Metadata = {
   },
 }
 
+const globalTitle = globalCopy.seo.title
+const globalDescription = globalCopy.seo.description
+const globalMetadata: Metadata = {
+  ...pageMetadata,
+  title: { absolute: globalTitle },
+  description: globalDescription,
+  keywords: globalCopy.seo.keywords,
+  openGraph: { ...pageMetadata.openGraph, title: globalTitle, description: globalDescription },
+}
+
 export default async function CarGpsTrackerPage({ params }: { params: Promise<{ market: CountryCode }> }) {
   const { market } = await params;
+  const content = market === 'global' ? globalCopy : undefined
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh' }}>
       <ScrollReveal />
-      <CarGpsHero />
-      <CarGpsOffers />
-      <WhoWeAreNumbers />
-      <CarGpsAbout />
+      <CarGpsHero content={content?.hero} />
+      <CarGpsOffers content={content?.features} />
+      <WhoWeAreNumbers content={content && { ...content.numbers, showStats: true }} />
+      <CarGpsAbout content={content?.device} />
       <TestimonialCarousel
         testimonials={TESTIMONIAL_DATA}
         heading="What Our Clients Say"
-        subheading="Real feedback from UAE businesses using the LOCATOR car GPS tracker for vehicles and fleets."
+        subheading={content?.reviews ?? 'Real feedback from UAE businesses using the LOCATOR car GPS tracker for vehicles and fleets.'}
       />
       <ServiceVideo
-        eyebrow=""
-        title="All your Vehicles, Assets & Staffs on One Software"
+        eyebrow={content?.platform.eyebrow ?? ''}
+        title={content?.platform.heading ?? 'All your Vehicles, Assets & Staffs on One Software'}
         titleColor="#1360ee"
-        lead="Take control of your whole operation with LOCATOR GPS Tracking"
+        lead={content?.platform.description ?? 'Take control of your whole operation with LOCATOR GPS Tracking'}
         headingMaxWidth="760px"
       />
-      <ServiceUseCases />
-      <DeviceCarousel />
-      <SoftwareBlog market={market} tag="Car Tracking" />
-      <SoftwareCTA />
+      <ServiceUseCases content={content?.platform} />
+      <DeviceCarousel content={content && {
+        ...sharedTrackingDevices.catalog,
+        eyebrow: content.hardware.eyebrow,
+        heading: content.hardware.heading,
+        paragraphs: [content.hardware.description],
+      }} />
+      <SoftwareBlog content={content?.blog} market={market} tag="Car Tracking" />
+      <SoftwareCTA content={content?.cta} />
       <Footer />
     </main>
   )
@@ -61,5 +79,5 @@ export default async function CarGpsTrackerPage({ params }: { params: Promise<{ 
 
 export async function generateMetadata({ params }: { params: Promise<{ market: CountryCode }> }): Promise<Metadata> {
   const { market } = await params;
-  return marketMetadata(pageMetadata, market, "/service/car-gps-tracker");
+  return marketMetadata(market === 'global' ? globalMetadata : pageMetadata, market, "/service/car-gps-tracker");
 }

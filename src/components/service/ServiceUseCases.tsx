@@ -27,7 +27,7 @@ const USE_CASES = [
   },
 ]
 
-export default function ServiceUseCases() {
+export default function ServiceUseCases({ content }: { content?: { items: { title: string; desc: string }[] } } = {}) {
   return (
     <>
       <style>{`
@@ -62,29 +62,32 @@ export default function ServiceUseCases() {
         <div style={{ maxWidth: 'var(--w-1120)', margin: '0 auto' }}>
 
           {/* Quote banner */}
-          <div className="suc-wrap" data-reveal="zoom">
+          {!content && <div className="suc-wrap" data-reveal="zoom">
             <span className="suc-quote-mark">&ldquo;</span>
             <p style={{ margin: '0 auto', maxWidth: '640px', fontSize: 'max(clamp(16px,2vw,21px), min(1.458vw, 30.45px))', fontWeight: 600, lineHeight: 1.6, color: '#fff' }}>
               Most companies struggle to effectively utilize their vehicles and field staff. We built a software
               tool that helps them manage and control their fleet, so their company can start growing again and
               increase revenue.
             </p>
-          </div>
+          </div>}
 
           {/* Use-case cards */}
           <div className="suc-cards">
-            {USE_CASES.map(u => (
-              <Link key={u.title} href={u.href} className="suc-card" data-reveal>
-                <div className="suc-media">
-                  <Image src={u.img} alt={u.alt} width={302} height={228} sizes="(max-width: 820px) 92vw, 360px" />
-                </div>
-                <div className="suc-body">
-                  <h3 style={{ margin: '0 0 8px', fontSize: 'var(--f-16)', fontWeight: 800, color: '#1d1d1f', letterSpacing: '-.01em' }}>{u.title}</h3>
-                  <p style={{ margin: 0, fontSize: 'var(--f-13-5)', lineHeight: 1.65, color: '#6e6e73' }}>{u.desc}</p>
-                  <span className="suc-link">Read details →</span>
-                </div>
-              </Link>
-            ))}
+            {USE_CASES.map((item, i) => {
+              const u = { ...item, ...content?.items[i] }
+              return (
+                <Link key={u.title} href={u.href} className="suc-card" data-reveal>
+                  <div className="suc-media">
+                    <Image src={u.img} alt={u.alt} width={302} height={228} sizes="(max-width: 820px) 92vw, 360px" />
+                  </div>
+                  <div className="suc-body">
+                    <h3 style={{ margin: '0 0 8px', fontSize: 'var(--f-16)', fontWeight: 800, color: '#1d1d1f', letterSpacing: '-.01em' }}>{u.title}</h3>
+                    <p style={{ margin: 0, fontSize: 'var(--f-13-5)', lineHeight: 1.65, color: '#6e6e73' }}>{u.desc}</p>
+                    <span className="suc-link">Read details →</span>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>

@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/car-tracking-system/global'
 import Image from 'next/image'
 import { REASONS } from './data'
 
@@ -11,7 +12,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * independent claims read as a single argument. The stick is dropped below the
  * breakpoint, where there is no second column for it to hold still against.
  */
-export default function CarTrackingWhyChoose() {
+export default function CarTrackingWhyChoose({ content }: { content?: typeof globalCopy.why } = {}) {
   return (
     <>
       <style>{`
@@ -92,12 +93,10 @@ export default function CarTrackingWhyChoose() {
       <section className="ctw">
         <div className="ctw-inner">
           <header className="ctw-head" data-reveal="right">
-            <p className="ctw-eyebrow">Why LOCATOR</p>
-            <h2 className="ctw-title">Why choose this car tracking device for your UAE business</h2>
+            <p className="ctw-eyebrow">{content?.eyebrow ?? 'Why LOCATOR'}</p>
+            <h2 className="ctw-title">{content?.heading ?? 'Why choose this car tracking device for your UAE business'}</h2>
             <p className="ctw-lead">
-              Four things decide whether a tracking platform is still worth having in year
-              three: what it can do, what it costs, who answers when it breaks, and whether
-              it plays well with the rest of your stack.
+              {content?.description ?? 'Four things decide whether a tracking platform is still worth having in year three: what it can do, what it costs, who answers when it breaks, and whether it plays well with the rest of your stack.'}
             </p>
 
             <div className="ctw-art">
@@ -112,13 +111,16 @@ export default function CarTrackingWhyChoose() {
           </header>
 
           <div className="ctw-grid">
-            {REASONS.map((r, i) => (
-              <article key={r.title} className="ctw-card" data-reveal data-reveal-delay={i * 100}>
-                <span className="ctw-ico" aria-hidden="true">{r.icon}</span>
-                <h3>{r.title}</h3>
-                <p>{r.desc}</p>
-              </article>
-            ))}
+            {REASONS.map((item, i) => {
+              const r = { ...item, ...content?.items[i] }
+              return (
+                <article key={r.title} className="ctw-card" data-reveal data-reveal-delay={i * 100}>
+                  <span className="ctw-ico" aria-hidden="true">{r.icon}</span>
+                  <h3>{r.title}</h3>
+                  <p>{r.desc}</p>
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>

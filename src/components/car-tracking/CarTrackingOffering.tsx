@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/car-tracking-system/global'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import { CAPABILITIES } from './data'
@@ -11,7 +12,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * (see the fleet → cut what it costs → prove it in a report), and numbering them
  * is what makes that argument visible instead of leaving three parallel boxes.
  */
-export default function CarTrackingOffering() {
+export default function CarTrackingOffering({ content }: { content?: typeof globalCopy.features } = {}) {
   return (
     <>
       <style>{`
@@ -113,34 +114,35 @@ export default function CarTrackingOffering() {
       <section className="cto">
         <div className="cto-inner">
           <header className="cto-head" data-reveal>
-            <p className="cto-eyebrow">What we offer</p>
-            <h2 className="cto-title">A vehicle tracking system that makes fleet monitoring a walk in the park</h2>
+            <p className="cto-eyebrow">{content?.eyebrow ?? 'What we offer'}</p>
+            <h2 className="cto-title">{content?.heading ?? 'A vehicle tracking system that makes fleet monitoring a walk in the park'}</h2>
             <p className="cto-lead">
-              With LOCATOR fitted, it does not matter what your vehicles are being used for or
-              where they are working — you can see all of it. These are the three reasons it is
-              regarded as the best car tracking device and software in the UAE.
+              {content?.description ?? 'With LOCATOR fitted, it does not matter what your vehicles are being used for or where they are working — you can see all of it. These are the three reasons it is regarded as the best car tracking device and software in the UAE.'}
             </p>
           </header>
 
           <div className="cto-grid">
-            {CAPABILITIES.map((c, i) => (
-              <article key={c.title} className="cto-card" data-reveal data-reveal-delay={i * 110}>
-                <div className="cto-media">
-                  <span className="cto-num">{String(i + 1).padStart(2, '0')}</span>
-                  <Image src={c.img} alt={c.alt} width={1143} height={863} sizes="(max-width: 940px) 92vw, 360px" />
-                </div>
-                <div className="cto-body">
-                  <h3>{c.title}</h3>
-                  <p>{c.desc}</p>
-                  <Link href={c.href} className="cto-link">
-                    Read details
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
-                  </Link>
-                </div>
-              </article>
-            ))}
+            {CAPABILITIES.map((item, i) => {
+              const c = { ...item, ...content?.items[i] }
+              return (
+                <article key={c.title} className="cto-card" data-reveal data-reveal-delay={i * 110}>
+                  <div className="cto-media">
+                    <span className="cto-num">{String(i + 1).padStart(2, '0')}</span>
+                    <Image src={c.img} alt={c.alt} width={1143} height={863} sizes="(max-width: 940px) 92vw, 360px" />
+                  </div>
+                  <div className="cto-body">
+                    <h3>{c.title}</h3>
+                    <p>{c.desc}</p>
+                    <Link href={c.href} className="cto-link">
+                      {content ? 'Read Details' : 'Read details'}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                    </Link>
+                  </div>
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>

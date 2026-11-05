@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/vehicle-tracking-system/global'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
@@ -25,7 +26,7 @@ const PROOF = [
  * An isometric city panel sits opposite the headline — it says "everything on
  * one map" before a single line of copy is read.
  */
-export default function VehicleTrackingHero() {
+export default function VehicleTrackingHero({ content }: { content?: typeof globalCopy.hero } = {}) {
   return (
     <>
       <style>{`
@@ -139,22 +140,19 @@ export default function VehicleTrackingHero() {
               <span aria-current="page">Vehicle Tracking System</span>
             </nav>
 
-            <p className="vth-eyebrow vth-anim" style={{ '--d': '70ms' } as React.CSSProperties}>
-              Vehicle tracking · United Arab Emirates
-            </p>
+            <p className="vth-eyebrow vth-anim" style={{ '--d': '70ms' } as React.CSSProperties}>{content?.eyebrow ?? 'Vehicle tracking · United Arab Emirates'}</p>
 
             <h1 className="vth-title vth-anim" style={{ '--d': '140ms' } as React.CSSProperties}>
-              The best <em>vehicle tracking system</em> in the UAE
+              {content?.heading ?? <>The best <em>vehicle tracking system</em> in the UAE</>}
             </h1>
 
             <p className="vth-lead vth-anim" style={{ '--d': '210ms' } as React.CSSProperties}>
-              Manage your vehicles with one click today. Every car, van, truck and
-              asset you own — live on a single screen, from Dubai to every other Emirate.
+              {content?.description ?? 'Manage your vehicles with one click today. Every car, van, truck and asset you own — live on a single screen, from Dubai to every other Emirate.'}
             </p>
 
             <div className="vth-actions vth-anim" style={{ '--d': '280ms' } as React.CSSProperties}>
               <Link href="/get-a-quote" className="vth-btn vth-btn--primary">
-                Get a free quote
+                {content ? 'Get a Free Quote' : 'Get a free quote'}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
@@ -163,12 +161,12 @@ export default function VehicleTrackingHero() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="9" /><path d="M10 8.5l6 3.5-6 3.5z" />
                 </svg>
-                Get a free demo
+                {content ? 'Get a Free Demo' : 'Get a free demo'}
               </Link>
             </div>
 
             <div className="vth-proof vth-anim" style={{ '--d': '350ms' } as React.CSSProperties}>
-              <p className="vth-proof-label">Trusted by fleets across the Emirates</p>
+              <p className="vth-proof-label">{content?.supporting ?? 'Trusted by fleets across the Emirates'}</p>
               <div className="vth-proof-row">
                 {PROOF.map(p => (
                   <Image key={p.name} src={p.src} alt={p.name} width={160} height={60} sizes="160px" />

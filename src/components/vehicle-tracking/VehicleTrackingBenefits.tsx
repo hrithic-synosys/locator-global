@@ -11,7 +11,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * and a list of five bare assertions is the part of an old brochure page that
  * ages worst. The claims are unchanged; they are just given something to stand on.
  */
-export default function VehicleTrackingBenefits() {
+export default function VehicleTrackingBenefits({ content }: { content?: { eyebrow: string; heading: string; description: string; items: { title: string; desc: string }[] } } = {}) {
   return (
     <>
       <style>{`
@@ -96,14 +96,12 @@ export default function VehicleTrackingBenefits() {
       <section className="vtb">
         <div className="vtb-inner">
           <div data-reveal="right">
-            <p className="vtb-eyebrow">The payoff</p>
-            <h2 className="vtb-title">Benefits of having a tracking system for vehicles</h2>
-            <p className="vtb-lead">
-              Some of the changes operators notice first, in the order they usually notice them.
-            </p>
+            <p className="vtb-eyebrow">{content?.eyebrow ?? 'The payoff'}</p>
+            <h2 className="vtb-title">{content?.heading ?? 'Benefits of having a tracking system for vehicles'}</h2>
+            <p className="vtb-lead">{content?.description ?? 'Some of the changes operators notice first, in the order they usually notice them.'}</p>
 
             <ul className="vtb-list">
-              {BENEFIT_POINTS.map(b => (
+              {(content?.items ?? BENEFIT_POINTS).map(b => (
                 <li key={b.title} className="vtb-item">
                   <span className="vtb-tick" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -129,17 +127,19 @@ export default function VehicleTrackingBenefits() {
                 sizes="(max-width: 940px) 92vw, 44vw"
               />
             </div>
-            <div className="vtb-badge">
-              <span className="vtb-badge-ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.2 1.9" />
-                </svg>
-              </span>
-              <div>
-                <b>Departure & arrival</b>
-                <span>Logged for every trip</span>
+            {!content && (
+              <div className="vtb-badge">
+                <span className="vtb-badge-ico" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.2 1.9" />
+                  </svg>
+                </span>
+                <div>
+                  <b>Departure & arrival</b>
+                  <span>Logged for every trip</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>

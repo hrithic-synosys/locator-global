@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/car-tracking-system/global'
 import Image from 'next/image'
 import { OUTCOMES } from './data'
 
@@ -10,7 +11,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * short lines in one column is a wall, and splitting them lets the whole set sit
  * next to the image at the same height instead of running past it.
  */
-export default function CarTrackingBenefits() {
+export default function CarTrackingBenefits({ content }: { content?: typeof globalCopy.returnSection } = {}) {
   return (
     <>
       <style>{`
@@ -90,15 +91,14 @@ export default function CarTrackingBenefits() {
       <section className="ctb">
         <div className="ctb-inner">
           <div data-reveal="right">
-            <p className="ctb-eyebrow">The return</p>
-            <h2 className="ctb-title">How your fleet benefits, in Dubai and every other Emirate</h2>
+            <p className="ctb-eyebrow">{content?.eyebrow ?? 'The return'}</p>
+            <h2 className="ctb-title">{content?.heading ?? 'How your fleet benefits, in Dubai and every other Emirate'}</h2>
             <p className="ctb-lead">
-              From Abu Dhabi to Sharjah and across the Northern Emirates, these are the
-              changes operators report once LOCATOR is running on their vehicles.
+              {content?.description ?? 'From Abu Dhabi to Sharjah and across the Northern Emirates, these are the changes operators report once LOCATOR is running on their vehicles.'}
             </p>
 
             <ul className="ctb-list">
-              {OUTCOMES.map(o => (
+              {(content?.items ?? OUTCOMES).map(o => (
                 <li key={o}>
                   <span className="ctb-check" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
@@ -121,17 +121,19 @@ export default function CarTrackingBenefits() {
                 sizes="(max-width: 940px) 92vw, 46vw"
               />
             </div>
-            <div className="ctb-badge">
-              <span className="ctb-badge-ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 17l6-6 4 4 8-8" /><path d="M21 7v5h-5" />
-                </svg>
-              </span>
-              <div>
-                <b>Up to 20%</b>
-                <span>Lower fuel spend after year one</span>
+            {!content && (
+              <div className="ctb-badge">
+                <span className="ctb-badge-ico" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 17l6-6 4 4 8-8" /><path d="M21 7v5h-5" />
+                  </svg>
+                </span>
+                <div>
+                  <b>Up to 20%</b>
+                  <span>Lower fuel spend after year one</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>

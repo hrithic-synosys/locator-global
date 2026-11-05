@@ -14,7 +14,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * lift them out of it — the same layered move the hero panel uses, and it means
  * the transition between two full-width bands is an event rather than a seam.
  */
-export default function CarTrackingQuote() {
+export default function CarTrackingQuote({ content }: { content?: { items: { title: string; desc: string }[]; supporting: string } } = {}) {
   return (
     <>
       <style>{`
@@ -33,6 +33,7 @@ export default function CarTrackingQuote() {
           mask-image: radial-gradient(ellipse 70% 90% at 50% 0%, #000, transparent 76%);
         }
 
+        .ctq-supporting { font-size: var(--f-16); line-height: 1.65; }
         .ctq-quote {
           position: relative; max-width: var(--w-900); margin: 0 auto; text-align: center;
         }
@@ -105,7 +106,7 @@ export default function CarTrackingQuote() {
 
       <section className="ctq">
         <div className="ctq-band">
-          <figure className="ctq-quote" data-reveal>
+          {content ? <p className="ctq-quote ctq-supporting" data-reveal>{content.supporting}</p> : <figure className="ctq-quote" data-reveal>
             <svg className="ctq-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M9.5 5C6.5 6.7 4.6 9.6 4.6 13.2c0 3.4 2 5.8 4.7 5.8 2.3 0 4-1.7 4-3.9 0-2.1-1.5-3.7-3.5-3.7-.4 0-.9.1-1 .1-.3 0-.4-.2-.3-.5.5-1.6 2-3.2 3.7-4.2.4-.2.5-.5.3-.8L11.4 5c-.3-.4-.6-.4-1.9 0zm9.1 0c-3 1.7-4.9 4.6-4.9 8.2 0 3.4 2 5.8 4.7 5.8 2.3 0 4-1.7 4-3.9 0-2.1-1.5-3.7-3.5-3.7-.4 0-.9.1-1 .1-.3 0-.4-.2-.3-.5.5-1.6 2-3.2 3.7-4.2.4-.2.5-.5.3-.8L20.5 5c-.3-.4-.6-.4-1.9 0z" />
             </svg>
@@ -115,23 +116,26 @@ export default function CarTrackingQuote() {
               business starts growing again, and revenue with it.
             </blockquote>
             <footer>Why LOCATOR exists</footer>
-          </figure>
+          </figure>}
         </div>
 
         <div className="ctq-cards">
-          {USE_CASES.map((u, i) => (
-            <article key={u.title} className="ctq-card" data-reveal data-reveal-delay={i * 110}>
-              <span className="ctq-ico" aria-hidden="true">{u.icon}</span>
-              <h3>{u.title}</h3>
-              <p>{u.desc}</p>
-              <Link href={u.href} className="ctq-link">
-                Read details
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </Link>
-            </article>
-          ))}
+          {USE_CASES.map((item, i) => {
+            const u = { ...item, ...content?.items[i] }
+            return (
+              <article key={u.title} className="ctq-card" data-reveal data-reveal-delay={i * 110}>
+                <span className="ctq-ico" aria-hidden="true">{u.icon}</span>
+                <h3>{u.title}</h3>
+                <p>{u.desc}</p>
+                <Link href={u.href} className="ctq-link">
+                  {content ? 'Read Details' : 'Read details'}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </Link>
+              </article>
+            )
+          })}
         </div>
       </section>
     </>

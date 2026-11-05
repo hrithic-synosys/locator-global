@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/vehicle-tracking-system/global'
 import Link from '@/components/country/CountryLink'
 import { FEATURES } from './data'
 
@@ -10,7 +11,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * element, so the icon, the hover rule and the link all pick up one value and a
  * fourth card only needs a colour in the data file — no new CSS.
  */
-export default function VehicleTrackingFeatures() {
+export default function VehicleTrackingFeatures({ content }: { content?: typeof globalCopy.features } = {}) {
   return (
     <>
       <style>{`
@@ -103,34 +104,36 @@ export default function VehicleTrackingFeatures() {
       <section className="vtf">
         <div className="vtf-inner">
           <header className="vtf-head" data-reveal>
-            <p className="vtf-eyebrow">What it does</p>
-            <h2 className="vtf-title">Three things every tracking system should get right</h2>
+            <p className="vtf-eyebrow">{content?.eyebrow ?? 'What it does'}</p>
+            <h2 className="vtf-title">{content?.heading ?? 'Three things every tracking system should get right'}</h2>
             <p className="vtf-lead">
-              Most vehicle tracking software can put a dot on a map. These are the parts that
-              decide whether it is still earning its keep a year later.
+              {content?.description ?? 'Most vehicle tracking software can put a dot on a map. These are the parts that decide whether it is still earning its keep a year later.'}
             </p>
           </header>
 
           <div className="vtf-grid">
-            {FEATURES.map((f, i) => (
-              <article
-                key={f.title}
-                className="vtf-card"
-                data-reveal
-                data-reveal-delay={i * 110}
-                style={{ '--accent': f.accent, '--tint': f.tint } as React.CSSProperties}
-              >
-                <span className="vtf-ico" aria-hidden="true">{f.icon}</span>
-                <h3>{f.title}</h3>
-                <p>{f.desc}</p>
-                <Link href={f.href} className="vtf-link">
-                  Read details
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </Link>
-              </article>
-            ))}
+            {FEATURES.map((item, i) => {
+              const f = { ...item, ...content?.items[i] }
+              return (
+                <article
+                  key={f.title}
+                  className="vtf-card"
+                  data-reveal
+                  data-reveal-delay={i * 110}
+                  style={{ '--accent': f.accent, '--tint': f.tint } as React.CSSProperties}
+                >
+                  <span className="vtf-ico" aria-hidden="true">{f.icon}</span>
+                  <h3>{f.title}</h3>
+                  <p>{f.desc}</p>
+                  <Link href={f.href} className="vtf-link">
+                    {content ? 'Read Details' : 'Read details'}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </Link>
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>

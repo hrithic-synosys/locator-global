@@ -49,7 +49,7 @@ function StatCard({ stat, start, index, immediate = false }: { stat: typeof STAT
   )
 }
 
-export default function WhoWeAreNumbers({ content }: { content?: { heading: string; description: string; showStats: boolean } }) {
+export default function WhoWeAreNumbers({ content }: { content?: { heading: string; description?: string; showStats: boolean; placeholders?: boolean; descriptions?: string[] } }) {
   const ref = useRef<HTMLDivElement>(null)
   const [start, setStart] = useState(false)
 
@@ -137,11 +137,11 @@ export default function WhoWeAreNumbers({ content }: { content?: { heading: stri
             LOCATOR in Numbers
           </span>
           <h2 className="wwn-h2">{content ? content.heading : <>Trusted at scale across <em>the UAE.</em></>}</h2>
-          {content && <p style={{ margin: '18px 0 0', color: '#6b7280', lineHeight: 1.7 }}>{content.description}</p>}
+          {content?.description && <p style={{ margin: '18px 0 0', color: '#6b7280', lineHeight: 1.7 }}>{content.description}</p>}
         </div>
 
         {(!content || content.showStats) && <div className="wwn-grid" ref={ref} data-in={content ? true : start}>
-          {STATS.map((s, i) => <StatCard key={s.label} stat={s} start={start} index={i} immediate={!!content} />)}
+          {STATS.map((s, i) => <StatCard key={s.label} stat={{ ...s, target: content?.placeholders ? 0 : s.target, desc: content?.descriptions?.[i] ?? s.desc }} start={start} index={i} immediate={!!content} />)}
         </div>}
       </section>
     </>

@@ -50,7 +50,7 @@ const HOVER_RATE = 0.28;
 /** How fast the rate eases toward its target. Per-frame lerp factor. */
 const RATE_EASE = 0.12;
 
-export default function LogoMarquee({ speed1 = 92, speed2 = 102, speed3 = 112 }) {
+export default function LogoMarquee({ speed1 = 92, speed2 = 102, speed3 = 112, heading = 'The companies you use, use LOCATOR', description = '' }) {
   const sectionRef = useRef(null);
   const innerRef = useRef(null);
   const spotRef = useRef(null);
@@ -165,7 +165,8 @@ export default function LogoMarquee({ speed1 = 92, speed2 = 102, speed3 = 112 })
       {/* Section heading */}
       <div className="lm__header">
         <p className="lm__eyebrow">Trusted by industry leaders</p>
-        <h2 className="lm__title">The companies you use, use LOCATOR</h2>
+        <h2 className="lm__title">{heading}</h2>
+        {description && <p className="lm__description">{description}</p>}
       </div>
 
       <div className="lm__inner" ref={innerRef}>
@@ -242,6 +243,7 @@ export default function LogoMarquee({ speed1 = 92, speed2 = 102, speed3 = 112 })
           margin: 0;
         }
 
+        .lm__description { margin: 12px auto 0; max-width: 62ch; color: #6e6e73; line-height: 1.65; }
         .lm__title {
           margin: clamp(10px, 1.1vw, 16px) 0 0;
           font-size: clamp(20px, 2.2vw, 32px);

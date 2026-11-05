@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/car-tracking-system/global'
 import Image from 'next/image'
 import Link from '@/components/country/CountryLink'
 import SoftwareNavbar from '@/components/software/SoftwareNavbar'
@@ -12,7 +13,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * The panel is an illustration rather than a screenshot: it stays legible at any
  * width and does not date the moment the UI changes.
  */
-export default function CarTrackingHero() {
+export default function CarTrackingHero({ content }: { content?: typeof globalCopy.hero } = {}) {
   return (
     <>
       <style>{`
@@ -139,22 +140,19 @@ export default function CarTrackingHero() {
               <span aria-current="page">Car Tracking System</span>
             </nav>
 
-            <p className="cts-eyebrow cts-anim" style={{ '--d': '70ms' } as React.CSSProperties}>
-              Car tracking · United Arab Emirates
-            </p>
+            <p className="cts-eyebrow cts-anim" style={{ '--d': '70ms' } as React.CSSProperties}>{content?.eyebrow ?? 'Car tracking · United Arab Emirates'}</p>
 
             <h1 className="cts-title cts-anim" style={{ '--d': '140ms' } as React.CSSProperties}>
-              Unrestricted access to your <em>car tracking system</em>
+              {content?.heading ?? <>Unrestricted access to your <em>car tracking system</em></>}
             </h1>
 
             <p className="cts-lead cts-anim" style={{ '--d': '210ms' } as React.CSSProperties}>
-              Be in control of every vehicle you own. LOCATOR puts your whole fleet on one live
-              map — wherever it is working, and whatever it is working on.
+              {content?.description ?? 'Be in control of every vehicle you own. LOCATOR puts your whole fleet on one live map — wherever it is working, and whatever it is working on.'}
             </p>
 
             <div className="cts-actions cts-anim" style={{ '--d': '280ms' } as React.CSSProperties}>
               <Link href="/get-a-quote" className="cts-btn cts-btn--primary">
-                Get a free quote
+                {content ? 'Get a Free Quote' : 'Get a free quote'}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
@@ -163,12 +161,12 @@ export default function CarTrackingHero() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="9" /><path d="M10 8.5l6 3.5-6 3.5z" />
                 </svg>
-                Get a free demo
+                {content ? 'Get a Free Demo' : 'Get a free demo'}
               </Link>
             </div>
 
             <ul className="cts-trust cts-anim" style={{ '--d': '350ms' } as React.CSSProperties}>
-              {['No long-term lock-in', 'Installed across the UAE', '24/7 local support'].map(t => (
+              {(content?.trust ?? ['No long-term lock-in', 'Installed across the UAE', '24/7 local support']).map(t => (
                 <li key={t}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M20 6 9 17l-5-5" />

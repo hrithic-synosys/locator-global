@@ -43,6 +43,7 @@ next-env.d.ts
 # documentation files
 *.md
 !README.md
+!/Global.md
 
 # IDE
 .vscode/

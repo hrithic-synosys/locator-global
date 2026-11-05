@@ -1,3 +1,4 @@
+import type { globalCopy } from '@/content/pages/vehicle-tracking-system/global'
 import Image from 'next/image'
 import { WHY_POINTS } from './data'
 
@@ -14,7 +15,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * Image sits on the left, copy on the right, mirroring the benefits section
  * further down so the two alternate rather than stacking the same way twice.
  */
-export default function VehicleTrackingWhy() {
+export default function VehicleTrackingWhy({ content }: { content?: typeof globalCopy.why } = {}) {
   return (
     <>
       <style>{`
@@ -113,30 +114,30 @@ export default function VehicleTrackingWhy() {
                 sizes="(max-width: 940px) 92vw, 46vw"
               />
             </div>
-            <div className="vtw-badge">
-              <span className="vtw-badge-ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
-              </span>
-              <div>
-                <b>100% accurate</b>
-                <span>Every report, every time</span>
+            {!content && (
+              <div className="vtw-badge">
+                <span className="vtw-badge-ico" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                </span>
+                <div>
+                  <b>100% accurate</b>
+                  <span>Every report, every time</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="vtw-copy" data-reveal="left" data-reveal-delay={100}>
-            <p className="vtw-eyebrow">Why Locator</p>
-            <h2 className="vtw-title">Why choose Locator over other GPS tracking companies</h2>
+            <p className="vtw-eyebrow">{content?.eyebrow ?? 'Why Locator'}</p>
+            <h2 className="vtw-title">{content?.heading ?? 'Why choose Locator over other GPS tracking companies'}</h2>
             <p className="vtw-lead">
-              Compared against the other GPS tracking applications operating in the UAE,
-              five things consistently decide it — and all five are things you feel every
-              working day, not on the sales call.
+              {content?.description ?? 'Compared against the other GPS tracking applications operating in the UAE, five things consistently decide it — and all five are things you feel every working day, not on the sales call.'}
             </p>
 
             <ul className="vtw-list">
-              {WHY_POINTS.map((p, i) => (
+              {(content?.items ?? WHY_POINTS).map((p, i) => (
                 <li key={p} className="vtw-item">
                   <span className="vtw-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                   <span>{p}</span>
