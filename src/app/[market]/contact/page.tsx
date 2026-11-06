@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import ScrollReveal from '@/components/software/ScrollReveal'
 import ContactHero from '@/components/contact/ContactHero'
 import ContactOffices from '@/components/contact/ContactOffices'
+import GlobalContactOffices from '@/components/contact/GlobalContactOffices'
 import ContactChannels from '@/components/contact/ContactChannels'
 import ContactSocial from '@/components/contact/ContactSocial'
 import ContactForm from '@/components/contact/ContactForm'
@@ -24,12 +25,13 @@ const pageMetadata: Metadata = {
   },
 }
 
-export default function ContactPage() {
+export default async function ContactPage({ params }: { params: Promise<{ market: CountryCode }> }) {
+  const { market } = await params
   return (
     <main style={{ background: '#ffffff', minHeight: '100vh', overflowX: 'clip' }}>
       <ScrollReveal />
       <ContactHero />
-      <ContactOffices />
+      {market === 'global' ? <GlobalContactOffices /> : <ContactOffices />}
       <ContactForm />
       <ContactPresence />
       <ContactChannels />
