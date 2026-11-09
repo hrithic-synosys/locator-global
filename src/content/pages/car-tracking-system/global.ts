@@ -2,7 +2,7 @@ export const globalCopy = {
   "hero": {
     "eyebrow": "Car Tracking | UAE & GCC",
     "heading": "Smart Car Tracking System for Businesses Across the UAE & GCC",
-    "description": "Keep track of your cars wherever business takes you. LOCATOR's GPS car tracking system lets you check live vehicle locations, review journeys and monitor driving activity from one easy-to-use platform. Manage your vehicles with better visibility and control across the UAE and GCC.",
+    "description": "Keep track of your cars wherever business takes you. LOCATOR's GPS car tracking system lets you check live vehicle locations, review journeys and monitor driving activity from one easy-to-use platform. Manage your vehicles with better visibility and control across the GCC.",
     "trust": [
       "No long-term lock-in options",
       "Installation support available",
@@ -127,7 +127,7 @@ export const globalCopy = {
     "eyebrow": "Fleet Intelligence",
     "heading": "Insights from the Road",
     "paragraphs": [
-      "Explore useful guides and articles about car tracking, GPS technology, vehicle safety, fuel management and fleet operations for businesses across the UAE and GCC."
+      "Explore useful guides and articles about car tracking, GPS technology, vehicle safety, fuel management and fleet operations for businesses across the GCC."
     ],
     "allArticlesLabel": "All Articles"
   },
@@ -231,7 +231,7 @@ export const globalCopy = {
     "eyebrow": "Get Started Today",
     "heading": "Keep Your Cars Connected with LOCATOR",
     "paragraphs": [
-      "Know where your cars are, understand how they are being used and manage your vehicles with greater confidence. Discover a GPS car tracking solution designed around your business requirements across the UAE and GCC."
+      "Know where your cars are, understand how they are being used and manage your vehicles with greater confidence. Discover a GPS car tracking solution designed around your business requirements across the GCC."
     ],
     "primaryCta": {
       "label": "Get a Quote",

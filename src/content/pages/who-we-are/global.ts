@@ -33,7 +33,7 @@ export const globalWhoWeAre = {
       "Since 2009, LOCATOR has continued to develop its technology around one important idea: businesses need better ways to manage their vehicles, assets and people.",
       "What started with GPS vehicle tracking has grown into a connected platform covering fleet management, asset tracking, driver task management, video telematics and IoT solutions.",
       "As technology and business needs have evolved, we have continued to expand our capabilities to help organisations gain better visibility, understand daily operations and manage resources more effectively.",
-      "Our journey is still moving forward. We remain focused on making connected technology practical, useful and accessible to businesses across the UAE and GCC."
+      "Our journey is still moving forward. We remain focused on making connected technology practical, useful and accessible to businesses across the GCC."
     ]
   },
   "services": {

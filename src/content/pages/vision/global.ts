@@ -2,7 +2,7 @@ export const globalVision = {
   "hero": {
     "label": "Our Vision",
     "heading": "Building a Smarter, More Connected World",
-    "description": "We envision a future where intelligent GPS tracking, IoT and AI-powered technology connect vehicles, assets and business operations. Our goal is to turn real-time data into meaningful insights that support safer mobility, smarter decisions and more efficient businesses across the UAE and GCC."
+    "description": "We envision a future where intelligent GPS tracking, IoT and AI-powered technology connect vehicles, assets and business operations. Our goal is to turn real-time data into meaningful insights that support safer mobility, smarter decisions and more efficient businesses across the GCC."
   },
   "statement": {
     "heading": "One Million IoT Devices. One Connected World.",

@@ -1,7 +1,7 @@
 export const globalMission = {
   "hero": {
     "heading": "Creating Technology for Smarter Business Operations",
-    "description": "We create intelligent GPS tracking, AI and IoT solutions that help businesses operate with greater visibility, control and confidence. Our mission is to simplify complex operations, improve efficiency and support smarter business decisions across the UAE and GCC.",
+    "description": "We create intelligent GPS tracking, AI and IoT solutions that help businesses operate with greater visibility, control and confidence. Our mission is to simplify complex operations, improve efficiency and support smarter business decisions across the GCC.",
     "buttons": [
       "Talk to Our Team",
       "Explore the Platform"
@@ -54,7 +54,7 @@ export const globalMission = {
   "cta": {
     "label": "Get Started Today",
     "heading": "Put Your Whole Fleet on One Platform",
-    "description": "Discover how LOCATOR's GPS tracking, fleet telematics and IoT solutions can help your business improve visibility and manage operations across the UAE and GCC.",
+    "description": "Discover how LOCATOR's GPS tracking, fleet telematics and IoT solutions can help your business improve visibility and manage operations across the GCC.",
     "buttons": [
       "Get a Quote",
       "Book a Live Demo"

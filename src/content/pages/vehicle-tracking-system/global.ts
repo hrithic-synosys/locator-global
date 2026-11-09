@@ -3,7 +3,7 @@ export const globalCopy = {
     "eyebrow": "Vehicle Tracking | UAE & GCC",
     "heading": "Reliable Vehicle Tracking Systems for Businesses in the UAE & GCC",
     "description": "Manage your cars, vans, trucks and business vehicles from one easy-to-use platform. LOCATOR's GPS vehicle tracking system helps you check live locations, monitor vehicle activity and stay informed about your fleet wherever business takes you.",
-    "supporting": "Helping businesses manage vehicles and fleet operations across the UAE and GCC."
+    "supporting": "Helping businesses manage vehicles and fleet operations across the GCC."
   },
   "features": {
     "eyebrow": "What It Does",
@@ -193,7 +193,7 @@ export const globalCopy = {
     "eyebrow": "Get Started Today",
     "heading": "Put Your Whole Fleet on One Platform",
     "paragraphs": [
-      "Manage your vehicles with GPS tracking, live location updates and useful fleet insights. Talk to LOCATOR about a vehicle tracking solution that suits your business across the UAE and GCC."
+      "Manage your vehicles with GPS tracking, live location updates and useful fleet insights. Talk to LOCATOR about a vehicle tracking solution that suits your business across the GCC."
     ],
     "primaryCta": {
       "label": "Get a Quote",
