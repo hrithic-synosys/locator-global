@@ -11,7 +11,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * and a list of five bare assertions is the part of an old brochure page that
  * ages worst. The claims are unchanged; they are just given something to stand on.
  */
-export default function VehicleTrackingBenefits({ content }: { content?: { eyebrow: string; heading: string; description: string; items: { title: string; desc: string }[] } } = {}) {
+export default function VehicleTrackingBenefits({ content }: { content?: { eyebrow: string; heading: string; description: string; items: { title: string; desc: string }[]; badge?: { title: string; text: string } } } = {}) {
   return (
     <>
       <style>{`
@@ -127,7 +127,7 @@ export default function VehicleTrackingBenefits({ content }: { content?: { eyebr
                 sizes="(max-width: 940px) 92vw, 44vw"
               />
             </div>
-            {!content && (
+            {(!content || content.badge) && (
               <div className="vtb-badge">
                 <span className="vtb-badge-ico" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -135,8 +135,8 @@ export default function VehicleTrackingBenefits({ content }: { content?: { eyebr
                   </svg>
                 </span>
                 <div>
-                  <b>Departure & arrival</b>
-                  <span>Logged for every trip</span>
+                  <b>{content?.badge?.title ?? 'Departure & arrival'}</b>
+                  <span>{content?.badge?.text ?? 'Logged for every trip'}</span>
                 </div>
               </div>
             )}

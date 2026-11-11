@@ -14,7 +14,7 @@ const EASE = 'cubic-bezier(.22,.61,.36,1)'
  * lift them out of it — the same layered move the hero panel uses, and it means
  * the transition between two full-width bands is an event rather than a seam.
  */
-export default function CarTrackingQuote({ content }: { content?: { items: { title: string; desc: string }[]; supporting: string } } = {}) {
+export default function CarTrackingQuote({ content }: { content?: { items: { title: string; desc: string }[]; supporting: string; linkLabel?: string } } = {}) {
   return (
     <>
       <style>{`
@@ -128,7 +128,7 @@ export default function CarTrackingQuote({ content }: { content?: { items: { tit
                 <h3>{u.title}</h3>
                 <p>{u.desc}</p>
                 <Link href={u.href} className="ctq-link">
-                  {content ? 'Read Details' : 'Read details'}
+                  {content?.linkLabel ?? (content ? 'Read Details' : 'Read details')}
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>

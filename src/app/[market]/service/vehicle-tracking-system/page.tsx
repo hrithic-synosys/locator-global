@@ -56,17 +56,17 @@ export default async function VehicleTrackingSystemPage({ params }: { params: Pr
       <VehicleTrackingFeatures content={content?.features} />
       <WhoWeAreNumbers content={content && { ...content.numbers, showStats: true }} />
       <VehicleTrackingWhy content={content?.why} />
-      {market !== 'global' && <TrackingVoices />}
+      <TrackingVoices content={content?.voices} />
       <VehicleTrackingBenefits content={content?.payoff} />
       <ServiceVideo
         eyebrow={content?.platform.eyebrow ?? ''}
         title={content?.platform.heading ?? 'All your Vehicles, Assets & Staffs on One Software'}
         titleColor="#1360ee"
-        lead={content?.platform.description ?? 'Take control of your whole operation with LOCATOR GPS Tracking'}
+        lead={content ? '' : 'Take control of your whole operation with LOCATOR GPS Tracking'}
         headingMaxWidth="760px"
       />
       <TrackingUseCases content={content?.platform} />
-      <SoftwareBlog market={market} tag={['GPS Tracking', 'Vehicle Maintenance']} />
+      <SoftwareBlog market={market} tag={['GPS Tracking', 'Vehicle Maintenance']} content={content?.blog} />
       <ServiceFAQ content={content?.faq} />
       <SoftwareCTA content={content?.cta} />
       <Footer />

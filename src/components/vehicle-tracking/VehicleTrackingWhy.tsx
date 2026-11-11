@@ -114,7 +114,7 @@ export default function VehicleTrackingWhy({ content }: { content?: typeof globa
                 sizes="(max-width: 940px) 92vw, 46vw"
               />
             </div>
-            {!content && (
+            {(!content || content.badge) && (
               <div className="vtw-badge">
                 <span className="vtw-badge-ico" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -122,8 +122,8 @@ export default function VehicleTrackingWhy({ content }: { content?: typeof globa
                   </svg>
                 </span>
                 <div>
-                  <b>100% accurate</b>
-                  <span>Every report, every time</span>
+                  <b>{content?.badge.title ?? '100% accurate'}</b>
+                  <span>{content?.badge.text ?? 'Every report, every time'}</span>
                 </div>
               </div>
             )}

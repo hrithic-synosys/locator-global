@@ -49,7 +49,7 @@ function StatCard({ stat, start, index, immediate = false }: { stat: typeof STAT
   )
 }
 
-export default function WhoWeAreNumbers({ content }: { content?: { heading: string; description?: string; showStats: boolean; placeholders?: boolean; descriptions?: string[] } }) {
+export default function WhoWeAreNumbers({ content }: { content?: { heading: string; description?: string; showStats: boolean; placeholders?: boolean; descriptions?: string[]; stats?: { value: number; suffix: string; label: string; desc: string }[] } }) {
   const ref = useRef<HTMLDivElement>(null)
   const [start, setStart] = useState(false)
 
@@ -140,8 +140,15 @@ export default function WhoWeAreNumbers({ content }: { content?: { heading: stri
           {content?.description && <p style={{ margin: '18px 0 0', color: '#6b7280', lineHeight: 1.7 }}>{content.description}</p>}
         </div>
 
-        {(!content || content.showStats) && <div className="wwn-grid" ref={ref} data-in={content ? true : start}>
-          {STATS.map((s, i) => <StatCard key={s.label} stat={{ ...s, target: content?.placeholders ? 0 : s.target, desc: content?.descriptions?.[i] ?? s.desc }} start={start} index={i} immediate={!!content} />)}
+        {(!content || content.showStats) && <div className="wwn-grid" ref={ref} data-in={content && !content.stats ? true : start}>
+          {STATS.map((s, i) => {
+            // Approved figures count up like the default set; placeholder copy renders immediately.
+            const custom = content?.stats?.[i]
+            const stat = custom
+              ? { ...s, target: custom.value, suffix: custom.suffix, label: custom.label, desc: custom.desc }
+              : { ...s, target: content?.placeholders ? 0 : s.target, desc: content?.descriptions?.[i] ?? s.desc }
+            return <StatCard key={s.label} stat={stat} start={start} index={i} immediate={!!content && !custom} />
+          })}
         </div>}
       </section>
     </>

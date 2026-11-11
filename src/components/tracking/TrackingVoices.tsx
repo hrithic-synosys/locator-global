@@ -31,7 +31,7 @@ function Stars({ n, size = 14 }: { n: number; size?: number }) {
  * The client marks are real logos, so every tile is white with a hairline —
  * four different brand palettes on a tinted ground would fight each other.
  */
-export default function TrackingVoices() {
+export default function TrackingVoices({ content }: { content?: { eyebrow: string; heading: string; description: string } } = {}) {
   const [lead, ...rest] = VOICES
 
   return (
@@ -181,11 +181,10 @@ export default function TrackingVoices() {
       <section className="ctv">
         <div className="ctv-inner">
           <header className="ctv-head" data-reveal>
-            <p className="ctv-eyebrow">In their words</p>
-            <h2 className="ctv-title">What UAE fleets say after switching</h2>
+            <p className="ctv-eyebrow">{content?.eyebrow ?? 'In their words'}</p>
+            <h2 className="ctv-title">{content?.heading ?? 'What UAE fleets say after switching'}</h2>
             <p className="ctv-lead">
-              Four operators on what changed once every vehicle was on one map — from document
-              expiry to fuel, job scheduling and day-to-day support.
+              {content?.description ?? 'Four operators on what changed once every vehicle was on one map — from document expiry to fuel, job scheduling and day-to-day support.'}
             </p>
           </header>
 

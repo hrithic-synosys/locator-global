@@ -152,7 +152,7 @@ export default function VehicleTrackingHero({ content }: { content?: typeof glob
 
             <div className="vth-actions vth-anim" style={{ '--d': '280ms' } as React.CSSProperties}>
               <Link href="/get-a-quote" className="vth-btn vth-btn--primary">
-                {content ? 'Get a Free Quote' : 'Get a free quote'}
+                {content ? content.primaryCtaLabel : 'Get a free quote'}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
@@ -161,7 +161,7 @@ export default function VehicleTrackingHero({ content }: { content?: typeof glob
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="9" /><path d="M10 8.5l6 3.5-6 3.5z" />
                 </svg>
-                {content ? 'Get a Free Demo' : 'Get a free demo'}
+                {content ? content.secondaryCtaLabel : 'Get a free demo'}
               </Link>
             </div>
 
@@ -179,7 +179,7 @@ export default function VehicleTrackingHero({ content }: { content?: typeof glob
           <div className="vth-art vth-anim" style={{ '--d': '240ms' } as React.CSSProperties}>
             <Image
               src="/services/vehicle-tracking-system/hero.png"
-              alt="Cars, trucks, a boat, a scooter and site machinery pinned across a city on one live map"
+              alt={content?.imageAlt ?? 'Cars, trucks, a boat, a scooter and site machinery pinned across a city on one live map'}
               width={1000}
               height={963}
               sizes="(max-width: 960px) 92vw, 54vw"

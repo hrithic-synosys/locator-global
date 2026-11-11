@@ -51,9 +51,11 @@ export default function ServiceVideo({
           <h2 style={{ margin: 0, fontSize: 'max(clamp(19px,2.2vw,26px), min(1.806vw, 37.7px))', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.015em', color: titleColor }}>
             {title}
           </h2>
-          <p style={{ margin: '16px auto 0', fontSize: 'max(clamp(14px,1.35vw,16px), min(1.111vw, 23.2px))', color: '#6e6e73', lineHeight: 1.6 }}>
-            {lead}
-          </p>
+          {lead && (
+            <p style={{ margin: '16px auto 0', fontSize: 'max(clamp(14px,1.35vw,16px), min(1.111vw, 23.2px))', color: '#6e6e73', lineHeight: 1.6 }}>
+              {lead}
+            </p>
+          )}
         </div>)}
 
         <div data-reveal="zoom" style={{
