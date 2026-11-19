@@ -60,7 +60,7 @@ export type ArticleSummary = {
 export type CmsCategory = {
   id: string;
   name: string;
-  slug: "blog";
+  slug: "blog" | "company-news";
   description?: string | null;
   sortOrder?: number;
   allowedFormats?: string[];
@@ -100,3 +100,14 @@ export type Pagination = {
 };
 export type CmsList = { items: CmsCard[]; pagination: Pagination };
 export type CmsSlug = { slug: string; market: CountryCode; updatedAt: string };
+
+/** Company News items are written articles or videos (videoUrl is set for videos). */
+export type CompanyNewsFormat = "article" | "video";
+export type CompanyNewsCard = Omit<CmsCard, "format" | "category"> & {
+  format: CompanyNewsFormat;
+  category: CmsCategory & { slug: "company-news" };
+  videoUrl: string | null;
+};
+export type CompanyNewsDetail = CompanyNewsCard &
+  Omit<CmsDetail, keyof CmsCard>;
+export type CompanyNewsList = { items: CompanyNewsCard[]; pagination: Pagination };

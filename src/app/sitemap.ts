@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 import { siteUrl } from "@/config/site";
 import { DEVICES } from "@/components/service/tracking-devices/devices-data";
 import { JOBS } from "@/components/about/career/jobs-data";
-import { getBlogSlugs } from "@/lib/cms-blog/client";
-import { blogHref } from "@/lib/cms-blog/urls";
+import { getBlogSlugs, getCompanyNewsSlugs } from "@/lib/cms-blog/client";
+import { blogHref, companyNewsHref } from "@/lib/cms-blog/urls";
 import { INDUSTRIES } from "@/components/industries/industries-data";
 import { countries, countryCodes } from "@/config/countries";
 import { canIndex, hasIndexableMarkets } from "@/config/indexing";
@@ -25,6 +25,7 @@ const ROUTES: { path: string; priority: number }[] = [
   { path: "/about/core-values", priority: 0.8 },
   { path: "/about/newsroom", priority: 0.6 },
   { path: "/about/newsroom/blog", priority: 0.8 },
+  { path: "/about/newsroom/company-news", priority: 0.7 },
   { path: "/about/career", priority: 0.6 },
   ...JOBS.map((j) => ({ path: `/about/career/${j.slug}`, priority: 0.5 })),
   { path: "/software", priority: 0.9 },
@@ -74,8 +75,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         )
     )
   ).flat();
+  // Company News is a secondary feed: an outage in one market omits only its
+  // stories for this request instead of failing the whole sitemap.
+  const companyNews = (
+    await Promise.all(
+      countryCodes
+        .filter((market) => countries[market].enabled)
+        .map(async (market) => {
+          let items: Awaited<ReturnType<typeof getCompanyNewsSlugs>>;
+          try {
+            items = await getCompanyNewsSlugs(market);
+          } catch {
+            return [];
+          }
+          return items
+            .filter((post) =>
+              canIndex(market, "/about/newsroom/company-news/" + post.slug)
+            )
+            .map((post) => ({
+              url: siteUrl + companyNewsHref(market, post.slug),
+              lastModified: post.updatedAt,
+              changeFrequency: "weekly" as const,
+              priority: 0.6,
+            }));
+        })
+    )
+  ).flat();
   return [
     ...blogs,
+    ...companyNews,
     ...countryCodes.flatMap((country) =>
       [
         ...ROUTES,

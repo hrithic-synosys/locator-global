@@ -28,11 +28,12 @@ export function countryPath(href: string, country: CountryCode): string {
   return prefix + (path === '/' ? '' : path.startsWith('/?') || path.startsWith('/#') ? path.slice(1) : path);
 }
 
-/** Articles are independent across markets; switch to the target blog index. */
+/** Articles are independent across markets; switch to the target collection index. */
 export function switchCountryPath(href: string, country: CountryCode): string {
   const path = stripCountry(href);
   if (path.split(/[?#]/)[0] === globalRegulatoryPath) return countryPath(path.replace(globalRegulatoryPath, '/regulatory'), country);
-  if (/^\/about\/newsroom\/blog\/[^/?#]+/.test(path)) return countryPath("/about/newsroom/blog", country);
-  if (/^\/about\/newsroom(?:\/blog)?(?:[?#]|$)/.test(path)) return countryPath(path.split(/[?#]/)[0], country);
+  const article = /^\/about\/newsroom\/(blog|company-news)\/[^/?#]+/.exec(path);
+  if (article) return countryPath(`/about/newsroom/${article[1]}`, country);
+  if (/^\/about\/newsroom(?:\/(?:blog|company-news))?(?:[?#]|$)/.test(path)) return countryPath(path.split(/[?#]/)[0], country);
   return countryPath(path, country);
 }

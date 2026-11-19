@@ -1,23 +1,34 @@
 import type { Metadata } from "next";
-import type { CmsDetail } from "./types";
-import { blogBase, blogHref, newsroomHref } from "./urls";
+import type { CmsDetail, CompanyNewsDetail } from "./types";
+import { collectionBase, collectionHref, newsroomHref } from "./urls";
+import { CMS_COLLECTIONS, type CmsCollection } from "./collections";
 import { countries } from "../../config/countries";
 import { canIndex } from "../../config/indexing";
 import { countryPath } from "../country/paths";
 import { siteConfig, siteUrl } from "../../config/site";
 import { CmsPayloadError } from "./validation";
-export const publicArticleUrl = (market: CmsDetail["market"], slug: string) =>
-  new URL(blogHref(market, slug), siteUrl).href;
+type PublicDetail = CmsDetail | CompanyNewsDetail;
+export const publicArticleUrl = (
+  market: CmsDetail["market"],
+  slug: string,
+  collection: CmsCollection = "blogs"
+) => new URL(collectionHref(market, collection, slug), siteUrl).href;
 export const absoluteImage = (url: string) => new URL(url, siteUrl).href;
 /** Mismatched canonicals need editorial review, rather than silent rewriting. */
-export function articleCanonical(post: CmsDetail): string {
-  const expected = publicArticleUrl(post.market, post.slug);
+export function articleCanonical(
+  post: PublicDetail,
+  collection: CmsCollection = "blogs"
+): string {
+  const expected = publicArticleUrl(post.market, post.slug, collection);
   if (post.seo.canonicalUrl && post.seo.canonicalUrl !== expected)
     throw new CmsPayloadError();
   return expected;
 }
-export function articleMetadata(post: CmsDetail): Metadata {
-  const url = articleCanonical(post),
+export function articleMetadata(
+  post: PublicDetail,
+  collection: CmsCollection = "blogs"
+): Metadata {
+  const url = articleCanonical(post, collection),
     title = post.seo.title || post.title,
     description = post.seo.description || post.excerpt;
   const image = post.seo.ogImage || post.banner?.src;
@@ -37,7 +48,9 @@ export function articleMetadata(post: CmsDetail): Metadata {
     : [];
   const ready = canIndex(
     post.market,
-    blogHref(post.market, post.slug).slice(countries[post.market].prefix.length)
+    collectionHref(post.market, collection, post.slug).slice(
+      countries[post.market].prefix.length
+    )
   );
   return {
     title,
@@ -70,14 +83,17 @@ export function articleMetadata(post: CmsDetail): Metadata {
     },
   };
 }
-export function articleJsonLd(post: CmsDetail) {
-  const url = articleCanonical(post),
+export function articleJsonLd(
+  post: PublicDetail,
+  collection: CmsCollection = "blogs"
+) {
+  const url = articleCanonical(post, collection),
     image = post.seo.ogImage || post.banner?.src;
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "BlogPosting",
+        "@type": collection === "blogs" ? "BlogPosting" : "NewsArticle",
         "@id": url + "#article",
         headline: post.title,
         description: post.seo.description || post.excerpt,
@@ -103,7 +119,10 @@ export function articleJsonLd(post: CmsDetail) {
         itemListElement: [
           { name: "Home", item: siteUrl + countryPath("/", post.market) },
           { name: "Newsroom", item: siteUrl + newsroomHref(post.market) },
-          { name: "Blog", item: siteUrl + blogBase(post.market) },
+          {
+            name: CMS_COLLECTIONS[collection].label,
+            item: siteUrl + collectionBase(post.market, collection),
+          },
           { name: post.title, item: url },
         ].map((item, i) => ({ "@type": "ListItem", position: i + 1, ...item })),
       },

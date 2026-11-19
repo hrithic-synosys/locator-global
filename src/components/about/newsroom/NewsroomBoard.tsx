@@ -21,7 +21,7 @@ import {
   type NewsItem,
   type SocialPost,
 } from './newsroom-data'
-import { blogBase } from '@/lib/cms-blog/urls'
+import { blogBase, companyNewsBase } from '@/lib/cms-blog/urls'
 import { useCountry } from '@/components/country/CountryProvider'
 import SocialPreviewCard from './SocialPreviewCard'
 
@@ -86,7 +86,7 @@ function Card({ item, size = 'md' }: { item: NewsItem; size?: 'md' | 'lg' }) {
   return (
     <Shell href={item.href} className={`nrb-card nrb-card--${size}`}>
       <div className="nrb-card-media" data-fit={item.fit ?? 'cover'} style={item.fit === 'contain' && item.imageAspect ? { aspectRatio: item.imageAspect } : undefined}>
-        {item.image && (item.category === "blog" ? <img src={item.image} alt={item.alt || ""} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}} /> : <Image
+        {item.image && (item.category === "blog" || item.cms ? <img src={item.image} alt={item.alt || ""} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}} /> : <Image
           src={item.image}
           alt={item.alt ?? ''}
           fill
@@ -96,12 +96,12 @@ function Card({ item, size = 'md' }: { item: NewsItem; size?: 'md' | 'lg' }) {
         <span className="nrb-chip" style={{ background: color }}>
           {item.tag || CATEGORY_LABEL[item.category]}
         </span>
-        {item.duration && (
+        {(item.duration || item.video) && (
           <>
             <span className="nrb-card-play">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5Z" /></svg>
             </span>
-            <span className="nrb-card-dur">{item.duration}</span>
+            {item.duration && <span className="nrb-card-dur">{item.duration}</span>}
           </>
         )}
       </div>
@@ -117,7 +117,16 @@ function Card({ item, size = 'md' }: { item: NewsItem; size?: 'md' | 'lg' }) {
 
 export { Card as NewsroomCard }
 
-export default function NewsroomBoard({ blogs = [], blogPanel }: { blogs?: NewsItem[]; blogPanel?: ReactNode }) {
+export default function NewsroomBoard({
+  blogs = [],
+  blogPanel,
+  companyNewsPanel,
+}: {
+  blogs?: NewsItem[]
+  blogPanel?: ReactNode
+  /** CMS-backed Company News (loads in its own Suspense boundary). */
+  companyNewsPanel?: ReactNode
+}) {
   const { code: market } = useCountry();
   const [tab, setTab] = useState<Tab>('all')
 
@@ -537,8 +546,17 @@ export default function NewsroomBoard({ blogs = [], blogPanel }: { blogs?: NewsI
               </div>
             )}
 
+            {tab === 'company' && companyNewsPanel && (
+              <div className="nrb-section-head">
+                <h2>Company News</h2>
+                <Link href={companyNewsBase(market)} className="nrb-viewall">
+                  View all company news →
+                </Link>
+              </div>
+            )}
+
             {tab !== 'all' && tab !== 'social' && tab !== 'media' && (
-              tab === 'blog' && blogPanel ? blogPanel : pool.length === 0 ? (
+              tab === 'blog' && blogPanel ? blogPanel : tab === 'company' && companyNewsPanel ? companyNewsPanel : pool.length === 0 ? (
                 <p className="nrb-empty">Nothing published in this category yet — check back soon.</p>
               ) : (
                 <div className="nrb-grid">

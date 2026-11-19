@@ -1,23 +1,39 @@
 /* eslint-disable @next/next/no-img-element -- Direct validated CMS media preserves the editor preview. */
 import Link from "next/link";
-import { blogHref, blogPageHref, dateLabel, type BlogFilters } from "@/lib/cms-blog/urls";
-import type { CmsCard, Pagination } from "@/lib/cms-blog/types";
+import { collectionBase, collectionHref, collectionPageHref, dateLabel, newsroomHref, type BlogFilters } from "@/lib/cms-blog/urls";
+import type { CmsCard, CompanyNewsCard, Pagination } from "@/lib/cms-blog/types";
+import type { CmsCollection } from "@/lib/cms-blog/collections";
 import type { CountryCode } from "@/config/countries";
 import ContentState from "../ContentState";
-import { blogBase, newsroomHref } from "@/lib/cms-blog/urls";
+
+// Collection-specific wording; layout and behaviour are shared.
+const COPY = {
+  blogs: { h1: "Locator Blog", noun: "articles", nav: "Blog pagination", empty: "No articles yet", all: "View all articles", lead: "Read Full Article →" },
+  "company-news": { h1: "LOCATOR Company News", noun: "company news", nav: "Company news pagination", empty: "No company news yet", all: "View all company news", lead: "Read Full Story →" },
+} as const;
+type ListingCard = CmsCard | CompanyNewsCard;
+const isVideo = (post: ListingCard) => post.format === "video";
 const EASE = "cubic-bezier(.22,.61,.36,1)";
 export default function BlogListing({
   posts,
   pagination,
   market,
   filters = { page: 1, q: "", tag: "" },
+  collection = "blogs",
 }: {
   market: CountryCode;
   filters?: BlogFilters;
-  posts: CmsCard[];
+  posts: ListingCard[];
   pagination: Pagination;
+  collection?: CmsCollection;
 }) {
   const [lead, ...rest] = posts;
+  const copy = COPY[collection];
+  const itemHref = (slug: string) => collectionHref(market, collection, slug);
+  const pageHref = (page: number) => collectionPageHref(market, collection, filters, page);
+  const filtered = Boolean(filters.q || filters.tag || filters.featured !== undefined);
+  // Videos have no reading time; label them instead.
+  const meta = (post: ListingCard) => (isVideo(post) ? "Video" : `${post.readingMinutes} min read`);
   return (
     <section className="bl">
       <style href="nr-bloglisting" precedence="medium">{`
@@ -80,10 +96,10 @@ export default function BlogListing({
         }
       `}</style>
       <div className="bl-wrap">
-        <h1 className="bl-h1">Locator Blog</h1>
+        <h1 className="bl-h1">{copy.h1}</h1>
         {lead ? (
           <Link
-            href={blogHref(market, lead.slug)}
+            href={itemHref(lead.slug)}
             className="bl-lead"
             style={!lead.banner ? { gridTemplateColumns: "1fr" } : undefined}
           >
@@ -96,9 +112,9 @@ export default function BlogListing({
                   {dateLabel(lead.publishedAt)}
                 </time>
                 <i />
-                <span>{lead.readingMinutes} min read</span>
+                <span>{meta(lead)}</span>
               </p>
-              <span className="bl-more">Read Full Article →</span>
+              <span className="bl-more">{isVideo(lead) ? "Watch Video →" : copy.lead}</span>
             </div>
             {lead.banner && (
               <div className="bl-lead-media">
@@ -115,14 +131,14 @@ export default function BlogListing({
           </Link>
         ) : (
           <ContentState state="empty"
-            title={filters.q || filters.tag || filters.featured !== undefined ? "No matching articles" : pagination.total ? "No articles on this page" : "No articles yet"}
-            description={filters.q || filters.tag || filters.featured !== undefined ? "Try another search or explore all published articles." : pagination.total ? "Explore the latest published articles from the first page." : undefined}
-            href={filters.q || filters.tag || filters.featured !== undefined || filters.page > 1 ? blogBase(market) : newsroomHref(market)}
-            linkLabel={filters.q || filters.tag || filters.featured !== undefined || filters.page > 1 ? "View all articles" : "Explore the newsroom"} />
+            title={filtered ? `No matching ${copy.noun}` : pagination.total ? `No ${copy.noun} on this page` : copy.empty}
+            description={filtered ? `Try another search or explore all published ${copy.noun}.` : pagination.total ? `Explore the latest published ${copy.noun} from the first page.` : collection === "blogs" ? undefined : "Company announcements will appear here once they are published. Explore the rest of our newsroom in the meantime."}
+            href={filtered || filters.page > 1 ? collectionBase(market, collection) : newsroomHref(market)}
+            linkLabel={filtered || filters.page > 1 ? copy.all : "Explore the newsroom"} />
         )}
         <div className="bl-grid">
           {rest.map((p) => (
-            <Link key={p.slug} href={blogHref(market, p.slug)} className="bl-card">
+            <Link key={p.slug} href={itemHref(p.slug)} className="bl-card">
               {p.banner && (
                 <div className="bl-card-media">
                   <img
@@ -145,24 +161,24 @@ export default function BlogListing({
                     {dateLabel(p.publishedAt)}
                   </time>
                   <i />
-                  <span>{p.readingMinutes} min read</span>
+                  <span>{meta(p)}</span>
                 </p>
                 <h2 className="bl-card-title">{p.title}</h2>
                 <p className="bl-card-excerpt">{p.excerpt}</p>
-                <span className="bl-more">Read More →</span>
+                <span className="bl-more">{isVideo(p) ? "Watch Video →" : "Read More →"}</span>
               </div>
             </Link>
           ))}
         </div>
         {posts.length > 0 && pagination.pages > 1 && (
           <nav
-            aria-label="Blog pagination"
+            aria-label={copy.nav}
             style={{ display: "flex", gap: 20, paddingBottom: 40 }}
           >
             {pagination.page > 1 && (
               <Link
                 rel="prev"
-                href={blogPageHref(market, filters, pagination.page - 1)}
+                href={pageHref(pagination.page - 1)}
               >
                 Previous
               </Link>
@@ -173,7 +189,7 @@ export default function BlogListing({
             {pagination.page < pagination.pages && (
               <Link
                 rel="next"
-                href={blogPageHref(market, filters, pagination.page + 1)}
+                href={pageHref(pagination.page + 1)}
               >
                 Next
               </Link>

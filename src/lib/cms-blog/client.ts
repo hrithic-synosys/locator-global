@@ -3,11 +3,20 @@ import { cache } from "react";
 import { connection } from "next/server";
 import { unstable_cache } from "next/cache";
 import { randomUUID } from "node:crypto";
-import { BLOG_CACHE_SECONDS, blogCacheTag } from "./cache-policy";
+import { BLOG_CACHE_SECONDS, cmsCacheTag } from "./cache-policy";
+import { CMS_COLLECTIONS, type CmsCollection } from "./collections";
 import { articleCanonical } from "./seo";
 import type { CountryCode } from "../../config/countries";
 import { assertMarket } from "./urls";
-import { parseCards, parseDetail, parseList, parseSlugs } from "./validation";
+import {
+  parseCards,
+  parseCompanyNewsCards,
+  parseCompanyNewsDetail,
+  parseCompanyNewsList,
+  parseDetail,
+  parseList,
+  parseSlugs,
+} from "./validation";
 
 export class CmsRequestError extends Error {
   constructor(public readonly status?: number) {
@@ -19,7 +28,9 @@ class MissingPublicBlog extends Error {}
 
 // Cache parsed public values, not HTTP responses: errors and invalid payloads
 // must never become successful cache entries. Keep request APIs outside scope.
+// Each collection has its own cache namespace and per-market tag.
 function publicCache<Args extends unknown[], Result>(
+  collection: CmsCollection,
   endpoint: string,
   load: (market: CountryCode, ...args: Args) => Promise<Result>
 ) {
@@ -42,10 +53,10 @@ function publicCache<Args extends unknown[], Result>(
           if (result === null) throw new MissingPublicBlog();
           return result;
         },
-        ["cms-public-blogs-v1", identity],
+        [CMS_COLLECTIONS[collection].cacheKey, identity],
         {
           revalidate: BLOG_CACHE_SECONDS,
-          tags: [blogCacheTag(market)],
+          tags: [cmsCacheTag(collection, market)],
         }
       )();
     } catch (error) {
@@ -79,11 +90,15 @@ async function request(
   market: CountryCode,
   path = "",
   query: Record<string, string> = {},
-  allow404 = false
+  allow404 = false,
+  collection: CmsCollection = "blogs"
 ) {
   assertMarket(market);
   const base = apiBase();
-  const url = new URL(`sites/${market}/blogs${path}`, base);
+  const url = new URL(
+    `sites/${market}/${CMS_COLLECTIONS[collection].apiPath}${path}`,
+    base
+  );
   url.search = new URLSearchParams(query).toString();
   // The CMS advertises max-age=60, stale-while-revalidate=300. Each actual
   // origin read uses a unique HTTP URL plus bypass headers so a webhook cannot
@@ -125,9 +140,36 @@ function articleSegment(slug: string) {
     throw new CmsRequestError(400);
   return encodeURIComponent(slug);
 }
+function listQuery(
+  page: number,
+  limit: number,
+  q: string,
+  tag: string,
+  featured?: boolean
+) {
+  bounded(page, Number.MAX_SAFE_INTEGER);
+  bounded(limit, 50);
+  if (
+    typeof q !== "string" ||
+    q.length > 200 ||
+    typeof tag !== "string" ||
+    (tag && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(tag)) ||
+    (featured !== undefined && typeof featured !== "boolean")
+  )
+    throw new CmsRequestError(400);
+  const query: Record<string, string> = {
+    page: String(page),
+    limit: String(limit),
+  };
+  if (q) query.q = q;
+  if (tag) query.tag = tag;
+  if (featured !== undefined) query.featured = String(featured);
+  return query;
+}
 // Primitive arguments keep identical page/metadata requests memoized by all
 // scope/filter dimensions, rather than object identity or a slug-only key.
 export const listBlogs = publicCache(
+  "blogs",
   "list",
   async (
     market: CountryCode,
@@ -137,23 +179,7 @@ export const listBlogs = publicCache(
     tag: string = "",
     featured?: boolean
   ) => {
-    bounded(page, Number.MAX_SAFE_INTEGER);
-    bounded(limit, 50);
-    if (
-      typeof q !== "string" ||
-      q.length > 200 ||
-      typeof tag !== "string" ||
-      (tag && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(tag)) ||
-      (featured !== undefined && typeof featured !== "boolean")
-    )
-      throw new CmsRequestError(400);
-    const query: Record<string, string> = {
-      page: String(page),
-      limit: String(limit),
-    };
-    if (q) query.q = q;
-    if (tag) query.tag = tag;
-    if (featured !== undefined) query.featured = String(featured);
+    const query = listQuery(page, limit, q, tag, featured);
     const r = await request(market, "", query);
     const result = parseList(r.data, r.base, market);
     if (result.pagination.page !== page || result.pagination.limit !== limit)
@@ -162,6 +188,7 @@ export const listBlogs = publicCache(
   }
 );
 export const getBlog = publicCache(
+  "blogs",
   "detail",
   async (market: CountryCode, slug: string) => {
     const r = await request(market, `/${articleSegment(slug)}`, {}, true);
@@ -173,6 +200,7 @@ export const getBlog = publicCache(
   }
 );
 export const getFeaturedBlogs = publicCache(
+  "blogs",
   "featured",
   async (market: CountryCode, limit: number = 6) => {
     bounded(limit, 50);
@@ -183,6 +211,7 @@ export const getFeaturedBlogs = publicCache(
   }
 );
 export const getBlogSlugs = publicCache(
+  "blogs",
   "slugs",
   async (market: CountryCode) => {
     const r = await request(market, "/slugs");
@@ -190,6 +219,7 @@ export const getBlogSlugs = publicCache(
   }
 );
 export const getRelatedBlogs = publicCache(
+  "blogs",
   "related",
   async (market: CountryCode, slug: string, limit: number = 3) => {
     bounded(limit, 12);
@@ -201,6 +231,90 @@ export const getRelatedBlogs = publicCache(
     );
     if (r.data === null) return null;
     const items = parseCards(r.data, r.base, market, true);
+    if (items.length > limit || items.some((item) => item.slug === slug))
+      throw new CmsRequestError();
+    return items;
+  }
+);
+
+// Company News: the same contract and cache rules as Blog, in its own API path,
+// cache namespace and per-market tag (cms-public-company-news:<market>).
+export const listCompanyNews = publicCache(
+  "company-news",
+  "list",
+  async (
+    market: CountryCode,
+    page: number = 1,
+    limit: number = 12,
+    q: string = "",
+    tag: string = "",
+    featured?: boolean
+  ) => {
+    const query = listQuery(page, limit, q, tag, featured);
+    const r = await request(market, "", query, false, "company-news");
+    const result = parseCompanyNewsList(r.data, r.base, market);
+    if (result.pagination.page !== page || result.pagination.limit !== limit)
+      throw new CmsRequestError();
+    return result;
+  }
+);
+export const getCompanyNews = publicCache(
+  "company-news",
+  "detail",
+  async (market: CountryCode, slug: string) => {
+    const r = await request(
+      market,
+      `/${articleSegment(slug)}`,
+      {},
+      true,
+      "company-news"
+    );
+    const item =
+      r.data === null ? null : parseCompanyNewsDetail(r.data, r.base, market);
+    if (item && item.slug !== slug) throw new CmsRequestError();
+    if (item) articleCanonical(item, "company-news");
+    return item;
+  }
+);
+export const getFeaturedCompanyNews = publicCache(
+  "company-news",
+  "featured",
+  async (market: CountryCode, limit: number = 6) => {
+    bounded(limit, 50);
+    const r = await request(
+      market,
+      "/featured",
+      { limit: String(limit) },
+      false,
+      "company-news"
+    );
+    const items = parseCompanyNewsCards(r.data, r.base, market);
+    if (items.length > limit) throw new CmsRequestError();
+    return items;
+  }
+);
+export const getCompanyNewsSlugs = publicCache(
+  "company-news",
+  "slugs",
+  async (market: CountryCode) => {
+    const r = await request(market, "/slugs", {}, false, "company-news");
+    return parseSlugs(r.data, market);
+  }
+);
+export const getRelatedCompanyNews = publicCache(
+  "company-news",
+  "related",
+  async (market: CountryCode, slug: string, limit: number = 3) => {
+    bounded(limit, 12);
+    const r = await request(
+      market,
+      `/${articleSegment(slug)}/related`,
+      { limit: String(limit) },
+      true,
+      "company-news"
+    );
+    if (r.data === null) return null;
+    const items = parseCompanyNewsCards(r.data, r.base, market, true);
     if (items.length > limit || items.some((item) => item.slug === slug))
       throw new CmsRequestError();
     return items;

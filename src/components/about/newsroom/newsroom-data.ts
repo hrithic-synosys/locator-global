@@ -39,6 +39,10 @@ export type NewsItem = {
   href: string
   /** Promotes the item into the big featured slot on the "All" tab. */
   featured?: boolean
+  /** CMS records (Blog, Company News): media is rendered from its own host. */
+  cms?: boolean
+  /** Shows the play badge without a duration (CMS video items). */
+  video?: boolean
 }
 
 export const TABS: { id: NewsCategory | 'all'; label: string }[] = [

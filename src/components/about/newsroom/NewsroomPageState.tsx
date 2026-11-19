@@ -9,9 +9,14 @@ import ScrollReveal from "@/components/software/ScrollReveal";
 export default function NewsroomPageState({
   newsroom = false,
   unavailable = false,
+  title,
+  description,
 }: {
   newsroom?: boolean;
   unavailable?: boolean;
+  /** Overrides the default (article) wording, e.g. for Company News. */
+  title?: string;
+  description?: string;
 }) {
   return (
     <main style={{ background: "#fff", minHeight: "100vh", overflowX: "clip" }}>
@@ -37,16 +42,18 @@ export default function NewsroomPageState({
           headingLevel={newsroom ? 2 : 1}
           state={unavailable ? "unavailable" : "loading"}
           title={
-            unavailable
+            title ??
+            (unavailable
               ? "This article is temporarily unavailable"
               : newsroom
                 ? "Preparing the newsroom"
-                : "Preparing the latest articles"
+                : "Preparing the latest articles")
           }
           description={
-            unavailable
+            description ??
+            (unavailable
               ? "We can’t load this article right now. Please try again shortly or explore the rest of our newsroom."
-              : undefined
+              : undefined)
           }
           href={unavailable ? "/about/newsroom" : undefined}
         />

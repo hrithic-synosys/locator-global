@@ -2,7 +2,8 @@
 
 /* eslint-disable @next/next/no-img-element -- Preserve the CMS renderer and arbitrary validated CMS media URLs. */
 import Link from "next/link";
-import { contentHref, blogBase, blogHref } from "@/lib/cms-blog/urls";
+import { contentHref, collectionBase, collectionHref } from "@/lib/cms-blog/urls";
+import { CMS_COLLECTIONS, type CmsCollection } from "@/lib/cms-blog/collections";
 import RichText from "./RichText";
 import { useEffect, useMemo, useState } from "react";
 import type { MouseEvent, ReactNode } from "react";
@@ -23,6 +24,61 @@ import type { CountryCode } from "@/config/countries";
 import { countryPath } from "@/lib/country/paths";
 import { createContext, useContext } from "react";
 const MarketContext = createContext<CountryCode>("global");
+// Which public collection the article belongs to (breadcrumb, related links).
+const CollectionContext = createContext<CmsCollection>("blogs");
+
+/** Privacy-friendly embed for YouTube and Vimeo links; null for anything else. */
+export function videoEmbedUrl(value: string): string | null {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:") return null;
+  const host = url.hostname.replace(/^(www\.|m\.)/, "");
+  const id = (v: string | null | undefined) =>
+    v && /^[A-Za-z0-9_-]{6,20}$/.test(v) ? v : null;
+  let youtube: string | null = null;
+  if (host === "youtu.be") youtube = id(url.pathname.slice(1));
+  else if (host === "youtube.com" || host === "youtube-nocookie.com") {
+    const [, kind, value] = url.pathname.split("/");
+    youtube =
+      kind === "watch"
+        ? id(url.searchParams.get("v"))
+        : ["embed", "shorts", "live"].includes(kind)
+          ? id(value)
+          : null;
+  }
+  if (youtube) return `https://www.youtube-nocookie.com/embed/${youtube}`;
+  if (host === "vimeo.com" || host === "player.vimeo.com") {
+    const vimeo = url.pathname.split("/").find((part) => /^\d{5,12}$/.test(part));
+    if (vimeo) return `https://player.vimeo.com/video/${vimeo}`;
+  }
+  return null;
+}
+
+function ArticleVideo({ url, title }: { url: string; title: string }) {
+  const embed = videoEmbedUrl(url);
+  return embed ? (
+    <figure className="ba-video">
+      <iframe
+        src={embed}
+        title={title}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      />
+    </figure>
+  ) : (
+    <p className="ba-video-link">
+      <a href={url} target="_blank" rel="noopener noreferrer" className="ba-btn ba-btn--solid">
+        Watch the video ↗
+      </a>
+    </p>
+  );
+}
 
 function Chevron() {
   return (
@@ -552,11 +608,12 @@ function PreviewSidebar({
 
 export function RelatedArticles({ articles: related, showThumbs }: { articles: RelatedArticle[]; showThumbs: boolean }) {
   const market = useContext(MarketContext);
+  const collection = useContext(CollectionContext);
   return related.length > 0 ? (
           <section className="ba-card ba-rel" aria-label="Related articles">
             <div className="ba-rel-head">
-              <h2 className="ba-card-title">Related articles</h2>
-              <Link href={blogBase(market)} className="ba-rel-all">
+              <h2 className="ba-card-title">{collection === "blogs" ? "Related articles" : "More company news"}</h2>
+              <Link href={collectionBase(market, collection)} className="ba-rel-all">
                 View all →
               </Link>
             </div>
@@ -564,7 +621,7 @@ export function RelatedArticles({ articles: related, showThumbs }: { articles: R
               {related.map((article) => (
                 <li key={article.id}>
                   <Link
-                    href={blogHref(market, article.slug)}
+                    href={collectionHref(market, collection, article.slug)}
                     className="ba-rel-item"
                     data-thumb={showThumbs && article.banner ? "yes" : "no"}
                   >
@@ -605,6 +662,10 @@ type PreviewProps = {
   categoryName?: string;
   publishedAt?: string | null;
   readingMinutes?: number;
+  /** Public collection; defaults to Blog. */
+  collection?: CmsCollection;
+  /** Video link for video items (YouTube/Vimeo embed, else a link). */
+  videoUrl?: string | null;
 };
 
 export default function BlogArticle({
@@ -622,13 +683,15 @@ export default function BlogArticle({
   categoryName,
   publishedAt,
   readingMinutes,
+  collection = "blogs",
+  videoUrl,
 }: PreviewProps) {
   const { blocks, toc } = useMemo(() => prepareBlocks(content), [content]);
   const banner = coverImage?.src ? coverImage : null;
   const safeAuthor = author?.name ? author : null;
 
   return (
-    <MarketContext.Provider value={market}><article className="ba">
+    <MarketContext.Provider value={market}><CollectionContext.Provider value={collection}><article className="ba">
       <style href="cms-locator-blog-preview-v3" precedence="medium">{`
         .ba { background:#fff; color:#0b1220; }
         .ba * { box-sizing:border-box; }
@@ -644,6 +707,7 @@ export default function BlogArticle({
         .ba-sum{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:clamp(14px,2vw,24px);margin:0 0 clamp(24px,3vw,36px);padding:clamp(18px,2.2vw,26px);background:#eaf2fe;border:1px solid #d9e6fb;border-radius:14px}.ba-sum-ico{width:52px;height:52px;border-radius:50%;background:#d6e5fd;color:#1360ee;display:grid;place-items:center}.ba-sum-title{margin:0 0 6px;font-size:16px;font-weight:780;color:#0b1220}.ba-sum-text{margin:0;font-size:13.5px;line-height:1.7;color:#4b5464}.ba-sum-art{color:#1360ee;opacity:.85}@media(max-width:700px){.ba-sum{grid-template-columns:auto minmax(0,1fr)}.ba-sum-art{display:none}}
         .ba-main>:is(.ba-h2,.ba-h3,.ba-p,.ba-list,.ba-olist,.ba-quote){max-width:760px}.ba-p{margin:0 0 18px;font-size:16px;line-height:1.8;color:#4b5464}.ba-h2{margin:clamp(30px,3.2vw,42px) 0 12px;font-size:clamp(20px,2vw,27px);font-weight:790;line-height:1.28;letter-spacing:-.02em;color:#0b1220;scroll-margin-top:104px}.ba-h3{margin:clamp(22px,2.4vw,30px) 0 10px;font-size:clamp(16px,1.45vw,20px);font-weight:760;line-height:1.35;color:#16233a;scroll-margin-top:104px}.ba-link{color:#1360ee;font-weight:600;text-decoration:none}.ba-link:hover{text-decoration:underline}
         .ba-list,.ba-olist{margin:0 0 18px;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}.ba-list>li,.ba-olist>li{position:relative;padding-left:26px;font-size:16px;line-height:1.7;color:#4b5464}.ba-list>li::before{content:'';position:absolute;left:7px;top:.72em;width:6px;height:6px;border-radius:50%;background:#1360ee}.ba-list--check>li{padding-left:30px;font-size:14.5px}.ba-list--check>li::before{left:0;top:.2em;width:18px;height:18px;background:#1360ee ${CHECK} center/11px no-repeat}.ba-olist{counter-reset:ba-ol}.ba-olist>li{counter-increment:ba-ol;padding-left:32px}.ba-olist>li::before{content:counter(ba-ol)'.';position:absolute;left:0;top:0;color:#1360ee;font-weight:700;font-variant-numeric:tabular-nums}.ba-quote{margin:0 0 22px;padding:4px 0 4px 20px;border-left:3px solid #1360ee;font-size:16px;line-height:1.7;color:#16233a;font-style:italic}.ba-cite{display:block;margin-top:6px;font-size:13px;font-style:normal;color:#8a93a4}
+        .ba-video{position:relative;margin:0 0 clamp(24px,3vw,36px);aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#0b2a55}.ba-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.ba-video-link{margin:0 0 clamp(24px,3vw,36px)}
         .ba-figure{margin:clamp(20px,2.6vw,30px) 0}.ba-img{display:block;width:100%;height:auto;border-radius:12px;background:#f4f7fd}.ba-caption{margin-top:8px;font-size:12px;color:#8a93a4}.ba-empty-media{min-height:180px;display:grid;place-items:center;border:1px dashed #d9e2ef;border-radius:12px;background:#f8faff;color:#8a93a4;font-size:13px}.ba-empty-bg{position:absolute;inset:0;display:grid;place-items:center;color:#9cc2ff;background:#0b2a55;font-size:13px}
         .ba-table-scroll{margin:clamp(18px,2.2vw,28px) 0;overflow-x:auto;border:1px solid #d9e6fb;border-radius:10px;background:#fff}.ba-table{width:100%;border-collapse:collapse}.ba-table th,.ba-table td{text-align:left;padding:11px 14px;border-bottom:1px solid #e7ecf6;font-size:13px;line-height:1.55;color:#4b5464;vertical-align:top}.ba-table th{background:#e7effd;color:#0b1220;font-weight:750}.ba-table td:first-child{color:#16233a;font-weight:500}.ba-table tbody tr:last-child td{border-bottom:0}.ba-table th+th,.ba-table td+td{border-left:1px solid #e7ecf6}.ba-table-caption{caption-side:top;text-align:left;padding:10px 14px;font-size:12px;color:#8a93a4}.ba-split-media .ba-table-scroll{margin:0}
         .ba-sec-kicker{display:block;margin-bottom:8px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#1360ee}.ba-ov{position:relative;display:flex;align-items:center;overflow:hidden;border-radius:12px;margin:clamp(20px,2.6vw,30px) 0;min-height:clamp(200px,22vw,250px);background:#0b2a55}.ba-ov-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.ba-ov::after{content:'';position:absolute;inset:0;background:linear-gradient(270deg,rgba(9,30,66,.97) 0%,rgba(9,30,66,.92) 44%,rgba(9,30,66,.1) 100%)}.ba-ov[data-align='left']::after{background:linear-gradient(90deg,rgba(9,30,66,.97) 0%,rgba(9,30,66,.92) 44%,rgba(9,30,66,.1) 100%)}.ba-ov-body{position:relative;z-index:2;width:52%;padding:clamp(20px,2.8vw,34px)}.ba-ov[data-align='right'] .ba-ov-body{margin-left:auto}@media(max-width:700px){.ba-ov,.ba-ov[data-align='left']{align-items:flex-end}.ba-ov::after,.ba-ov[data-align='left']::after{background:linear-gradient(0deg,rgba(9,30,66,.96) 0%,rgba(9,30,66,.8) 65%,rgba(9,30,66,.2) 100%)}.ba-ov-body{width:100%;margin-left:0!important;padding-top:110px}}.ba-dark .ba-sec-kicker{color:#8fbaff}.ba-dark .ba-h2{margin:0 0 10px;color:#fff;font-size:clamp(21px,2.2vw,30px)}.ba-dark .ba-h3{color:#fff}.ba-dark .ba-p,.ba-dark .ba-list>li,.ba-dark .ba-olist>li,.ba-dark .ba-quote{color:rgba(255,255,255,.88);font-size:14.5px}.ba-dark .ba-p{margin-bottom:14px}.ba-dark .ba-link{color:#9cc2ff}.ba-dark .ba-quote{border-color:#8fbaff}.ba-btn{display:inline-flex;align-items:center;text-decoration:none;font-size:13.5px;font-weight:700;padding:12px 22px;border-radius:10px;transition:transform .18s ${EASE},background .18s ${EASE}}.ba-btn--solid{background:#1360ee;color:#fff}.ba-btn--solid:hover{background:#0f4fc4;transform:translateY(-1px)}
@@ -655,7 +719,7 @@ export default function BlogArticle({
         <nav className="ba-crumbs" aria-label="Breadcrumb">
           <Link href={countryPath("/", market)}>Homepage</Link>
           <Chevron />
-          <Link href={blogBase(market)}>Blog</Link>
+          <Link href={collectionBase(market, collection)}>{CMS_COLLECTIONS[collection].label}</Link>
           <Chevron />
           <span className="cur" aria-current="page">
             {title}
@@ -736,13 +800,15 @@ export default function BlogArticle({
               </span>
               <div>
                 <h2 className="ba-sum-title">
-                  {summary.heading || "Blog Summary"}
+                  {summary.heading || (collection === "blogs" ? "Blog Summary" : "Summary")}
                 </h2>
                 <p className="ba-sum-text">{summary.text}</p>
               </div>
               <SummaryArt icon={summary.icon || "truck"} />
             </section>
           )}
+
+          {videoUrl && <ArticleVideo url={videoUrl} title={title} />}
 
           {blocks.map((block, index) => (
             <ContentBlock
@@ -759,6 +825,6 @@ export default function BlogArticle({
           showThumbs={Boolean(banner)}
         />
       </div>
-    </article></MarketContext.Provider>
+    </article></CollectionContext.Provider></MarketContext.Provider>
   );
 }

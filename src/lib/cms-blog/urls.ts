@@ -4,6 +4,7 @@ import {
   type CountryCode,
 } from "../../config/countries";
 import { countryPath } from "../country/paths";
+import { CMS_COLLECTIONS, type CmsCollection } from "./collections";
 
 export function assertMarket(value: unknown): asserts value is CountryCode {
   if (
@@ -18,9 +19,20 @@ export function newsroomHref(market: CountryCode): string {
   assertMarket(market);
   return `${countries[market].prefix}/about/newsroom`;
 }
-export const blogBase = (market: CountryCode) => `${newsroomHref(market)}/blog`;
+export const collectionBase = (market: CountryCode, collection: CmsCollection) =>
+  `${newsroomHref(market)}/${CMS_COLLECTIONS[collection].route}`;
+export const collectionHref = (
+  market: CountryCode,
+  collection: CmsCollection,
+  slug: string
+) => `${collectionBase(market, collection)}/${encodeURIComponent(slug)}`;
+export const blogBase = (market: CountryCode) => collectionBase(market, "blogs");
 export const blogHref = (market: CountryCode, slug: string) =>
-  `${blogBase(market)}/${encodeURIComponent(slug)}`;
+  collectionHref(market, "blogs", slug);
+export const companyNewsBase = (market: CountryCode) =>
+  collectionBase(market, "company-news");
+export const companyNewsHref = (market: CountryCode, slug: string) =>
+  collectionHref(market, "company-news", slug);
 export const dateLabel = (value: string) =>
   new Date(value).toLocaleDateString("en-US", {
     month: "long",
@@ -95,8 +107,9 @@ export function readBlogFilters(
         : {}),
   };
 }
-export function blogPageHref(
+export function collectionPageHref(
   market: CountryCode,
+  collection: CmsCollection,
   filters: BlogFilters,
   page: number
 ): string {
@@ -106,5 +119,10 @@ export function blogPageHref(
   if (filters.tag) query.set("tag", filters.tag);
   if (filters.featured !== undefined)
     query.set("featured", String(filters.featured));
-  return blogBase(market) + (query.size ? `?${query}` : "");
+  return collectionBase(market, collection) + (query.size ? `?${query}` : "");
 }
+export const blogPageHref = (
+  market: CountryCode,
+  filters: BlogFilters,
+  page: number
+) => collectionPageHref(market, "blogs", filters, page);

@@ -5,9 +5,13 @@ import type {
   CmsDetail,
   CmsList,
   CmsSlug,
+  CompanyNewsCard,
+  CompanyNewsDetail,
+  CompanyNewsList,
   ImageData,
   RelatedArticle,
 } from "./types";
+import { CMS_COLLECTIONS, type CmsCollection } from "./collections";
 import { mediaUrl as resolveMediaUrl, safeHref } from "./urls";
 export class CmsPayloadError extends Error {
   constructor() {
@@ -153,19 +157,30 @@ function block(v: unknown, base: string, nested = false): BlogBlock {
       return fail();
   }
 }
-function card(
+/** Video links open in a new tab or a privacy embed; only plain web URLs pass. */
+function videoUrl(v: unknown): string {
+  const value = str(v);
+  return /^https:\/\//i.test(value) && safeHref(value) ? value : fail();
+}
+// Shared card checks for every collection: exact market, category, allowed
+// format, publication and content version. Related cards may omit `format`
+// (it then means "article", as the Blog contract allows).
+function collectionCard(
   v: unknown,
   base: string,
   market: CountryCode,
+  collection: CmsCollection,
   related = false
-): CmsCard {
+) {
   const o = obj(v),
-    c = obj(o.category);
+    c = obj(o.category),
+    scope = CMS_COLLECTIONS[collection],
+    format = related && o.format === undefined ? "article" : o.format;
   if (
     !isCountryCode(market) ||
     o.market !== market ||
-    c.slug !== "blog" ||
-    ((!related || o.format !== undefined) && o.format !== "article") ||
+    c.slug !== scope.categorySlug ||
+    !(scope.formats as readonly unknown[]).includes(format) ||
     (o.status !== undefined && o.status !== "published") ||
     (o.contentVersion !== undefined && o.contentVersion !== 2)
   )
@@ -173,16 +188,53 @@ function card(
   const publishedAt = date(o.publishedAt);
   if (Date.parse(publishedAt) > Date.now()) fail();
   return {
-    id: str(o.id),
-    market,
-    slug: slug(o.slug),
-    title: str(o.title),
-    excerpt: str(o.excerpt),
+    o,
+    format: format as string,
+    card: {
+      id: str(o.id),
+      market,
+      slug: slug(o.slug),
+      title: str(o.title),
+      excerpt: str(o.excerpt),
+      category: { id: str(c.id), name: str(c.name) },
+      publishedAt,
+      readingMinutes: integer(o.readingMinutes),
+      banner: o.banner === null ? null : image(o.banner, base),
+    },
+  };
+}
+function card(
+  v: unknown,
+  base: string,
+  market: CountryCode,
+  related = false
+): CmsCard {
+  const { card } = collectionCard(v, base, market, "blogs", related);
+  return {
+    ...card,
     format: "article",
-    category: { id: str(c.id), name: str(c.name), slug: "blog" },
-    publishedAt,
-    readingMinutes: integer(o.readingMinutes),
-    banner: o.banner === null ? null : image(o.banner, base),
+    category: { ...card.category, slug: "blog" },
+  };
+}
+function companyNewsCard(
+  v: unknown,
+  base: string,
+  market: CountryCode,
+  related = false
+): CompanyNewsCard {
+  const { o, format, card } = collectionCard(
+    v,
+    base,
+    market,
+    "company-news",
+    related
+  );
+  return {
+    ...card,
+    format: format as CompanyNewsCard["format"],
+    category: { ...card.category, slug: "company-news" },
+    // A video without a playable link is an invalid record, not an empty one.
+    videoUrl: format === "video" ? videoUrl(o.videoUrl) : null,
   };
 }
 const envelope = (v: unknown) => {
@@ -194,14 +246,13 @@ function unique<T extends { slug: string }>(items: T[]): T[] {
   if (new Set(items.map((i) => i.slug)).size !== items.length) fail();
   return items;
 }
-export function parseList(
+function list<T extends { slug: string }>(
   v: unknown,
-  base: string,
-  market: CountryCode
-): CmsList {
+  parse: (v: unknown) => T
+): { items: T[]; pagination: CmsList["pagination"] } {
   const o = envelope(v),
     p = obj(o.pagination),
-    items = unique(arr(o.items).map((v) => card(v, base, market)));
+    items = unique(arr(o.items).map(parse));
   const pagination = {
     page: integer(p.page, 1),
     limit: integer(p.limit, 1),
@@ -225,6 +276,16 @@ export function parseList(
   if (items.length !== expected) fail();
   return { items, pagination };
 }
+export const parseList = (
+  v: unknown,
+  base: string,
+  market: CountryCode
+): CmsList => list(v, (item) => card(item, base, market));
+export const parseCompanyNewsList = (
+  v: unknown,
+  base: string,
+  market: CountryCode
+): CompanyNewsList => list(v, (item) => companyNewsCard(item, base, market));
 export const parseCards = (
   v: unknown,
   base: string,
@@ -232,13 +293,32 @@ export const parseCards = (
   related = false
 ): RelatedArticle[] =>
   unique(arr(envelope(v).items).map((v) => card(v, base, market, related)));
-export function parseDetail(
+export const parseCompanyNewsCards = (
+  v: unknown,
+  base: string,
+  market: CountryCode,
+  related = false
+): CompanyNewsCard[] =>
+  unique(
+    arr(envelope(v).items).map((v) => companyNewsCard(v, base, market, related))
+  );
+export const parseDetail = (
   v: unknown,
   base: string,
   market: CountryCode
-): CmsDetail {
+): CmsDetail => detail(v, base, (o) => card(o, base, market));
+export const parseCompanyNewsDetail = (
+  v: unknown,
+  base: string,
+  market: CountryCode
+): CompanyNewsDetail => detail(v, base, (o) => companyNewsCard(o, base, market));
+function detail<C extends CmsCard | CompanyNewsCard>(
+  v: unknown,
+  base: string,
+  parseCard: (o: Record<string, unknown>) => C
+): C & Omit<CmsDetail, keyof CmsCard> {
   const o = obj(envelope(v).article),
-    c = card(o, base, market),
+    c = parseCard(o),
     seo = obj(o.seo);
   if (o.contentVersion !== 2) fail();
   const a = o.author === null ? null : obj(o.author),
@@ -276,7 +356,7 @@ export function parseDetail(
       ...(seo.ogImage ? { ogImage: mediaUrl(str(seo.ogImage), base) } : {}),
     },
     content: arr(o.content).map((v) => block(v, base)),
-  };
+  } as C & Omit<CmsDetail, keyof CmsCard>;
 }
 export function parseSlugs(v: unknown, market: CountryCode): CmsSlug[] {
   return unique(

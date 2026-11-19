@@ -11,11 +11,14 @@ import AboutPillarNav from "@/components/about/AboutPillarNav";
 import Footer from "@/components/layouts/Footer";
 import NewsroomVideosAndBlogs from "@/components/about/newsroom/NewsroomVideosAndBlogs";
 
-import { listBlogs } from "@/lib/cms-blog/client";
+import { listBlogs, listCompanyNews } from "@/lib/cms-blog/client";
 import { Suspense } from "react";
 import { loadCmsResource } from "@/lib/cms-blog/resource";
 import ContentState from "@/components/about/newsroom/ContentState";
 import NewsroomBlogFeed from "@/components/about/newsroom/NewsroomBlogFeed";
+import NewsroomCompanyNewsFeed, {
+  COMPANY_NEWS_COPY,
+} from "@/components/about/newsroom/NewsroomCompanyNewsFeed";
 import { assertMarket } from "@/lib/cms-blog/urls";
 export const dynamic = "force-dynamic";
 
@@ -45,6 +48,9 @@ export default async function AboutNewsroomPage({
   const raw = typeof query.blogPage === "string" ? query.blogPage : "";
   const page = /^\d{1,7}$/.test(raw) && Number(raw) > 0 ? Number(raw) : 1;
   const resource = loadCmsResource(() => listBlogs(market, page, 3));
+  // Loaded in parallel and streamed separately: a Company News outage or empty
+  // feed never blocks the newsroom or its Blog panels.
+  const companyNews = loadCmsResource(() => listCompanyNews(market, 1, 6));
   return (
     <main
       style={{ background: "#ffffff", minHeight: "100vh", overflowX: "clip" }}
@@ -61,6 +67,15 @@ export default async function AboutNewsroomPage({
               market={market}
               variant="board"
             />
+          </Suspense>
+        }
+        companyNewsPanel={
+          <Suspense
+            fallback={
+              <ContentState state="loading" title={COMPANY_NEWS_COPY.loading} />
+            }
+          >
+            <NewsroomCompanyNewsFeed resource={companyNews} market={market} />
           </Suspense>
         }
       />
