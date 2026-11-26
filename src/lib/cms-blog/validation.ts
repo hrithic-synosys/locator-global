@@ -9,9 +9,19 @@ import type {
   CompanyNewsDetail,
   CompanyNewsList,
   ImageData,
+  MediaCard,
+  MediaDetail,
+  MediaList,
+  ProductUpdateCard,
+  ProductUpdateDetail,
+  ProductUpdateList,
   RelatedArticle,
 } from "./types";
-import { CMS_COLLECTIONS, type CmsCollection } from "./collections";
+import {
+  CMS_COLLECTIONS,
+  type CmsCollection,
+  type MediaCollection,
+} from "./collections";
 import { mediaUrl as resolveMediaUrl, safeHref } from "./urls";
 export class CmsPayloadError extends Error {
   constructor() {
@@ -216,27 +226,29 @@ function card(
     category: { ...card.category, slug: "blog" },
   };
 }
-function companyNewsCard(
+// Article + video collections (Company News, Product Updates) share one card shape.
+function mediaCard<C extends MediaCollection>(
+  collection: C,
   v: unknown,
   base: string,
   market: CountryCode,
   related = false
-): CompanyNewsCard {
-  const { o, format, card } = collectionCard(
-    v,
-    base,
-    market,
-    "company-news",
-    related
-  );
+): MediaCard<C> {
+  const { o, format, card } = collectionCard(v, base, market, collection, related);
   return {
     ...card,
-    format: format as CompanyNewsCard["format"],
-    category: { ...card.category, slug: "company-news" },
+    format: format as MediaCard<C>["format"],
+    category: { ...card.category, slug: collection },
     // A video without a playable link is an invalid record, not an empty one.
     videoUrl: format === "video" ? videoUrl(o.videoUrl) : null,
   };
 }
+const companyNewsCard = (
+  v: unknown,
+  base: string,
+  market: CountryCode,
+  related = false
+): CompanyNewsCard => mediaCard("company-news", v, base, market, related);
 const envelope = (v: unknown) => {
   const o = obj(v);
   if (o.success !== true) fail();
@@ -286,6 +298,17 @@ export const parseCompanyNewsList = (
   base: string,
   market: CountryCode
 ): CompanyNewsList => list(v, (item) => companyNewsCard(item, base, market));
+export const parseMediaList = <C extends MediaCollection>(
+  collection: C,
+  v: unknown,
+  base: string,
+  market: CountryCode
+): MediaList<C> => list(v, (item) => mediaCard(collection, item, base, market));
+export const parseProductUpdateList = (
+  v: unknown,
+  base: string,
+  market: CountryCode
+): ProductUpdateList => parseMediaList("product-updates", v, base, market);
 export const parseCards = (
   v: unknown,
   base: string,
@@ -302,6 +325,22 @@ export const parseCompanyNewsCards = (
   unique(
     arr(envelope(v).items).map((v) => companyNewsCard(v, base, market, related))
   );
+export const parseMediaCards = <C extends MediaCollection>(
+  collection: C,
+  v: unknown,
+  base: string,
+  market: CountryCode,
+  related = false
+): MediaCard<C>[] =>
+  unique(
+    arr(envelope(v).items).map((v) => mediaCard(collection, v, base, market, related))
+  );
+export const parseProductUpdateCards = (
+  v: unknown,
+  base: string,
+  market: CountryCode,
+  related = false
+): ProductUpdateCard[] => parseMediaCards("product-updates", v, base, market, related);
 export const parseDetail = (
   v: unknown,
   base: string,
@@ -312,7 +351,18 @@ export const parseCompanyNewsDetail = (
   base: string,
   market: CountryCode
 ): CompanyNewsDetail => detail(v, base, (o) => companyNewsCard(o, base, market));
-function detail<C extends CmsCard | CompanyNewsCard>(
+export const parseMediaDetail = <C extends MediaCollection>(
+  collection: C,
+  v: unknown,
+  base: string,
+  market: CountryCode
+): MediaDetail<C> => detail(v, base, (o) => mediaCard(collection, o, base, market));
+export const parseProductUpdateDetail = (
+  v: unknown,
+  base: string,
+  market: CountryCode
+): ProductUpdateDetail => parseMediaDetail("product-updates", v, base, market);
+function detail<C extends CmsCard | MediaCard>(
   v: unknown,
   base: string,
   parseCard: (o: Record<string, unknown>) => C

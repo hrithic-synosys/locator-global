@@ -33,6 +33,10 @@ export const companyNewsBase = (market: CountryCode) =>
   collectionBase(market, "company-news");
 export const companyNewsHref = (market: CountryCode, slug: string) =>
   collectionHref(market, "company-news", slug);
+export const productUpdatesBase = (market: CountryCode) =>
+  collectionBase(market, "product-updates");
+export const productUpdateHref = (market: CountryCode, slug: string) =>
+  collectionHref(market, "product-updates", slug);
 export const dateLabel = (value: string) =>
   new Date(value).toLocaleDateString("en-US", {
     month: "long",

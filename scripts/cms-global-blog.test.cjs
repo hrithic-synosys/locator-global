@@ -489,11 +489,12 @@ test("sitemap fetches each enabled market independently and retains unrelated re
   const sitemap = await l.load("src/app/sitemap.ts").default();
   const blogs = sitemap.filter((e) => e.url.includes("/about/newsroom/blog/"));
   assert.equal(blogs.length, 5);
-  // One Blog and one Company News slug read per enabled market.
+  // One Blog, one Company News and one Product Updates slug read per enabled market.
   const paths = l.requests.map(([input]) => new URL(input).pathname);
   assert.equal(paths.filter((p) => p.endsWith("/blogs/slugs")).length, 5);
   assert.equal(paths.filter((p) => p.endsWith("/company-news/slugs")).length, 5);
-  assert.equal(l.requests.length, 10);
+  assert.equal(paths.filter((p) => p.endsWith("/product-updates/slugs")).length, 5);
+  assert.equal(l.requests.length, 15);
   for (const m of markets) {
     const prefix = m === "global" ? "" : "/" + m;
     assert.ok(

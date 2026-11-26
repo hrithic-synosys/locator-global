@@ -23,7 +23,19 @@ export const CMS_COLLECTIONS = {
     tagPrefix: "cms-public-company-news",
     invalidated: "market_company_news",
   },
+  "product-updates": {
+    apiPath: "product-updates",
+    categorySlug: "product-updates",
+    formats: ["article", "video"],
+    route: "product-updates",
+    label: "Product Updates",
+    cacheKey: "cms-public-product-updates-v1",
+    tagPrefix: "cms-public-product-updates",
+    invalidated: "market_product_updates",
+  },
 } as const;
 
 export type CmsCollection = keyof typeof CMS_COLLECTIONS;
 export type CmsCollectionConfig = (typeof CMS_COLLECTIONS)[CmsCollection];
+/** Collections that carry written articles and videos (everything but Blog). */
+export type MediaCollection = Exclude<CmsCollection, "blogs">;

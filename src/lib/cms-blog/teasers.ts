@@ -2,8 +2,8 @@ import "server-only";
 import { connection } from "next/server";
 import type { CountryCode } from "../../config/countries";
 import { listBlogs } from "./client";
-import { blogHref, companyNewsHref, dateLabel } from "./urls";
-import type { CmsCard, CompanyNewsCard } from "./types";
+import { blogHref, companyNewsHref, dateLabel, productUpdateHref } from "./urls";
+import type { CmsCard, CompanyNewsCard, ProductUpdateCard } from "./types";
 
 /** Secondary feeds can fail locally without taking commercial pages down.
  * Callers must display the unavailable state, never masquerade it as empty. */
@@ -47,6 +47,20 @@ export const newsroomCompanyNewsCard = (post: CompanyNewsCard) => ({
   alt: post.banner?.alt || "",
   date: dateLabel(post.publishedAt),
   href: companyNewsHref(post.market, post.slug),
+  cms: true,
+  video: post.format === "video",
+});
+/** Product Updates cards on the newsroom board's Product Updates tab. */
+export const newsroomProductUpdateCard = (post: ProductUpdateCard) => ({
+  id: post.id,
+  category: "product" as const,
+  tag: post.category.name,
+  title: post.title,
+  excerpt: post.excerpt,
+  image: post.banner?.src || "",
+  alt: post.banner?.alt || "",
+  date: dateLabel(post.publishedAt),
+  href: productUpdateHref(post.market, post.slug),
   cms: true,
   video: post.format === "video",
 });

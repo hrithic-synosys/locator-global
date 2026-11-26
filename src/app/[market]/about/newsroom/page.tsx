@@ -11,7 +11,7 @@ import AboutPillarNav from "@/components/about/AboutPillarNav";
 import Footer from "@/components/layouts/Footer";
 import NewsroomVideosAndBlogs from "@/components/about/newsroom/NewsroomVideosAndBlogs";
 
-import { listBlogs, listCompanyNews } from "@/lib/cms-blog/client";
+import { listBlogs, listCompanyNews, listProductUpdates } from "@/lib/cms-blog/client";
 import { Suspense } from "react";
 import { loadCmsResource } from "@/lib/cms-blog/resource";
 import ContentState from "@/components/about/newsroom/ContentState";
@@ -19,6 +19,9 @@ import NewsroomBlogFeed from "@/components/about/newsroom/NewsroomBlogFeed";
 import NewsroomCompanyNewsFeed, {
   COMPANY_NEWS_COPY,
 } from "@/components/about/newsroom/NewsroomCompanyNewsFeed";
+import NewsroomProductUpdatesFeed, {
+  PRODUCT_UPDATES_COPY,
+} from "@/components/about/newsroom/NewsroomProductUpdatesFeed";
 import { assertMarket } from "@/lib/cms-blog/urls";
 export const dynamic = "force-dynamic";
 
@@ -51,6 +54,8 @@ export default async function AboutNewsroomPage({
   // Loaded in parallel and streamed separately: a Company News outage or empty
   // feed never blocks the newsroom or its Blog panels.
   const companyNews = loadCmsResource(() => listCompanyNews(market, 1, 6));
+  // Same for Product Updates (the board's Product Updates tab).
+  const productUpdates = loadCmsResource(() => listProductUpdates(market, 1, 6));
   return (
     <main
       style={{ background: "#ffffff", minHeight: "100vh", overflowX: "clip" }}
@@ -76,6 +81,15 @@ export default async function AboutNewsroomPage({
             }
           >
             <NewsroomCompanyNewsFeed resource={companyNews} market={market} />
+          </Suspense>
+        }
+        productUpdatesPanel={
+          <Suspense
+            fallback={
+              <ContentState state="loading" title={PRODUCT_UPDATES_COPY.loading} />
+            }
+          >
+            <NewsroomProductUpdatesFeed resource={productUpdates} market={market} />
           </Suspense>
         }
       />

@@ -4,17 +4,22 @@ import { connection } from "next/server";
 import { unstable_cache } from "next/cache";
 import { randomUUID } from "node:crypto";
 import { BLOG_CACHE_SECONDS, cmsCacheTag } from "./cache-policy";
-import { CMS_COLLECTIONS, type CmsCollection } from "./collections";
+import {
+  CMS_COLLECTIONS,
+  type CmsCollection,
+  type MediaCollection,
+} from "./collections";
+import type { MediaCard, MediaDetail, MediaList } from "./types";
 import { articleCanonical } from "./seo";
 import type { CountryCode } from "../../config/countries";
 import { assertMarket } from "./urls";
 import {
   parseCards,
-  parseCompanyNewsCards,
-  parseCompanyNewsDetail,
-  parseCompanyNewsList,
   parseDetail,
   parseList,
+  parseMediaCards,
+  parseMediaDetail,
+  parseMediaList,
   parseSlugs,
 } from "./validation";
 
@@ -237,86 +242,105 @@ export const getRelatedBlogs = publicCache(
   }
 );
 
-// Company News: the same contract and cache rules as Blog, in its own API path,
-// cache namespace and per-market tag (cms-public-company-news:<market>).
-export const listCompanyNews = publicCache(
-  "company-news",
-  "list",
-  async (
-    market: CountryCode,
-    page: number = 1,
-    limit: number = 12,
-    q: string = "",
-    tag: string = "",
-    featured?: boolean
-  ) => {
-    const query = listQuery(page, limit, q, tag, featured);
-    const r = await request(market, "", query, false, "company-news");
-    const result = parseCompanyNewsList(r.data, r.base, market);
-    if (result.pagination.page !== page || result.pagination.limit !== limit)
-      throw new CmsRequestError();
-    return result;
-  }
-);
-export const getCompanyNews = publicCache(
-  "company-news",
-  "detail",
-  async (market: CountryCode, slug: string) => {
-    const r = await request(
-      market,
-      `/${articleSegment(slug)}`,
-      {},
-      true,
-      "company-news"
-    );
-    const item =
-      r.data === null ? null : parseCompanyNewsDetail(r.data, r.base, market);
-    if (item && item.slug !== slug) throw new CmsRequestError();
-    if (item) articleCanonical(item, "company-news");
-    return item;
-  }
-);
-export const getFeaturedCompanyNews = publicCache(
-  "company-news",
-  "featured",
-  async (market: CountryCode, limit: number = 6) => {
-    bounded(limit, 50);
-    const r = await request(
-      market,
-      "/featured",
-      { limit: String(limit) },
-      false,
-      "company-news"
-    );
-    const items = parseCompanyNewsCards(r.data, r.base, market);
-    if (items.length > limit) throw new CmsRequestError();
-    return items;
-  }
-);
-export const getCompanyNewsSlugs = publicCache(
-  "company-news",
-  "slugs",
-  async (market: CountryCode) => {
-    const r = await request(market, "/slugs", {}, false, "company-news");
-    return parseSlugs(r.data, market);
-  }
-);
-export const getRelatedCompanyNews = publicCache(
-  "company-news",
-  "related",
-  async (market: CountryCode, slug: string, limit: number = 3) => {
-    bounded(limit, 12);
-    const r = await request(
-      market,
-      `/${articleSegment(slug)}/related`,
-      { limit: String(limit) },
-      true,
-      "company-news"
-    );
-    if (r.data === null) return null;
-    const items = parseCompanyNewsCards(r.data, r.base, market, true);
-    if (items.length > limit || items.some((item) => item.slug === slug))
-      throw new CmsRequestError();
-    return items;
-  }
-);
+// Article + video collections (Company News, Product Updates): the same contract
+// and cache rules as Blog, each in its own API path, cache namespace and
+// per-market tag (cms-public-<collection>:<market>).
+function mediaReads<C extends MediaCollection>(collection: C) {
+  return {
+    list: publicCache(
+      collection,
+      "list",
+      async (
+        market: CountryCode,
+        page: number = 1,
+        limit: number = 12,
+        q: string = "",
+        tag: string = "",
+        featured?: boolean
+      ): Promise<MediaList<C>> => {
+        const query = listQuery(page, limit, q, tag, featured);
+        const r = await request(market, "", query, false, collection);
+        const result = parseMediaList(collection, r.data, r.base, market);
+        if (result.pagination.page !== page || result.pagination.limit !== limit)
+          throw new CmsRequestError();
+        return result;
+      }
+    ),
+    detail: publicCache(
+      collection,
+      "detail",
+      async (market: CountryCode, slug: string): Promise<MediaDetail<C> | null> => {
+        const r = await request(
+          market,
+          `/${articleSegment(slug)}`,
+          {},
+          true,
+          collection
+        );
+        const item =
+          r.data === null ? null : parseMediaDetail(collection, r.data, r.base, market);
+        if (item && item.slug !== slug) throw new CmsRequestError();
+        if (item) articleCanonical(item, collection);
+        return item;
+      }
+    ),
+    featured: publicCache(
+      collection,
+      "featured",
+      async (market: CountryCode, limit: number = 6): Promise<MediaCard<C>[]> => {
+        bounded(limit, 50);
+        const r = await request(
+          market,
+          "/featured",
+          { limit: String(limit) },
+          false,
+          collection
+        );
+        const items = parseMediaCards(collection, r.data, r.base, market);
+        if (items.length > limit) throw new CmsRequestError();
+        return items;
+      }
+    ),
+    slugs: publicCache(collection, "slugs", async (market: CountryCode) => {
+      const r = await request(market, "/slugs", {}, false, collection);
+      return parseSlugs(r.data, market);
+    }),
+    related: publicCache(
+      collection,
+      "related",
+      async (
+        market: CountryCode,
+        slug: string,
+        limit: number = 3
+      ): Promise<MediaCard<C>[] | null> => {
+        bounded(limit, 12);
+        const r = await request(
+          market,
+          `/${articleSegment(slug)}/related`,
+          { limit: String(limit) },
+          true,
+          collection
+        );
+        if (r.data === null) return null;
+        const items = parseMediaCards(collection, r.data, r.base, market, true);
+        if (items.length > limit || items.some((item) => item.slug === slug))
+          throw new CmsRequestError();
+        return items;
+      }
+    ),
+  };
+}
+
+const companyNews = mediaReads("company-news");
+export const listCompanyNews = companyNews.list;
+export const getCompanyNews = companyNews.detail;
+export const getFeaturedCompanyNews = companyNews.featured;
+export const getCompanyNewsSlugs = companyNews.slugs;
+export const getRelatedCompanyNews = companyNews.related;
+
+const productUpdates = mediaReads("product-updates");
+export const listProductUpdates = productUpdates.list;
+export const getProductUpdate = productUpdates.detail;
+export const getFeaturedProductUpdates = productUpdates.featured;
+export const getProductUpdateSlugs = productUpdates.slugs;
+export const getRelatedProductUpdates = productUpdates.related;

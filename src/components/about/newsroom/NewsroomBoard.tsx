@@ -21,7 +21,7 @@ import {
   type NewsItem,
   type SocialPost,
 } from './newsroom-data'
-import { blogBase, companyNewsBase } from '@/lib/cms-blog/urls'
+import { blogBase, companyNewsBase, productUpdatesBase } from '@/lib/cms-blog/urls'
 import { useCountry } from '@/components/country/CountryProvider'
 import SocialPreviewCard from './SocialPreviewCard'
 
@@ -121,11 +121,14 @@ export default function NewsroomBoard({
   blogs = [],
   blogPanel,
   companyNewsPanel,
+  productUpdatesPanel,
 }: {
   blogs?: NewsItem[]
   blogPanel?: ReactNode
   /** CMS-backed Company News (loads in its own Suspense boundary). */
   companyNewsPanel?: ReactNode
+  /** CMS-backed Product Updates for the Product Updates tab (own Suspense boundary). */
+  productUpdatesPanel?: ReactNode
 }) {
   const { code: market } = useCountry();
   const [tab, setTab] = useState<Tab>('all')
@@ -555,8 +558,17 @@ export default function NewsroomBoard({
               </div>
             )}
 
+            {tab === 'product' && productUpdatesPanel && (
+              <div className="nrb-section-head">
+                <h2>Product Updates</h2>
+                <Link href={productUpdatesBase(market)} className="nrb-viewall">
+                  View all product updates →
+                </Link>
+              </div>
+            )}
+
             {tab !== 'all' && tab !== 'social' && tab !== 'media' && (
-              tab === 'blog' && blogPanel ? blogPanel : tab === 'company' && companyNewsPanel ? companyNewsPanel : pool.length === 0 ? (
+              tab === 'blog' && blogPanel ? blogPanel : tab === 'company' && companyNewsPanel ? companyNewsPanel : tab === 'product' && productUpdatesPanel ? productUpdatesPanel : pool.length === 0 ? (
                 <p className="nrb-empty">Nothing published in this category yet — check back soon.</p>
               ) : (
                 <div className="nrb-grid">

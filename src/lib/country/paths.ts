@@ -32,8 +32,8 @@ export function countryPath(href: string, country: CountryCode): string {
 export function switchCountryPath(href: string, country: CountryCode): string {
   const path = stripCountry(href);
   if (path.split(/[?#]/)[0] === globalRegulatoryPath) return countryPath(path.replace(globalRegulatoryPath, '/regulatory'), country);
-  const article = /^\/about\/newsroom\/(blog|company-news)\/[^/?#]+/.exec(path);
+  const article = /^\/about\/newsroom\/(blog|company-news|product-updates)\/[^/?#]+/.exec(path);
   if (article) return countryPath(`/about/newsroom/${article[1]}`, country);
-  if (/^\/about\/newsroom(?:\/(?:blog|company-news))?(?:[?#]|$)/.test(path)) return countryPath(path.split(/[?#]/)[0], country);
+  if (/^\/about\/newsroom(?:\/(?:blog|company-news|product-updates))?(?:[?#]|$)/.test(path)) return countryPath(path.split(/[?#]/)[0], country);
   return countryPath(path, country);
 }

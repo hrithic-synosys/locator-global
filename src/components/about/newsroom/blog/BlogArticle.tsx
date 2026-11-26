@@ -612,7 +612,7 @@ export function RelatedArticles({ articles: related, showThumbs }: { articles: R
   return related.length > 0 ? (
           <section className="ba-card ba-rel" aria-label="Related articles">
             <div className="ba-rel-head">
-              <h2 className="ba-card-title">{collection === "blogs" ? "Related articles" : "More company news"}</h2>
+              <h2 className="ba-card-title">{collection === "blogs" ? "Related articles" : collection === "product-updates" ? "More product updates" : "More company news"}</h2>
               <Link href={collectionBase(market, collection)} className="ba-rel-all">
                 View all →
               </Link>

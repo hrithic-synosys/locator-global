@@ -9,3 +9,5 @@ export const blogCacheTag = (market: CountryCode) =>
   cmsCacheTag("blogs", market);
 export const companyNewsCacheTag = (market: CountryCode) =>
   cmsCacheTag("company-news", market);
+export const productUpdatesCacheTag = (market: CountryCode) =>
+  cmsCacheTag("product-updates", market);

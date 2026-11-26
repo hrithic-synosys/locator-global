@@ -1,4 +1,5 @@
 import type { CountryCode } from "../../config/countries";
+import type { MediaCollection } from "./collections";
 
 export type ImageData = {
   src: string;
@@ -60,7 +61,7 @@ export type ArticleSummary = {
 export type CmsCategory = {
   id: string;
   name: string;
-  slug: "blog" | "company-news";
+  slug: "blog" | MediaCollection;
   description?: string | null;
   sortOrder?: number;
   allowedFormats?: string[];
@@ -101,13 +102,22 @@ export type Pagination = {
 export type CmsList = { items: CmsCard[]; pagination: Pagination };
 export type CmsSlug = { slug: string; market: CountryCode; updatedAt: string };
 
-/** Company News items are written articles or videos (videoUrl is set for videos). */
-export type CompanyNewsFormat = "article" | "video";
-export type CompanyNewsCard = Omit<CmsCard, "format" | "category"> & {
-  format: CompanyNewsFormat;
-  category: CmsCategory & { slug: "company-news" };
+/** Company News and Product Updates items are written articles or videos (videoUrl is set for videos). */
+export type MediaFormat = "article" | "video";
+export type CompanyNewsFormat = MediaFormat;
+/** A card in an article + video collection; the category slug equals the collection key. */
+export type MediaCard<C extends MediaCollection = MediaCollection> = Omit<CmsCard, "format" | "category"> & {
+  format: MediaFormat;
+  category: CmsCategory & { slug: C };
   videoUrl: string | null;
 };
-export type CompanyNewsDetail = CompanyNewsCard &
+export type MediaDetail<C extends MediaCollection = MediaCollection> = MediaCard<C> &
   Omit<CmsDetail, keyof CmsCard>;
-export type CompanyNewsList = { items: CompanyNewsCard[]; pagination: Pagination };
+export type MediaList<C extends MediaCollection = MediaCollection> = { items: MediaCard<C>[]; pagination: Pagination };
+
+export type CompanyNewsCard = MediaCard<"company-news">;
+export type CompanyNewsDetail = MediaDetail<"company-news">;
+export type CompanyNewsList = MediaList<"company-news">;
+export type ProductUpdateCard = MediaCard<"product-updates">;
+export type ProductUpdateDetail = MediaDetail<"product-updates">;
+export type ProductUpdateList = MediaList<"product-updates">;

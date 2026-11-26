@@ -1,17 +1,18 @@
 /* eslint-disable @next/next/no-img-element -- Direct validated CMS media preserves the editor preview. */
 import Link from "next/link";
 import { collectionBase, collectionHref, collectionPageHref, dateLabel, newsroomHref, type BlogFilters } from "@/lib/cms-blog/urls";
-import type { CmsCard, CompanyNewsCard, Pagination } from "@/lib/cms-blog/types";
+import type { CmsCard, MediaCard, Pagination } from "@/lib/cms-blog/types";
 import type { CmsCollection } from "@/lib/cms-blog/collections";
 import type { CountryCode } from "@/config/countries";
 import ContentState from "../ContentState";
 
 // Collection-specific wording; layout and behaviour are shared.
 const COPY = {
-  blogs: { h1: "Locator Blog", noun: "articles", nav: "Blog pagination", empty: "No articles yet", all: "View all articles", lead: "Read Full Article →" },
-  "company-news": { h1: "LOCATOR Company News", noun: "company news", nav: "Company news pagination", empty: "No company news yet", all: "View all company news", lead: "Read Full Story →" },
+  blogs: { h1: "Locator Blog", noun: "articles", nav: "Blog pagination", empty: "No articles yet", emptyLead: undefined, all: "View all articles", lead: "Read Full Article →" },
+  "company-news": { h1: "LOCATOR Company News", noun: "company news", nav: "Company news pagination", empty: "No company news yet", emptyLead: "Company announcements will appear here once they are published. Explore the rest of our newsroom in the meantime.", all: "View all company news", lead: "Read Full Story →" },
+  "product-updates": { h1: "LOCATOR Product Updates", noun: "product updates", nav: "Product updates pagination", empty: "No product updates yet", emptyLead: "New features and releases will appear here once they are published. Explore the rest of our newsroom in the meantime.", all: "View all product updates", lead: "Read Full Update →" },
 } as const;
-type ListingCard = CmsCard | CompanyNewsCard;
+type ListingCard = CmsCard | MediaCard;
 const isVideo = (post: ListingCard) => post.format === "video";
 const EASE = "cubic-bezier(.22,.61,.36,1)";
 export default function BlogListing({
@@ -132,7 +133,7 @@ export default function BlogListing({
         ) : (
           <ContentState state="empty"
             title={filtered ? `No matching ${copy.noun}` : pagination.total ? `No ${copy.noun} on this page` : copy.empty}
-            description={filtered ? `Try another search or explore all published ${copy.noun}.` : pagination.total ? `Explore the latest published ${copy.noun} from the first page.` : collection === "blogs" ? undefined : "Company announcements will appear here once they are published. Explore the rest of our newsroom in the meantime."}
+            description={filtered ? `Try another search or explore all published ${copy.noun}.` : pagination.total ? `Explore the latest published ${copy.noun} from the first page.` : copy.emptyLead}
             href={filtered || filters.page > 1 ? collectionBase(market, collection) : newsroomHref(market)}
             linkLabel={filtered || filters.page > 1 ? copy.all : "Explore the newsroom"} />
         )}

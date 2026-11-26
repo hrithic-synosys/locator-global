@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { CmsDetail, CompanyNewsDetail } from "./types";
+import type { CmsDetail, MediaDetail } from "./types";
 import { collectionBase, collectionHref, newsroomHref } from "./urls";
 import { CMS_COLLECTIONS, type CmsCollection } from "./collections";
 import { countries } from "../../config/countries";
@@ -7,7 +7,7 @@ import { canIndex } from "../../config/indexing";
 import { countryPath } from "../country/paths";
 import { siteConfig, siteUrl } from "../../config/site";
 import { CmsPayloadError } from "./validation";
-type PublicDetail = CmsDetail | CompanyNewsDetail;
+type PublicDetail = CmsDetail | MediaDetail;
 export const publicArticleUrl = (
   market: CmsDetail["market"],
   slug: string,
